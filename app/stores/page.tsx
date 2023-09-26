@@ -125,7 +125,7 @@ function StoresPage() {
       <EditModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        store={selectedStore}
+        store={selectedStore!}
       />
     </div>
   );
