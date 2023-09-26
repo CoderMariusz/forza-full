@@ -30,20 +30,15 @@ const EditModal: React.FC<Props> = ({ isOpen, onClose, store }) => {
     setAId(store.$id);
   }, [store]);
 
-  import { useStoreProduct, ProductStore } from '@/store/ProductsStore';
-
   const handleSave = async () => {
     console.log('Save Changes');
-    const product: ProductStore = await useStoreProduct
-      .getState()
-      .getProduct(id);
-    if (!product) return;
+    const product = await useStoreProduct.getState().getProduct(id);
     product.aCode = aCode;
     product.topLabel = [topLabel[0], topLabel[1].toString()];
-    product.bottomLabel = [bottomLabel[0], bottomLabel[1].toString()];
-    product.sticker = sticker;
+    product.bottomLabel[0] = [bottomLabel[0], bottomLabel[1].toString()];
+    product.sticker = [sticker[0], sticker[1].toString()];
     await useStoreProduct.getState().editProduct(id, product);
-    onClose();
+    onclose;
   };
 
   console.log('EditModal', store);
