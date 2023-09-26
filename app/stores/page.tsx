@@ -11,10 +11,9 @@ function StoresPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const data = await useStoreProducts.getState().setProductsFromDB();
-      console.log(data);
+      const data: any = await useStoreProducts.getState().setProductsFromDB();
 
-      if (data) {
+      if (data.documents) {
         setStores(data.documents);
       }
     }
