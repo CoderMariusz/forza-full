@@ -17,6 +17,7 @@ interface Props {
 }
 
 const EditModal: React.FC<Props> = ({ isOpen, onClose, store }) => {
+  if (!isOpen) return null;
   const [id, setAId] = useState(store.$id);
   const [aCode, setACode] = useState(store.aCode);
   const [topLabel, setTopLabel] = useState(store.topLabel);
