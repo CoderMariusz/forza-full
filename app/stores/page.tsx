@@ -4,14 +4,22 @@ import React, { useState, useEffect } from 'react';
 import EditModal from './EditModal';
 import { useStoreProduct, useStoreProducts } from '@/store/ProductsStore';
 
+interface Store {
+  $id: string;
+  aCode: string;
+  topLabel: [string, number];
+  bottomLabel: [string, number];
+  sticker: [string, number];
+}
+
 function StoresPage() {
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState(stores[0]); // default selected store
 
   useEffect(() => {
     async function fetchData() {
-      const data: any = await useStoreProducts.getState().setProductsFromDB();
+      const data: any = useStoreProducts.getState().setProductsFromDB();
 
       if (data.documents) {
         setStores(data.documents);
@@ -28,7 +36,7 @@ function StoresPage() {
     console.log('Edit: ', store);
   };
 
-  const handleRemove = (store: (typeof stores)[0]) => {
+  const handleRemove = async (store: (typeof stores)[0]) => {
     const product = useStoreProduct.getState().getProduct(store.$id);
     useStoreProduct.getState().deleteProduct(store.$id);
     console.log('Remove: ', product);
@@ -37,8 +45,8 @@ function StoresPage() {
   };
 
   const handleCloseModal = async () => {
-    const data = await useStoreProducts.getState().setProductsFromDB();
-    setStores(data?.documents);
+    const data: any = useStoreProducts.getState().setProductsFromDB();
+    setStores(data.documents);
     setModalOpen(false);
   };
 
