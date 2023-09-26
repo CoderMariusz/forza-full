@@ -7,6 +7,7 @@ interface Store {
   topLabel: [string, number];
   bottomLabel: [string, number];
   sticker: [string, number];
+  $id: string;
 }
 
 interface Props {
@@ -33,7 +34,7 @@ const EditModal: React.FC<Props> = ({ isOpen, onClose, store }) => {
 
   const handleSave = async () => {
     console.log('Save Changes');
-    const product = await useStoreProduct.getState().getProduct(id);
+    const product: any = await useStoreProduct.getState().getProduct(id);
     product.aCode = aCode;
     product.topLabel = [topLabel[0], topLabel[1].toString()];
     product.bottomLabel[0] = [bottomLabel[0], bottomLabel[1].toString()];
