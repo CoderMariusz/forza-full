@@ -15,15 +15,13 @@ interface Store {
 function StoresPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedStore, setSelectedStore] = useState(stores[0]); // default selected store
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null); // default selected store
 
   useEffect(() => {
     async function fetchData() {
-      const data: any = useStoreProducts.getState().setProductsFromDB();
+      const data: any = await useStoreProducts.getState().setProductsFromDB();
 
-      if (data.documents) {
-        setStores(data.documents);
-      }
+      setStores(data.documents);
     }
     fetchData();
   }, []);
@@ -73,7 +71,7 @@ function StoresPage() {
           </tr>
         </thead>
         <tbody className='text-gray-700'>
-          {stores.map((store: any, index) => (
+          {stores?.map((store: Store, index) => (
             <tr key={index}>
               <td className='text-center py-2'>{store.aCode}</td>
               <td className='text-center py-2'>
