@@ -1,3 +1,4 @@
+import BurgerMenu from './BurgerMenu';
 import Menu from './Menu';
 import './globals.css';
 import type { Metadata } from 'next';
@@ -14,8 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='bg-slate-300 text-slate-600 flex gap-2'>
+      <body className='bg-slate-300 text-slate-600 flex gap-1'>
         <Menu />
+        <BurgerMenu />
         {children}
       </body>
     </html>

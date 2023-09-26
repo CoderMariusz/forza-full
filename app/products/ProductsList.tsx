@@ -26,7 +26,7 @@ function ProductsList() {
   }, [setProducts]);
 
   return (
-    <div>
+    <div className='flex flex-col mx-12 md:mx-2 w-full'>
       {products.map((product) => {
         console.log(product);
 

@@ -14,13 +14,13 @@ function ProductCard({ name, aCode, rates, version, web }: Product) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div
-      className='bg-white p-4 shadow-md rounded-md overflow-hidden mb-4 cursor-pointer md:cursor-default'
+      className='bg-white px-3 py-1 shadow-md rounded-md overflow-hidden mb-4 cursor-pointer md:cursor-default'
       onClick={() => setIsOpen(!isOpen)}>
       <ul
         className={`transition-all duration-200 ${
           isOpen ? 'flex flex-col' : 'flex'
         } md:flex-row md:gap-4 md:items-center overflow-hidden`}>
-        <li className='flex-1 py-1 w-28'>
+        <li className='flex-1 py-1'>
           <strong className='mr-1'>A-code:</strong>
           <p>{aCode}</p>
         </li>
@@ -30,7 +30,7 @@ function ProductCard({ name, aCode, rates, version, web }: Product) {
         </li>
 
         <div
-          className={`transition-all duration-200 gap-3 flex flex-col md:flex-row ${
+          className={`transition-all duration-200 gap-4 flex flex-col md:flex-row ${
             isOpen ? 'opacity-100 max-h-screen' : 'opacity-0 max-h-0 max-w-0'
           } md:opacity-100 md:max-h-screen`}>
           <li className='flex-1 py-1 '>
