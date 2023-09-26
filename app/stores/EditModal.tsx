@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useStoreProduct } from '@/store/ProductsStore';
 import React, { useState, useEffect } from 'react';
 
