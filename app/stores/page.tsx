@@ -44,7 +44,7 @@ function StoresPage() {
   };
 
   const handleCloseModal = async () => {
-    const data: any = useStoreProducts.getState().setProductsFromDB();
+    const data: any = await useStoreProducts.getState().setProductsFromDB();
     setStores(data.documents);
     setModalOpen(false);
   };
