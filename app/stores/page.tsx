@@ -24,6 +24,7 @@ function StoresPage() {
       setStores(data.documents);
     }
     fetchData();
+    console.log('StoresPage' + stores);
   }, []);
 
   const handleAddProduct = () => {
@@ -47,6 +48,8 @@ function StoresPage() {
     setStores(data.documents);
     setModalOpen(false);
   };
+
+  console.log(stores);
 
   return (
     <div className='container mx-auto p-4'>
