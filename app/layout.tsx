@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='bg-slate-300 text-slate-600 flex gap-1'>
+      <body className='bg-slate-300 text-slate-600 flex gap-1 min-h-full'>
         <Menu />
         <BurgerMenu />
         {children}

@@ -40,7 +40,7 @@ const EditModal: React.FC<Props> = ({ isOpen, onClose, store }) => {
     product.bottomLabel = [bottomLabel[0], bottomLabel[1].toString()];
     product.sticker = [sticker[0], sticker[1].toString()];
     await useStoreProduct.getState().editProduct(id, product);
-    onclose;
+    onClose();
   };
 
   console.log('EditModal', store);

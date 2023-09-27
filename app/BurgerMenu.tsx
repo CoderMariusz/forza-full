@@ -38,7 +38,7 @@ function BurgerMenu() {
           </h2>
           <nav>
             <ul className='flex flex-col gap-2 mx-2'>
-              {linksList(name, setName)}
+              {linksList(name, setName, setIsOpen)}
             </ul>
           </nav>
         </div>

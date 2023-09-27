@@ -3,6 +3,8 @@ import { database } from '@/appwrite';
 import React, { useState, useEffect } from 'react';
 import EditModal from './EditModal';
 import { useStoreProduct, useStoreProducts } from '@/store/ProductsStore';
+import AddModal from './AddModal';
+import Link from 'next/link';
 
 interface Store {
   $id: string;
@@ -15,6 +17,8 @@ interface Store {
 function StoresPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null); // default selected store
 
   useEffect(() => {
@@ -24,11 +28,13 @@ function StoresPage() {
       setStores(data.documents);
     }
     fetchData();
-    console.log('StoresPage' + stores);
   }, []);
 
-  const handleAddProduct = () => {
+  const handleAddProduct = (newStore: Store) => {
     console.log('Add: ');
+    // Open Add Modal
+    setStores((prevStores) => [...prevStores, newStore]);
+    setAddModalOpen(false);
   };
 
   const handleEdit = (store: (typeof stores)[0]) => {
@@ -36,7 +42,7 @@ function StoresPage() {
   };
 
   const handleRemove = async (store: (typeof stores)[0]) => {
-    const product = useStoreProduct.getState().getProduct(store.$id);
+    const product = await useStoreProduct.getState().getProduct(store.$id);
     useStoreProduct.getState().deleteProduct(store.$id);
     console.log('Remove: ', product);
     const newStores = stores.filter((s) => s.$id !== store.$id);
@@ -56,12 +62,31 @@ function StoresPage() {
       <h1 className='text-3xl font-bold mb-4'>Stores</h1>
       <div className='mb-4 flex justify-end'>
         <button
-          onClick={handleAddProduct}
+          onClick={() => {
+            setAddModalOpen(true);
+          }}
           className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
-          Add Store Product
+          Add Product +
         </button>
       </div>
       <hr className='mb-4' />
+      <div className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-2 sm:mb-4'>
+        <Link
+          href='/live'
+          className='bg-zinc-200 text-blue-700 px-2 sm:px-4 py-1 sm:py-2 rounded-md hover:bg-blue-300 transition ease-in-out duration-200 text-sm sm:text-base'>
+          Live
+        </Link>
+        <Link
+          href='/stores'
+          className='bg-zinc-200 text-blue-700 px-2 sm:px-4 py-1 sm:py-2 rounded-md hover:bg-blue-300 transition ease-in-out duration-200 text-sm sm:text-base'>
+          Stores
+        </Link>
+        <Link
+          href='/calculation'
+          className='bg-zinc-200 text-blue-700 px-2 sm:px-4 py-1 sm:py-2 rounded-md hover:bg-blue-300 transition ease-in-out duration-200 text-sm sm:text-base'>
+          Calculation
+        </Link>
+      </div>
       <table className='min-w-full bg-white'>
         <thead className='bg-gray-800 text-white'>
           <tr>
@@ -129,6 +154,11 @@ function StoresPage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         store={selectedStore!}
+      />
+      <AddModal
+        isOpen={isAddModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onAdd={handleAddProduct}
       />
     </div>
   );

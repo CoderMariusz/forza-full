@@ -1,9 +1,12 @@
 'use client';
 import { account } from '@/appwrite';
-import { useUserStore } from '@/store/UserStore';
 import Link from 'next/link';
 
-export const linksList = (name: string, setName: Function) => {
+export const linksList = (
+  name: string,
+  setName: Function,
+  setIsOpen: Function
+) => {
   const links = [
     'dashboard',
     'products',
@@ -41,6 +44,10 @@ export const linksList = (name: string, setName: Function) => {
             className='transition-all duration-200 hover:bg-blue-100 rounded p-1'>
             <Link
               href={`/${link}`}
+              onClick={() => {
+                console.log('clicked');
+                setIsOpen(false);
+              }}
               className='text-gray-600 hover:text-blue-500 hover:font-bold p-2 block rounded'>
               {link}
             </Link>
