@@ -1,14 +1,11 @@
 'use client';
-import { account, avatars } from '@/appwrite';
 import { useUserStore } from '@/store/UserStore';
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 import { linksList } from '@/lib/LinkList';
+import { useState } from 'react';
 
 function Menu() {
-  const [name, setName] = useUserStore((state) => [state.name, state.setName]);
-  const link = () => {};
+  const [name, setName] = useUserStore((state) => ['mariusz', state.setName]);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className='hidden md:flex flex-col gap-4 mx-4 mt-4 w-48 p-4 bg-gray-100 rounded-lg shadow-lg'>
@@ -21,7 +18,7 @@ function Menu() {
       <h2 className='text-gray-800 font-semibold text-lg'>Hi, {name}</h2>
       <nav>
         <ul className='flex flex-col gap-2 mx-2'>
-          {linksList(name, setName, link)}
+          {linksList(name, setName, setIsOpen)}
         </ul>
       </nav>
     </div>

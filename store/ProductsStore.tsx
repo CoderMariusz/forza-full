@@ -1,19 +1,26 @@
 import { database } from '@/appwrite';
 import { create } from 'zustand';
+import { Labels } from './LabelsStore';
 
-interface ProductState {
+interface ProductsState {
   products: Product[];
   setProducts: (products: Product[]) => void;
+  setProductsFromDB: () => Promise<Product[]>;
 }
-interface Product {
-  name: string;
-  aCode: string;
-  $id: string;
-  version: number;
-  web: string;
-  rates: number;
+
+export interface Product {
+  name?: string;
+  aCode?: string;
+  $id?: string;
+  version?: number;
+  web?: string;
+  rates?: number;
+  labels?: Labels[];
+}
+
+interface ProductState extends Product {
   setName: (name: string) => void;
-  setACode: (email: string) => void;
+  setACode: (aCode: string) => void;
   setId: (id: string) => void;
   setVersion: (version: number) => void;
   setWeb: (web: string) => void;
@@ -22,45 +29,47 @@ interface Product {
   deleteProduct: (id: string) => void;
 }
 
-interface StoreProducts {
-  products: Product[];
-  setProducts: (products: Product[]) => void;
-  setProductsFromDB: () => void;
-}
-
-interface ProductStore {
-  aCode: string;
-  topLabel: [string, number];
-  bottomLabel: [string, number];
-  sticker: [string, number];
-  setACode: (aCode: string) => void;
-  setTopLabel: (topLabel: [string, number]) => void;
-  setBottomLabel: (bottomLabel: [string, number]) => void;
-  setSticker: (sticker: [string, number]) => void;
-  addProduct: (product: ProductStore) => void;
-  getProduct: (id: string) => void;
-  editProduct: (id: string, product: ProductStore) => void;
-  deleteProduct: (id: string) => void;
-}
-
-const useProductsStore = create<ProductState>((set) => ({
+const useProductsStore = create<ProductsState>((set) => ({
   products: [],
-  setProducts: (products: Product[]) => set((state) => ({ ...state, products }))
+  setProducts: (products: Product[]) =>
+    set((state) => ({ ...state, products })),
+  setProductsFromDB: async () => {
+    const data = await database.listDocuments(
+      '6510bb07873546043cae',
+      '6510bb1f8f240bd7c3b2'
+    );
+    const products = data.documents.map((product) => {
+      return {
+        name: product.name,
+        aCode: product.aCode,
+        $id: product.$id,
+        version: product.version,
+        web: product.web,
+        rates: product.rates,
+        labels: product.labels
+      };
+    });
+    set((state) => ({ ...state, products }));
+    return products;
+  }
 }));
 
-const useProduct = create<Product>((set) => ({
+const useProduct = create<ProductState>((set) => ({
   name: '',
   aCode: '',
   $id: '',
   version: 0,
   web: '',
   rates: 0,
+  labels: [],
+
   setName: (name: string) => set((state) => ({ ...state, name })),
   setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
   setId: (id: string) => set((state) => ({ ...state, id })),
   setVersion: (version: number) => set((state) => ({ ...state, version })),
   setWeb: (web: string) => set((state) => ({ ...state, web })),
   setRates: (rates: number) => set((state) => ({ ...state, rates })),
+  setLabels: (labels: Labels[]) => set((state) => ({ ...state, labels })),
 
   editProduct: async (id: string, product: Product) => {
     await database.updateDocument(
@@ -72,7 +81,8 @@ const useProduct = create<Product>((set) => ({
         aCode: product?.aCode || '',
         version: product?.version || 0,
         web: product?.web || '',
-        rates: product?.rates || 0
+        rates: product?.rates || 0,
+        labels: product?.labels || []
       }
     );
   },
@@ -86,74 +96,4 @@ const useProduct = create<Product>((set) => ({
   }
 }));
 
-const useStoreProducts = create<StoreProducts>((set) => ({
-  products: [],
-  setProducts: (products: Product[]) =>
-    set((state) => ({ ...state, products })),
-  setProductsFromDB: async () => {
-    const data = await database.listDocuments(
-      '6510bb07873546043cae',
-      '6511ee740583b96d787b'
-    );
-    return data;
-  }
-}));
-
-const useStoreProduct = create<ProductStore>((set) => ({
-  aCode: '',
-  topLabel: ['', 0],
-  bottomLabel: ['', 0],
-  sticker: ['', 0],
-  setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
-  setTopLabel: (topLabel: [string, number]) =>
-    set((state) => ({ ...state, topLabel })),
-  setBottomLabel: (bottomLabel: [string, number]) =>
-    set((state) => ({ ...state, bottomLabel })),
-  setSticker: (sticker: [string, number]) =>
-    set((state) => ({ ...state, sticker })),
-  addProduct: async (product: ProductStore) => {
-    await database.createDocument(
-      '6510bb07873546043cae',
-      '6511ee740583b96d787b',
-      '',
-      {
-        aCode: product.aCode,
-        topLabel: product.topLabel,
-        bottomLabel: product.bottomLabel,
-        sticker: product.sticker
-      },
-      [] // add an empty array as the fifth argument
-    );
-  },
-  getProduct: async (id: string) => {
-    const data = await database.getDocument(
-      '6510bb07873546043cae',
-      '6511ee740583b96d787b',
-      id
-    );
-    console.log(data);
-    return data;
-  },
-  editProduct: async (id: string, product: ProductStore) => {
-    await database.updateDocument(
-      '6510bb07873546043cae',
-      '6511ee740583b96d787b',
-      id,
-      {
-        aCode: product.aCode,
-        topLabel: product.topLabel,
-        bottomLabel: product.bottomLabel,
-        sticker: product.sticker
-      }
-    );
-  },
-  deleteProduct: async (id: string) => {
-    await database.deleteDocument(
-      '6510bb07873546043cae',
-      '6511ee740583b96d787b',
-      id
-    );
-  }
-}));
-
-export { useProductsStore, useProduct, useStoreProduct, useStoreProducts };
+export { useProductsStore, useProduct };

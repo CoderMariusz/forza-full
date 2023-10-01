@@ -10,6 +10,7 @@ export const linksList = (
   const links = [
     'dashboard',
     'products',
+    'labels',
     'orders',
     'production',
     'stores',
@@ -19,7 +20,7 @@ export const linksList = (
   const logout = async () => {
     await account.deleteSession('current');
     try {
-      setName('');
+      setName('jaja');
     } catch (e) {
       console.log(e);
     }
