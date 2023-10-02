@@ -71,11 +71,27 @@ function StoresPage() {
     stores.map((store) => {
       console.log(store.labels);
 
-      store.labels?.map((label: any) => {
-        if (selectedStore && label.code === selectedStore[0]?.code) {
-          useLabels.getState().updateLabel(label.$id, quantity);
-        }
-      });
+      const onUpdate = async (quantity: number | null = 0) => {
+        const updatedStores = stores.map((store) => {
+          const updatedLabels = store.labels?.map((label: any) => {
+            if (selectedStore && label.code === selectedStore[0]?.code) {
+              return { ...label, quantity: quantity ?? 0 };
+            } else {
+              return label;
+            }
+          });
+
+          // Sort labels by code within each store
+          updatedLabels?.sort((a, b) => a.code.localeCompare(b.code));
+
+          return { ...store, labels: updatedLabels };
+        });
+
+        stores.map((store) => {
+          console.log(store.labels);
+        });
+        setStores(updatedStores);
+      };
     });
     setStores(updatedStores);
   };
