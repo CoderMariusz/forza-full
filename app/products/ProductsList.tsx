@@ -23,7 +23,7 @@ function ProductsList({ products }: { products: Product[] }) {
         </thead>
         <tbody className='text-gray-700'>
           {products.map((product) => (
-            <React.Fragment key={product.$id}>
+            <React.Fragment key={product.$id || product.aCode}>
               <tr>
                 <td className='border p-2'>{product.aCode}</td>
                 <td className='border p-2'>{product.name}</td>
@@ -39,7 +39,7 @@ function ProductsList({ products }: { products: Product[] }) {
                 <td className='hidden md:table-cell border p-2 w-64 min-w-[200px]'>
                   {product.labels &&
                     product.labels.map((label) => (
-                      <div key={label.id}>
+                      <div key={label.$id || label.code}>
                         <strong>Group:</strong> {label.group} -{' '}
                         <strong>Code:</strong> {label.code}
                       </div>
@@ -75,7 +75,7 @@ function ProductsList({ products }: { products: Product[] }) {
                         {product.labels &&
                           product.labels.map((label) => (
                             <div
-                              key={label.id}
+                              key={label.$id || label.code}
                               className='pl-4'>
                               <div>Group: {label.group}</div>
                               <div>Code: {label.code}</div>

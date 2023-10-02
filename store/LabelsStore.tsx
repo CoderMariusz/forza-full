@@ -11,16 +11,16 @@ export interface Labels {
   group?: string;
   code?: string;
   quantity?: number;
-  id?: string;
-  createdAt?: string;
+  $id?: string;
+  $createdAt?: string;
 }
 
 export interface LabelState {
   group?: string;
   code?: string;
   quantity?: number;
-  id?: string;
-  createdAt?: string;
+  $id?: string;
+  $createdAt?: string;
   setGroup: (group: string) => void;
   setCode: (code: string) => void;
   setQuantity: (quantity: number) => void;
@@ -34,8 +34,7 @@ const useLabels = create<LabelState>((set) => ({
   group: '',
   code: '',
   quantity: 0,
-  id: '',
-  createdAt: '',
+  $createdAt: '',
   setGroup: (group: string) => set((state) => ({ ...state, group })),
   setCode: (code: string) => set((state) => ({ ...state, code })),
   setQuantity: (quantity: number) => set((state) => ({ ...state, quantity })),
@@ -55,11 +54,11 @@ const useLabels = create<LabelState>((set) => ({
     );
     console.log(data);
   },
-  updateLabel: async (id: string, change: number): Promise<void> => {
+  updateLabel: async ($id: string, change: number): Promise<void> => {
     const data = await database.updateDocument(
       '6510bb07873546043cae',
       '65141203c8f6aaa2dcde',
-      id,
+      $id,
       {
         quantity: change
       }
@@ -83,8 +82,8 @@ const useLabelsStore = create<LabelsState>((set) => ({
           group: doc.group,
           code: doc.code,
           quantity: doc.quantity,
-          id: doc.$id,
-          createdAt: doc.$createdAt
+          $id: doc.$id,
+          $createdAt: doc.$createdAt
         })
       );
 

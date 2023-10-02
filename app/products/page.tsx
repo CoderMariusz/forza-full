@@ -1,175 +1,32 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import ProductsList from './ProductsList';
-import { Product, useProductsStore } from '@/store/ProductsStore';
+import { Product, useProduct, useProductsStore } from '@/store/ProductsStore';
 import AddModal from './AddModal';
+import { Labels, useLabelsStore } from '@/store/LabelsStore';
 
 function ProductPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [labels, setLabels] = useState<Labels[]>([]);
 
   useEffect(() => {
-    setProducts([
-      {
-        name: 'Example Product 1',
-        aCode: 'a-0001',
-        $id: '123456',
-        version: 1,
-        web: 'flm2001',
-        rates: 4.5,
-        labels: [
-          {
-            group: 'top',
-            code: 'flm1003',
-            quantity: 12,
-            id: 'label1',
-            createdAt: '2023-09-29T00:00:00Z'
-          },
-          {
-            group: 'bottom',
-            code: 'flm1007',
-            quantity: 8,
-            id: 'label2',
-            createdAt: '2023-09-29T01:00:00Z'
-          },
-          {
-            group: 'sticker',
-            code: 'flm1011',
-            quantity: 19,
-            id: 'label3',
-            createdAt: '2023-09-29T02:00:00Z'
-          }
-        ]
-      },
-      {
-        name: 'Example Product 2',
-        aCode: 'a-0002',
-        $id: '123457',
-        version: 2,
-        web: 'flm2002',
-        rates: 3.7,
-        labels: [
-          {
-            group: 'top',
-            code: 'flm1015',
-            quantity: 5,
-            id: 'label4',
-            createdAt: '2023-09-29T03:00:00Z'
-          },
-          {
-            group: 'bottom',
-            code: 'flm1020',
-            quantity: 21,
-            id: 'label5',
-            createdAt: '2023-09-29T04:00:00Z'
-          },
-          {
-            group: 'sticker',
-            code: 'flm1012',
-            quantity: 3,
-            id: 'label6',
-            createdAt: '2023-09-29T05:00:00Z'
-          }
-        ]
-      },
-      {
-        name: 'Example Product 3',
-        aCode: 'a-0003',
-        $id: '123458',
-        version: 1,
-        web: 'flm2003',
-        rates: 4.9,
-        labels: [
-          {
-            group: 'top',
-            code: 'flm1005',
-            quantity: 15,
-            id: 'label7',
-            createdAt: '2023-09-29T06:00:00Z'
-          },
-          {
-            group: 'bottom',
-            code: 'flm1018',
-            quantity: 11,
-            id: 'label8',
-            createdAt: '2023-09-29T07:00:00Z'
-          },
-          {
-            group: 'sticker',
-            code: 'flm1001',
-            quantity: 7,
-            id: 'label9',
-            createdAt: '2023-09-29T08:00:00Z'
-          }
-        ]
-      },
-      {
-        name: 'Example Product 4',
-        aCode: 'a-0004',
-        $id: '123459',
-        version: 2,
-        web: 'flm2004',
-        rates: 4.0,
-        labels: [
-          {
-            group: 'top',
-            code: 'flm1022',
-            quantity: 9,
-            id: 'label10',
-            createdAt: '2023-09-29T09:00:00Z'
-          },
-          {
-            group: 'bottom',
-            code: 'flm1003',
-            quantity: 12,
-            id: 'label11',
-            createdAt: '2023-09-29T10:00:00Z'
-          },
-          {
-            group: 'sticker',
-            code: 'flm1007',
-            quantity: 8,
-            id: 'label12',
-            createdAt: '2023-09-29T11:00:00Z'
-          }
-        ]
-      },
-      {
-        name: 'Example Product 5',
-        aCode: 'a-0005',
-        $id: '123460',
-        version: 1,
-        web: 'flm2005',
-        rates: 5.0,
-        labels: [
-          {
-            group: 'top',
-            code: 'flm1011',
-            quantity: 19,
-            id: 'label13',
-            createdAt: '2023-09-29T12:00:00Z'
-          },
-          {
-            group: 'bottom',
-            code: 'flm1015',
-            quantity: 5,
-            id: 'label14',
-            createdAt: '2023-09-29T13:00:00Z'
-          },
-          {
-            group: 'sticker',
-            code: 'flm1020',
-            quantity: 21,
-            id: 'label15',
-            createdAt: '2023-09-29T14:00:00Z'
-          }
-        ]
-      }
-    ]);
+    const fetchData = async () => {
+      const dateProduct = await useProductsStore.getState().setProductsFromDB();
+      const dateLabels = await useLabelsStore.getState().setLabelsFromDB();
+      console.log(dateLabels);
+
+      setProducts(dateProduct);
+      setLabels(dateLabels);
+      console.log(dateProduct);
+    };
+    console.log('fetching data');
+
+    fetchData();
   }, []);
 
-  const onAddProduct = ({
+  const onAddProduct = async ({
     name,
     aCode,
     web,
@@ -193,6 +50,13 @@ function ProductPage() {
     useProductsStore.setState((state) => ({
       products: [...state.products, newProduct]
     }));
+
+    try {
+      await useProduct.getState().createProduct(newProduct);
+      console.log('Product Created');
+    } catch (error) {
+      console.log(error);
+    }
 
     setIsAddModalOpen(false);
   };
@@ -235,6 +99,7 @@ function ProductPage() {
         isOpen={isAddModalOpen}
         onClose={handleClose}
         onAdd={onAddProduct}
+        existingLabels={labels}
       />
     </div>
   );

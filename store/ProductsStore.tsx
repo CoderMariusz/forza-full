@@ -1,4 +1,4 @@
-import { database } from '@/appwrite';
+import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 import { Labels } from './LabelsStore';
 
@@ -25,6 +25,8 @@ interface ProductState extends Product {
   setVersion: (version: number) => void;
   setWeb: (web: string) => void;
   setRates: (rates: number) => void;
+  setLabels: (labels: Labels[]) => void;
+  createProduct: (product: Product) => void;
   editProduct: (id: string, product: Product) => void;
   deleteProduct: (id: string) => void;
 }
@@ -57,7 +59,6 @@ const useProductsStore = create<ProductsState>((set) => ({
 const useProduct = create<ProductState>((set) => ({
   name: '',
   aCode: '',
-  $id: '',
   version: 0,
   web: '',
   rates: 0,
@@ -70,6 +71,29 @@ const useProduct = create<ProductState>((set) => ({
   setWeb: (web: string) => set((state) => ({ ...state, web })),
   setRates: (rates: number) => set((state) => ({ ...state, rates })),
   setLabels: (labels: Labels[]) => set((state) => ({ ...state, labels })),
+
+  createProduct: async (product: Product) => {
+    console.log('product send', product);
+    const relation = product.labels?.map((label) => {
+      return label.$id;
+    });
+    console.log('relation', relation);
+
+    const data = await database.createDocument(
+      '6510bb07873546043cae',
+      '6510bb1f8f240bd7c3b2',
+      ID.unique(),
+      {
+        name: product?.name || '',
+        aCode: product?.aCode || '',
+        version: product?.version || 0,
+        web: product?.web || '',
+        rates: product?.rates || 0,
+        labels: relation || []
+      }
+    );
+    console.log(data);
+  },
 
   editProduct: async (id: string, product: Product) => {
     await database.updateDocument(
