@@ -30,8 +30,7 @@ const AddModal: React.FC<Props> = ({
 
     onAdd({
       group,
-      code,
-      createdAt: new Date().toISOString()
+      code
     }); // Adjust id and createdAt accordingly.
     setGroup('');
     setCode('');
