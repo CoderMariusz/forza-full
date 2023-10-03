@@ -10,7 +10,7 @@ export interface LabelsState {
 export interface Labels {
   group?: string;
   code?: string;
-  quantity?: number;
+  quantity?: number | null;
   $id?: string;
   $createdAt?: string;
 }
@@ -18,12 +18,12 @@ export interface Labels {
 export interface LabelState {
   group?: string;
   code?: string;
-  quantity?: number;
+  quantity?: number | null;
   $id?: string;
   $createdAt?: string;
   setGroup: (group: string) => void;
   setCode: (code: string) => void;
-  setQuantity: (quantity: number) => void;
+  setQuantity: (quantity: number | null) => void;
   setId: (id: string) => void;
   setCreatedAt: (createdAt: string) => void;
   createLabel: (label: Labels) => Promise<void>;
@@ -37,7 +37,8 @@ const useLabels = create<LabelState>((set) => ({
   $createdAt: '',
   setGroup: (group: string) => set((state) => ({ ...state, group })),
   setCode: (code: string) => set((state) => ({ ...state, code })),
-  setQuantity: (quantity: number) => set((state) => ({ ...state, quantity })),
+  setQuantity: (quantity: number | null) =>
+    set((state) => ({ ...state, quantity })),
   setId: (id: string) => set((state) => ({ ...state, id })),
   setCreatedAt: (createdAt: string) =>
     set((state) => ({ ...state, createdAt })),
@@ -54,13 +55,13 @@ const useLabels = create<LabelState>((set) => ({
     );
     console.log(data);
   },
-  updateLabel: async ($id: string, change: number): Promise<void> => {
+  updateLabel: async ($id: string, change: number | null): Promise<void> => {
     const data = await database.updateDocument(
       '6510bb07873546043cae',
       '65141203c8f6aaa2dcde',
       $id,
       {
-        quantity: change
+        quantity: change || 0
       }
     );
     console.log(data);
@@ -81,7 +82,7 @@ const useLabelsStore = create<LabelsState>((set) => ({
         (doc): Labels => ({
           group: doc.group,
           code: doc.code,
-          quantity: doc.quantity,
+          quantity: doc.quantity || 0,
           $id: doc.$id,
           $createdAt: doc.$createdAt
         })

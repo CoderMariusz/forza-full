@@ -16,6 +16,7 @@ export interface Product {
   web?: string;
   rates?: number;
   labels?: Labels[];
+  packetInBox?: number;
 }
 
 interface ProductState extends Product {
@@ -48,7 +49,8 @@ const useProductsStore = create<ProductsState>((set) => ({
         version: product.version,
         web: product.web,
         rates: product.rates,
-        labels: product.labels
+        labels: product.labels,
+        packetInBox: product.packetInBox
       };
     });
     set((state) => ({ ...state, products }));
@@ -63,6 +65,7 @@ const useProduct = create<ProductState>((set) => ({
   web: '',
   rates: 0,
   labels: [],
+  packetInBox: 0,
 
   setName: (name: string) => set((state) => ({ ...state, name })),
   setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
@@ -71,6 +74,8 @@ const useProduct = create<ProductState>((set) => ({
   setWeb: (web: string) => set((state) => ({ ...state, web })),
   setRates: (rates: number) => set((state) => ({ ...state, rates })),
   setLabels: (labels: Labels[]) => set((state) => ({ ...state, labels })),
+  setPacketInBox: (packetInBox: number) =>
+    set((state) => ({ ...state, packetInBox })),
 
   createProduct: async (product: Product) => {
     console.log('product send', product);

@@ -1,33 +1,75 @@
-import Link from 'next/link';
+'use client';
+import React, { useEffect, useState } from 'react';
+import ExcelReader from './ExcelReader';
+import { useProductionStore } from '@/store/Production';
+
+interface MyData {
+  aCode: string;
+  quantity: number | null;
+  date: number;
+}
 
 function ProductionPage() {
-  const dummyData = [
-    { aCode: 'a-0001', quantity: 100, date: '2023-10-01' },
-    { aCode: 'a-0001', quantity: 200, date: '2023-10-02' },
-    { aCode: 'a-0002', quantity: 150, date: '2023-10-03' },
-    { aCode: 'a-0002', quantity: 250, date: '2023-10-04' }
-  ];
+  const [data, setData] = useState<MyData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await useProductionStore.getState().setProductsFromDB();
+      setData(data);
+    };
+
+    fetchData();
+  }, [data]);
+
+  const sortedData = [...data].sort(
+    (a: MyData, b: MyData) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  function excelDateToJSDate(serial: number) {
+    const excelEpoch = new Date(1899, 11, 30); // December 30, 1899 (the 0-based month is 11)
+    const excelEpochAsUnixTimestamp = excelEpoch.getTime();
+    const millisecondsInADay = 24 * 60 * 60 * 1000;
+    const serialDateAsUnixTimestamp = serial * millisecondsInADay;
+    const correctDateAsUnixTimestamp =
+      excelEpochAsUnixTimestamp + serialDateAsUnixTimestamp;
+
+    return new Date(correctDateAsUnixTimestamp);
+  }
 
   return (
-    <div className='container mx-auto p-4'>
-      <h1 className='text-3xl font-bold mb-4'>Production</h1>
-      {/* ... additional components or links ... */}
-      <table className='min-w-full bg-white'>
+    <div className='w-full my-4'>
+      <div>
+        <h1 className='text-3xl font-bold mb-1'>Production</h1>
+        <ExcelReader setData={setData} />
+      </div>
+      <hr className='mb-4' />
+
+      <table className='min-w-full bg-white divide-y divide-gray-200'>
         <thead className='bg-gray-800 text-white'>
           <tr>
-            <th className='w-1/4 py-2'>A-Code</th>
-            <th className='w-1/4 py-2'>Quantity</th>
-            <th className='w-1/4 py-2'>Date</th>
+            <th className='py-2'>A-Code</th>
+            <th className='py-2'>Quantity</th>
+            <th className='py-2'>Date</th>
           </tr>
         </thead>
         <tbody className='text-gray-700'>
-          {dummyData.map((data, index) => (
-            <tr key={index}>
-              <td className='text-center py-2'>{data.aCode}</td>
-              <td className='text-center py-2'>{data.quantity}</td>
-              <td className='text-center py-2'>{data.date}</td>
-            </tr>
-          ))}
+          {sortedData.map((row: MyData, index) => {
+            const date = new Date(excelDateToJSDate(row.date));
+            const formedDate = `${date.getDate()}/${
+              date.getMonth() + 1
+            }/${date.getFullYear()}`;
+
+            return (
+              <React.Fragment key={index}>
+                <tr>
+                  <td className='border p-2'>{row.aCode}</td>
+                  <td className='border p-2'>{row.quantity}</td>
+                  <td className='border p-2'>{formedDate}</td>
+                </tr>
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>

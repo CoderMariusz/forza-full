@@ -5,6 +5,7 @@ function mergeTables(products: any, labels: any) {
     const result = {
       aCode: product.aCode,
       $id: product.$id,
+      packetInBox: product.packetInBox,
       labels: product.labels?.map((label) => {
         const foundLabel = labels.find((l: any) => l.code === label.code);
 

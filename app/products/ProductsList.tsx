@@ -7,6 +7,8 @@ function ProductsList({ products }: { products: Product[] }) {
     null
   );
 
+  console.log('products:', products);
+
   return (
     <div className='flex flex-col my-4 w-full mx-auto'>
       <table className='min-w-full bg-white divide-y divide-gray-200'>
@@ -18,6 +20,8 @@ function ProductsList({ products }: { products: Product[] }) {
             <th className='hidden md:table-cell py-2'>Web</th>
             <th className='hidden md:table-cell py-2'>Rates</th>
             <th className='hidden md:table-cell py-2'>Labels</th>
+
+            <th className='hidden md:table-cell py-2'>Packets in Box</th>
             <th className='py-2'>Actions</th>
           </tr>
         </thead>
@@ -36,6 +40,7 @@ function ProductsList({ products }: { products: Product[] }) {
                 <td className='hidden md:table-cell border p-2'>
                   {product.rates}
                 </td>
+
                 <td className='hidden md:table-cell border p-2 w-64 min-w-[200px]'>
                   {product.labels &&
                     product.labels.map((label) => (
@@ -44,6 +49,9 @@ function ProductsList({ products }: { products: Product[] }) {
                         <strong>Code:</strong> {label.code}
                       </div>
                     ))}
+                </td>
+                <td className='hidden md:table-cell border p-2'>
+                  {product.packetInBox}
                 </td>
                 <td className='border p-2'>
                   <button
