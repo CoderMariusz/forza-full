@@ -32,7 +32,7 @@ function StoresPage() {
       const data = mergeTables(ProductData, labelData);
       setStores(data);
       console.log('stores', data);
-      setProduction(useProductionStore.getState().products);
+      setProduction(await useProductionStore.getState().setProductsFromDB());
       console.log('production', production);
     };
     if (!loading) {
@@ -88,6 +88,50 @@ function StoresPage() {
     setStores(updatedStores);
   };
 
+  const changeStoresBookmark = (number: number) => {
+    number === 1 ? setStoresBookmark(true) : setStoresBookmark(false);
+  };
+
+  const calculateUpdatedStock = (
+    stocks: Stores[],
+    production: ProductionProduct[]
+  ) => {
+    return production
+      .map((prodItem): (ProductionProduct | null)[] => {
+        const relevantStock = stocks.find(
+          (stockItem) => stockItem.aCode === prodItem.aCode
+        );
+
+        if (!relevantStock) {
+          console.warn(`No stock found for aCode ${prodItem.aCode}`);
+          return [];
+        }
+        console.log('relevantStock', relevantStock.packetInBox);
+        console.log('prodItem', prodItem.quantity);
+
+        const prodLabelQty =
+          (prodItem.quantity ? prodItem.quantity : 0) *
+          (relevantStock.packetInBox ? relevantStock.packetInBox : 0);
+
+        console.log('prodLabelQty', prodLabelQty);
+
+        return (
+          relevantStock.labels?.map((label: any) => {
+            return {
+              aCode: prodItem.aCode,
+              labelCode: label.code,
+              quantity: label.quantity - prodLabelQty,
+              date: new Date().getTime()
+            } as ProductionProduct;
+          }) ?? []
+        );
+      })
+      .flat()
+      .filter((item): item is ProductionProduct => item !== null);
+  };
+
+  const updatedStock = calculateUpdatedStock(stores, production);
+
   const filteredStores = stores
     .map((store) => {
       // Check if the aCode matches or if any label's code matches
@@ -106,57 +150,6 @@ function StoresPage() {
       return null;
     })
     .filter(Boolean);
-
-  const changeStoresBookmark = (number: number) => {
-    number === 1 ? setStoresBookmark(true) : setStoresBookmark(false);
-  };
-
-  const calculateUpdatedStock = (
-    stocks: Stores[],
-    production: ProductionProduct[]
-  ) => {
-    return production
-      .map((prodItem): (ProductionProduct | null)[] => {
-        console.log(prodItem);
-
-        const relevantStock = stocks.find(
-          (stockItem) => stockItem.aCode === prodItem.aCode
-        );
-
-        if (!relevantStock) {
-          console.warn(`No stock found for aCode ${prodItem.aCode}`);
-          return [];
-        }
-
-        const prodLabelQty =
-          prodItem.quantity ?? 0 * (relevantStock.packetInBox ?? 0);
-
-        return (
-          relevantStock.labels?.map((label: any) => {
-            return {
-              aCode: prodItem.aCode,
-              quantity: label.quantity - prodLabelQty,
-              date: new Date().getTime()
-            } as ProductionProduct;
-          }) ?? []
-        );
-      })
-      .flat()
-      .filter((item): item is ProductionProduct => item !== null);
-  };
-
-  const updatedStock = calculateUpdatedStock(
-    stores,
-    production.map(
-      (prod) =>
-        ({
-          aCode: prod.aCode,
-          labelCode: prod.code,
-          quantity: prod.quantity,
-          date: prod.date
-        } as ProductionProduct)
-    )
-  );
 
   return (
     <div className='container mx-auto p-4'>

@@ -9,14 +9,14 @@ interface ProductsState {
 }
 
 export interface Product {
-  name?: string;
-  aCode?: string;
+  name: string;
+  aCode: string;
   $id?: string;
-  version?: number;
-  web?: string;
-  rates?: number;
-  labels?: Labels[];
-  packetInBox?: number;
+  version: number;
+  web: string;
+  rates: number;
+  labels: Labels[];
+  packetInBox: number;
 }
 
 interface ProductState extends Product {

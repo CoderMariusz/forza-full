@@ -1,5 +1,5 @@
 import { ID, database } from '@/appwrite';
-import create from 'zustand';
+import { create } from 'zustand';
 
 interface Production {
   week?: number;
@@ -45,11 +45,15 @@ const useProductionStore = create<ProductionState>((set) => ({
       '6510bb07873546043cae',
       '651c49ecb2b3850611bf'
     );
-    return data.documents.map((doc) => ({
-      aCode: doc.data.aCode || '',
-      quantity: doc.data.quantity || 0,
-      date: doc.data.date || 0
-    })) as ProductionProduct[];
+    return data.documents.map((doc) => {
+      console.log(doc);
+
+      return {
+        aCode: doc.aCode || '',
+        quantity: doc.quantity || 0,
+        date: doc.date || 0
+      };
+    });
   }
 }));
 

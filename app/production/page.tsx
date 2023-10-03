@@ -12,14 +12,31 @@ interface MyData {
 function ProductionPage() {
   const [data, setData] = useState<MyData[]>([]);
 
+  function formatDate(inputStr: string | number | Date) {
+    const date = new Date(inputStr); // create a Date object
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
   useEffect(() => {
+    console.log('useEffect');
+
     const fetchData = async () => {
       const data = await useProductionStore.getState().setProductsFromDB();
+      console.log('production', data);
+
+      data.map((row) => {
+        row.date = formatDate(row.date) as unknown as number;
+      });
+
       setData(data);
     };
 
     fetchData();
-  }, [data]);
+  }, []);
 
   const sortedData = [...data].sort(
     (a: MyData, b: MyData) =>
@@ -56,16 +73,14 @@ function ProductionPage() {
         <tbody className='text-gray-700'>
           {sortedData.map((row: MyData, index) => {
             const date = new Date(excelDateToJSDate(row.date));
-            const formedDate = `${date.getDate()}/${
-              date.getMonth() + 1
-            }/${date.getFullYear()}`;
+            const formedDate = date.getDay();
 
             return (
               <React.Fragment key={index}>
                 <tr>
                   <td className='border p-2'>{row.aCode}</td>
                   <td className='border p-2'>{row.quantity}</td>
-                  <td className='border p-2'>{formedDate}</td>
+                  <td className='border p-2'>{row.date}</td>
                 </tr>
               </React.Fragment>
             );
