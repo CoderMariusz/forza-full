@@ -32,6 +32,7 @@ function ProductPage() {
     web,
     version,
     rates,
+    packetInBox,
     labels
   }: Product) => {
     console.log('Add Product Clicked');
@@ -42,6 +43,7 @@ function ProductPage() {
       web,
       rates,
       version,
+      packetInBox,
       labels
     };
 

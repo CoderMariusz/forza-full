@@ -131,6 +131,7 @@ function StoresPage() {
   };
 
   const updatedStock = calculateUpdatedStock(stores, production);
+  console.log('updatedStock', updatedStock);
 
   const filteredStores = stores
     .map((store) => {
@@ -150,6 +151,15 @@ function StoresPage() {
       return null;
     })
     .filter(Boolean);
+
+  const filteredUpdate = updatedStock.filter((item) => {
+    const isACodeMatch = item.aCode.includes(searchQuery);
+    const isLabelCodeMatch =
+      item.labelCode && item.labelCode.includes(searchQuery);
+
+    // Return the item if either the aCode or labelCode matches
+    return isACodeMatch || isLabelCodeMatch;
+  });
 
   return (
     <div className='container mx-auto p-4'>
@@ -231,7 +241,7 @@ function StoresPage() {
             </tr>
           </thead>
           <tbody>
-            {updatedStock.map((item, index) => (
+            {filteredUpdate.map((item, index) => (
               <tr
                 key={index}
                 className='bg-gray-100'>

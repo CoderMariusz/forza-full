@@ -19,6 +19,7 @@ const AddModal: React.FC<Props> = ({
   const [version, setVersion] = useState(1);
   const [web, setWeb] = useState('');
   const [rates, setRates] = useState(0);
+  const [packetInBox, setPacketInBox] = useState(0);
   const [labels, setLabels] = useState<Labels[]>([]);
 
   const filteredLabelsTop = existingLabels.filter(
@@ -38,6 +39,7 @@ const AddModal: React.FC<Props> = ({
       setVersion(1);
       setWeb('');
       setRates(0);
+      setPacketInBox(0);
       setLabels([]);
     }
   }, [isOpen]);
@@ -49,6 +51,7 @@ const AddModal: React.FC<Props> = ({
       version,
       web,
       rates,
+      packetInBox,
       labels
     });
   };
@@ -130,6 +133,20 @@ const AddModal: React.FC<Props> = ({
           id='name'
           value={rates}
           onChange={(e) => setRates(parseInt(e.target.value))}
+          className='shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+        />
+      </div>
+      <div className='mb-2'>
+        <label
+          className='block text-gray-700 text-sm font-bold '
+          htmlFor='name'>
+          Packet In Box
+        </label>
+        <input
+          type='string'
+          id='name'
+          value={packetInBox}
+          onChange={(e) => setPacketInBox(parseInt(e.target.value))}
           className='shadow appearance-none border rounded w-full py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
         />
       </div>

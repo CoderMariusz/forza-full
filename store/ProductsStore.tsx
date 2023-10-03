@@ -94,6 +94,7 @@ const useProduct = create<ProductState>((set) => ({
         version: product?.version || 0,
         web: product?.web || '',
         rates: product?.rates || 0,
+        packetInBox: product?.packetInBox || 0,
         labels: relation || []
       }
     );
