@@ -5,6 +5,8 @@ import { Product, useProductsStore } from '@/store/ProductsStore';
 import mergeTables from '@/lib/MargeTables';
 import EditModal from './EditModal';
 import { ProductionProduct, useProductionStore } from '@/store/Production';
+import WeeklyReport from './WeeklyReport';
+import GenerateReportButton from './GenerateReportButton';
 
 interface Stores {
   aCode?: string;
@@ -13,27 +15,34 @@ interface Stores {
   labels?: Labels[];
 }
 
+interface Result {
+  aCode: string;
+  labelCode: string;
+  startQuantity: number;
+  quantityAfterProduction: number;
+  endQuantity: number;
+  wasted: number;
+}
+
 function StoresPage() {
   const [stores, setStores] = useState<Stores[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<Labels[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [storesBookmark, setStoresBookmark] = useState(true);
+  const [storesBookmark, setStoresBookmark] = useState(0);
   const [production, setProduction] = useState<ProductionProduct[]>([]);
+
+  const [weeklyReport, setWeeklyReport] = useState<Result[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const labelData = await useLabelsStore.getState().setLabelsFromDB();
       const ProductData = await useProductsStore.getState().setProductsFromDB();
 
-      console.log(labelData);
-      console.log(ProductData);
       const data = mergeTables(ProductData, labelData);
       setStores(data);
-      console.log('stores', data);
       setProduction(await useProductionStore.getState().setProductsFromDB());
-      console.log('production', production);
     };
     if (!loading) {
       fetchData();
@@ -48,7 +57,6 @@ function StoresPage() {
 
   const handleOpen = (store: any, label: any) => {
     const newStore = store.labels.filter((lab: any) => lab.code === label);
-    console.log(newStore);
 
     setSelectedStore(newStore || null);
     setModalOpen(true);
@@ -79,7 +87,6 @@ function StoresPage() {
       store.labels?.map((label: any) => {
         if (selectedStore && label.code === selectedStore[0]?.code) {
           useLabels.getState().updateLabel(label.$id, quantity as number);
-          console.log('label', label.$id, quantity);
         }
       });
 
@@ -88,50 +95,51 @@ function StoresPage() {
     setStores(updatedStores);
   };
 
-  const changeStoresBookmark = (number: number) => {
-    number === 1 ? setStoresBookmark(true) : setStoresBookmark(false);
-  };
-
   const calculateUpdatedStock = (
     stocks: Stores[],
     production: ProductionProduct[]
   ) => {
-    return production
-      .map((prodItem): (ProductionProduct | null)[] => {
-        const relevantStock = stocks.find(
-          (stockItem) => stockItem.aCode === prodItem.aCode
+    // Make a deep copy of the stores array to avoid mutating the original
+    const updatedStores = JSON.parse(JSON.stringify(stocks));
+
+    const ProductionSortedArray = production.reduce(
+      (acc: ProductionProduct[], item) => {
+        const existing = acc.find(
+          (e): e is ProductionProduct => e.aCode === item.aCode
         );
 
-        if (!relevantStock) {
-          console.warn(`No stock found for aCode ${prodItem.aCode}`);
-          return [];
+        if (existing) {
+          existing.quantity = (existing.quantity ?? 0) + (item.quantity ?? 0);
+        } else {
+          acc.push({ ...item });
         }
-        console.log('relevantStock', relevantStock.packetInBox);
-        console.log('prodItem', prodItem.quantity);
 
-        const prodLabelQty =
-          (prodItem.quantity ? prodItem.quantity : 0) *
-          (relevantStock.packetInBox ? relevantStock.packetInBox : 0);
+        return acc;
+      },
+      []
+    );
 
-        console.log('prodLabelQty', prodLabelQty);
+    ProductionSortedArray.forEach((prodItem) => {
+      const storeItem = updatedStores.find(
+        (store: Stores) => store.aCode === prodItem.aCode
+      );
 
-        return (
-          relevantStock.labels?.map((label: any) => {
-            return {
-              aCode: prodItem.aCode,
-              labelCode: label.code,
-              quantity: label.quantity - prodLabelQty,
-              date: new Date().getTime()
-            } as ProductionProduct;
-          }) ?? []
-        );
-      })
-      .flat()
-      .filter((item): item is ProductionProduct => item !== null);
+      if (!storeItem) {
+        console.warn(`No store found for aCode ${prodItem.aCode}`);
+        return;
+      }
+
+      const prodLabelQty = (prodItem.quantity ?? 0) * storeItem.packetInBox;
+
+      storeItem.labels.forEach((label: Labels) => {
+        label.quantity = (label.quantity ?? 0) - prodLabelQty;
+      });
+    });
+
+    return updatedStores;
   };
 
   const updatedStock = calculateUpdatedStock(stores, production);
-  console.log('updatedStock', updatedStock);
 
   const filteredStores = stores
     .map((store) => {
@@ -152,14 +160,32 @@ function StoresPage() {
     })
     .filter(Boolean);
 
-  const filteredUpdate = updatedStock.filter((item) => {
-    const isACodeMatch = item.aCode.includes(searchQuery);
-    const isLabelCodeMatch =
-      item.labelCode && item.labelCode.includes(searchQuery);
+  const flattenedStock = updatedStock.flatMap((item: any) => {
+    return item.labels.map((label: any) => ({
+      aCode: item.aCode,
+      labelCode: label.code,
+      quantity: label.quantity
+    }));
+  });
 
-    // Return the item if either the aCode or labelCode matches
+  const filteredUpdate = flattenedStock.filter((item: any) => {
+    const isACodeMatch = item.aCode ? item.aCode.includes(searchQuery) : false;
+    const isLabelCodeMatch = item.labelCode
+      ? item.labelCode.includes(searchQuery)
+      : false;
+
     return isACodeMatch || isLabelCodeMatch;
   });
+
+  const changeStoresBookmark = (number: number) => {
+    if (number >= 0 && number <= 3) {
+      setStoresBookmark(number);
+    } else {
+      console.warn('Invalid bookmark number');
+    }
+  };
+
+  console.log('weeklyReport', weeklyReport);
 
   return (
     <div className='container mx-auto p-4'>
@@ -179,86 +205,146 @@ function StoresPage() {
           Add Store +
         </button>
       </div>
+      <div>
+        <GenerateReportButton
+          updatedStock={updatedStock}
+          stores={stores}
+          setWeeklyReport={setWeeklyReport}
+        />
+      </div>
 
       <hr className='mb-4' />
       <div className='flex bg-slate-100 mb-2 rounded-md'>
         <button
           className='p-3 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2 rounded-tl-md rounded-bl-md'
-          onClick={() => changeStoresBookmark(2)}>
+          onClick={() => changeStoresBookmark(1)}>
           Live Store
         </button>
         <button
           className='p-3 px-4 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2'
-          onClick={() => changeStoresBookmark(1)}>
+          onClick={() => changeStoresBookmark(0)}>
           Store
+        </button>
+        <button
+          className='p-3 px-4 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2'
+          onClick={() => changeStoresBookmark(2)}>
+          WeeklyReport
         </button>
       </div>
 
-      {storesBookmark === true ? (
-        <table className='min-w-full bg-white'>
-          <thead className='bg-gray-800 text-white'>
-            <tr>
-              <th className='w-1/4 py-2'>A-Code</th>
-              <th className='w-1/4 py-2'>Label Code</th>
-              <th className='w-1/4 py-2'>Quantity</th>
-              <th className='w-1/4 py-2'>Actions</th>
-            </tr>
-          </thead>
-          <tbody className='text-gray-700'>
-            {filteredStores.map(
-              (store) =>
-                store &&
-                store.labels?.map((label, idx) => (
-                  <tr key={idx}>
-                    <td className='text-center py-2'>{store.aCode}</td>
-                    <td className='text-center py-2'>{label.code}</td>
-                    <td className='text-center py-2'>{label.quantity}</td>
-                    <td className='text-center py-2 flex space-x-2'>
-                      <button
-                        onClick={() => handleOpen(store, label.code)}
-                        className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600'>
-                        Update
-                      </button>
-                      <button
-                        onClick={() => handleRemove(store.aCode)} // assuming you also want to use label code to remove a specific label
-                        className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'>
-                        Remove
-                      </button>
-                    </td>
+      {(() => {
+        switch (storesBookmark) {
+          case 0:
+            return (
+              <table className='min-w-full bg-white'>
+                <thead className='bg-gray-800 text-white'>
+                  <tr>
+                    <th className='w-1/4 py-2'>A-Code</th>
+                    <th className='w-1/4 py-2'>Label Code</th>
+                    <th className='w-1/4 py-2'>Quantity</th>
+                    <th className='w-1/4 py-2'>Actions</th>
                   </tr>
-                ))
-            )}
-          </tbody>
-        </table>
-      ) : (
-        <table className='w-full text-center'>
-          <thead className='bg-gray-800 text-white'>
-            <tr>
-              <th className='w-1/4 py-2'>A-Code</th>
-              <th className='w-1/4 py-2'>Label Code</th>
-              <th className='w-1/4 py-2'>Quantity</th>
-              <th className='w-1/4 py-2'>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUpdate.map((item, index) => (
-              <tr
-                key={index}
-                className='bg-gray-100'>
-                <td className='py-2'>{item.aCode}</td>
-                <td>{item.labelCode}</td>
-                <td>{item.quantity}</td>
-                <td>
-                  <button className='bg-blue-500 text-white px-4 py-1 rounded'>
-                    Action
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
+                </thead>
+                <tbody className='text-gray-700'>
+                  {filteredStores.map(
+                    (store) =>
+                      store &&
+                      store.labels?.map((label, idx) => (
+                        <tr key={idx}>
+                          <td className='text-center py-2'>{store.aCode}</td>
+                          <td className='text-center py-2'>{label.code}</td>
+                          <td className='text-center py-2'>{label.quantity}</td>
+                          <td className='text-center py-2 flex space-x-2'>
+                            <button
+                              onClick={() => handleOpen(store, label.code)}
+                              className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600'>
+                              Update
+                            </button>
+                            <button
+                              onClick={() => handleRemove(store.aCode)} // assuming you also want to use label code to remove a specific label
+                              className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'>
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            );
+          case 1:
+            return (
+              <table className='w-full text-center'>
+                <thead className='bg-gray-800 text-white'>
+                  <tr>
+                    <th className='w-1/4 py-2'>A-Code</th>
+                    <th className='w-1/4 py-2'>Label Code</th>
+                    <th className='w-1/4 py-2'>Quantity</th>
+                    <th className='w-1/4 py-2'>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUpdate.map((item: any, index: any) => {
+                    return (
+                      <tr
+                        key={index}
+                        className='bg-gray-100'>
+                        <td className='py-2'>{item.aCode}</td>
+                        <td>{item.labelCode}</td>
+                        <td>{item.quantity}</td>
+                        <td>
+                          <button className='bg-blue-500 text-white px-4 py-1 rounded'>
+                            Action
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            );
+          case 2:
+            return <WeeklyReport data={weeklyReport} />;
+          default:
+            return (
+              <table className='min-w-full bg-white'>
+                <thead className='bg-gray-800 text-white'>
+                  <tr>
+                    <th className='w-1/4 py-2'>A-Code</th>
+                    <th className='w-1/4 py-2'>Label Code</th>
+                    <th className='w-1/4 py-2'>Quantity</th>
+                    <th className='w-1/4 py-2'>Actions</th>
+                  </tr>
+                </thead>
+                <tbody className='text-gray-700'>
+                  {filteredStores.map(
+                    (store) =>
+                      store &&
+                      store.labels?.map((label, idx) => (
+                        <tr key={idx}>
+                          <td className='text-center py-2'>{store.aCode}</td>
+                          <td className='text-center py-2'>{label.code}</td>
+                          <td className='text-center py-2'>{label.quantity}</td>
+                          <td className='text-center py-2 flex space-x-2'>
+                            <button
+                              onClick={() => handleOpen(store, label.code)}
+                              className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600'>
+                              Update
+                            </button>
+                            <button
+                              onClick={() => handleRemove(store.aCode)} // assuming you also want to use label code to remove a specific label
+                              className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'>
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            );
+        }
+      })()}
       {isModalOpen && (
         <EditModal
           isOpen={isModalOpen}

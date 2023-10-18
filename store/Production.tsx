@@ -10,7 +10,7 @@ export interface ProductionProduct {
   code?: string;
   labelCode?: string;
   quantity: number | null;
-  date: number;
+  date: Date | string;
 }
 
 interface ProductionState extends Production {
@@ -18,7 +18,7 @@ interface ProductionState extends Production {
   setACode: (aCode: string) => void;
   setCode: (code: string) => void;
   setQuantity: (quantity: number | null) => void;
-  setDate: (date: number) => void;
+  setDate: (date: Date | string) => void;
   setProducts: (products: ProductionProduct[]) => void;
   setProductsFromDB: () => Promise<ProductionProduct[]>;
 }
@@ -26,18 +26,19 @@ interface ProductionState extends Production {
 interface ProductionProductState extends ProductionProduct {
   setACode: (aCode: string) => void;
   setQuantity: (quantity: number | null) => void;
-  setDate: (date: number) => void;
+  setDate: (date: Date | string) => void;
+  createProduct: (product: ProductionProduct) => void;
 }
 
 const useProductionStore = create<ProductionState>((set) => ({
   week: 0,
-  products: [{ aCode: '', quantity: 0, date: 0 }],
+  products: [{ aCode: '', quantity: 0, date: new Date() }],
   setWeek: (week: number) => set((state) => ({ ...state, week })),
   setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
   setCode: (code: string) => set((state) => ({ ...state, code })),
   setQuantity: (quantity: number | null) =>
     set((state) => ({ ...state, quantity })),
-  setDate: (date: number) => set((state) => ({ ...state, date })),
+  setDate: (date: Date | string) => set((state) => ({ ...state, date })),
   setProducts: (products: ProductionProduct[]) =>
     set((state) => ({ ...state, products })),
   setProductsFromDB: async () => {
@@ -60,11 +61,11 @@ const useProductionStore = create<ProductionState>((set) => ({
 const useProductionProductStore = create<ProductionProductState>((set) => ({
   aCode: '',
   quantity: 0,
-  date: 0,
+  date: new Date(),
   setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
   setQuantity: (quantity: number | null) =>
     set((state) => ({ ...state, quantity })),
-  setDate: (date: number) => set((state) => ({ ...state, date })),
+  setDate: (date: Date | string) => set((state) => ({ ...state, date })),
   createProduct: (product: ProductionProduct) => {
     database.createDocument(
       '6510bb07873546043cae',
