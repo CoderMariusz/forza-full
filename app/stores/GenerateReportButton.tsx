@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 
 interface InputData {
   labelCode: string;
+  $id: string;
   endQuantity: number;
 }
 
 interface Result {
   aCode: string;
+  $id: string;
   labelCode: string;
   startQuantity: number;
   quantityAfterProduction: number;
@@ -29,6 +31,8 @@ const GenerateReportButton: React.FC<{
   };
 
   const handleSubmit = () => {
+    console.log('inputData', inputData);
+
     const report: Result[] = inputData.map((data) => {
       const aCode =
         stores.find((s: any) =>
@@ -43,9 +47,15 @@ const GenerateReportButton: React.FC<{
       const wastedValue =
         ((afterProductionQ - data.endQuantity) / startQ) * 100;
 
+      const labelId =
+        stores
+          .find((s: any) => s.aCode === aCode)
+          ?.labels.find((l: any) => l.code === data.labelCode)?.$id || '';
+
       return {
         aCode: aCode,
         labelCode: data.labelCode,
+        $id: labelId,
         startQuantity: startQ,
         quantityAfterProduction: afterProductionQ,
         endQuantity: data.endQuantity,
@@ -53,6 +63,7 @@ const GenerateReportButton: React.FC<{
       };
     });
     setWeeklyReport(report);
+
     setModalVisible(false);
   };
 

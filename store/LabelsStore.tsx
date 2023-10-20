@@ -77,7 +77,6 @@ const useLabelsStore = create<LabelsState>((set) => ({
       '65141203c8f6aaa2dcde'
     );
     try {
-      console.log(labels.documents);
       const data = labels.documents.map(
         (doc): Labels => ({
           group: doc.group,

@@ -47,8 +47,6 @@ const useProductionStore = create<ProductionState>((set) => ({
       '651c49ecb2b3850611bf'
     );
     return data.documents.map((doc) => {
-      console.log(doc);
-
       return {
         aCode: doc.aCode || '',
         quantity: doc.quantity || 0,

@@ -7,6 +7,7 @@ import EditModal from './EditModal';
 import { ProductionProduct, useProductionStore } from '@/store/Production';
 import WeeklyReport from './WeeklyReport';
 import GenerateReportButton from './GenerateReportButton';
+import { useWeeklyReportsStore } from '@/store/WeeklyReportStore';
 
 interface Stores {
   aCode?: string;
@@ -17,6 +18,7 @@ interface Stores {
 
 interface Result {
   aCode: string;
+  $id: string;
   labelCode: string;
   startQuantity: number;
   quantityAfterProduction: number;
@@ -41,7 +43,13 @@ function StoresPage() {
       const ProductData = await useProductsStore.getState().setProductsFromDB();
 
       const data = mergeTables(ProductData, labelData);
-      setStores(data);
+      useLabelsStore.getState().setLabels(data);
+      console.log('data from stores', useLabelsStore.getState().labels);
+
+      const labels = useLabelsStore.getState().labels;
+      if (labels) {
+        setStores(labels);
+      }
       setProduction(await useProductionStore.getState().setProductsFromDB());
     };
     if (!loading) {
@@ -185,7 +193,26 @@ function StoresPage() {
     }
   };
 
-  console.log('weeklyReport', weeklyReport);
+  const setWeeklyReportInDB = async (report: Result[]) => {
+    setWeeklyReport(report);
+    console.log('weeklyReport', weeklyReport);
+
+    const updatedStores = [...stores]; // make a copy of current stores
+
+    for (const item of report) {
+      await useLabels.getState().updateLabel(item.$id, item.endQuantity); // Update DB
+
+      // Update local state
+      for (const store of updatedStores) {
+        const label = store.labels?.find((l) => l.$id === item.$id);
+        if (label) {
+          label.quantity = item.endQuantity;
+        }
+      }
+    }
+
+    setStores(updatedStores); // Assuming you have a function `setStores` to update the local state for stores
+  };
 
   return (
     <div className='container mx-auto p-4'>
@@ -209,7 +236,7 @@ function StoresPage() {
         <GenerateReportButton
           updatedStock={updatedStock}
           stores={stores}
-          setWeeklyReport={setWeeklyReport}
+          setWeeklyReport={setWeeklyReportInDB}
         />
       </div>
 
