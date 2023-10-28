@@ -53,7 +53,6 @@ const useLabels = create<LabelState>((set) => ({
         quantity: label.quantity || 0
       }
     );
-    console.log(data);
   },
   updateLabel: async ($id: string, change: number | null): Promise<void> => {
     const data = await database.updateDocument(
@@ -64,7 +63,6 @@ const useLabels = create<LabelState>((set) => ({
         quantity: change || 0
       }
     );
-    console.log(data);
   }
 }));
 

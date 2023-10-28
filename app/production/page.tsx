@@ -11,7 +11,7 @@ import { useProductsStore } from '@/store/ProductsStore';
 interface MyData {
   aCode: string;
   quantity: number | null;
-  date: string | Date;
+  date: string | Date | number;
 }
 
 function ProductionPage() {
@@ -51,17 +51,27 @@ function ProductionPage() {
   }, []);
 
   const sortedData = [...data].sort((a: MyData, b: MyData) => {
-    // Convert the date string from "DD/MM/YYYY" to "YYYY/MM/DD"
-    const dateA =
-      typeof a.date === 'string'
-        ? new Date(a.date.split('/').reverse().join('/')).getTime()
-        : a.date.getTime();
-    const dateB =
-      typeof b.date === 'string'
-        ? new Date(b.date.split('/').reverse().join('/')).getTime()
-        : b.date.getTime();
+    const getDateTimestamp = (input: string | Date): number => {
+      if (typeof input === 'string') {
+        // Convert "DD/MM/YYYY" to "YYYY/MM/DD" and return the timestamp
+        return new Date(input.split('/').reverse().join('/')).getTime();
+      } else {
+        // Return the timestamp of the Date object
+        return input.getTime();
+      }
+    };
 
-    return dateA - dateB;
+    if (typeof a.date === 'number' && typeof b.date === 'number') {
+      return a.date - b.date;
+    } else if (typeof a.date === 'number') {
+      return -1; // Consider numbers as smaller
+    } else if (typeof b.date === 'number') {
+      return 1; // Consider numbers as smaller
+    } else {
+      const dateA = getDateTimestamp(a.date);
+      const dateB = getDateTimestamp(b.date);
+      return dateA - dateB;
+    }
   });
 
   const onAdd = (production: {
@@ -78,7 +88,10 @@ function ProductionPage() {
     <div className='w-full my-4'>
       <div className='flex flex-col pl-3'>
         <h1 className='text-3xl font-bold mb-1'>Production</h1>
-        <ExcelReader setData={setData} />
+        <ExcelReader
+          setData={setData}
+          dataFromPage={data}
+        />
         <button
           onClick={() => setModalOpen(true)}
           className='bg-blue-600 w-48 text-white p-2 rounded hover:bg-blue-700'>
@@ -102,7 +115,11 @@ function ProductionPage() {
                 <tr>
                   <td className='border p-2'>{row.aCode}</td>
                   <td className='border p-2'>{row.quantity}</td>
-                  <td className='border p-2'>{row.date.toString()}</td>
+                  <td className='border p-2'>
+                    {row.date instanceof Date
+                      ? row.date.toLocaleDateString()
+                      : String(row.date)}
+                  </td>
                 </tr>
               </React.Fragment>
             );

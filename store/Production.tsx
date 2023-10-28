@@ -28,6 +28,7 @@ interface ProductionProductState extends ProductionProduct {
   setQuantity: (quantity: number | null) => void;
   setDate: (date: Date | string) => void;
   createProduct: (product: ProductionProduct) => void;
+  deleteProduct: ($id: string) => void;
 }
 
 const useProductionStore = create<ProductionState>((set) => ({
@@ -50,7 +51,8 @@ const useProductionStore = create<ProductionState>((set) => ({
       return {
         aCode: doc.aCode || '',
         quantity: doc.quantity || 0,
-        date: doc.date || 0
+        date: doc.date || 0,
+        $id: doc.$id || ''
       };
     });
   }
@@ -64,6 +66,7 @@ const useProductionProductStore = create<ProductionProductState>((set) => ({
   setQuantity: (quantity: number | null) =>
     set((state) => ({ ...state, quantity })),
   setDate: (date: Date | string) => set((state) => ({ ...state, date })),
+
   createProduct: (product: ProductionProduct) => {
     database.createDocument(
       '6510bb07873546043cae',
@@ -74,6 +77,13 @@ const useProductionProductStore = create<ProductionProductState>((set) => ({
         quantity: product.quantity || 0,
         date: product.date || 0
       }
+    );
+  },
+  deleteProduct: ($id: string) => {
+    database.deleteDocument(
+      '6510bb07873546043cae',
+      '651c49ecb2b3850611bf',
+      $id
     );
   }
 }));

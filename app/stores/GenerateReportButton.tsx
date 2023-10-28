@@ -1,4 +1,9 @@
 'use client';
+import {
+  useProductionProductStore,
+  useProductionStore
+} from '@/store/Production';
+import { useWeeklyReportStore } from '@/store/WeeklyReportStore';
 import React, { useState } from 'react';
 
 interface InputData {
@@ -9,18 +14,19 @@ interface InputData {
 
 interface Result {
   aCode: string;
-  $id: string;
   labelCode: string;
   startQuantity: number;
   quantityAfterProduction: number;
   endQuantity: number;
+  week: number;
+  labelId: string;
 }
 
 const GenerateReportButton: React.FC<{
   updatedStock: any;
   stores: any;
-  setWeeklyReport: any;
-}> = ({ updatedStock, stores, setWeeklyReport }) => {
+  updateWeeklyReport: any;
+}> = ({ updatedStock, stores, updateWeeklyReport }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputData, setInputData] = useState<InputData[]>([]);
 
@@ -30,10 +36,17 @@ const GenerateReportButton: React.FC<{
     return label?.quantity || 0;
   };
 
-  const handleSubmit = () => {
-    console.log('inputData', inputData);
+  const handleSubmit = async () => {
+    const production = await useProductionStore.getState().setProductsFromDB();
 
-    const report: Result[] = inputData.map((data) => {
+    function getWeekNumber(date: any) {
+      const target = new Date(date);
+      const start = new Date(target.getFullYear(), 0, 1);
+      const days = Math.floor((target.valueOf() - start.valueOf()) / 86400000);
+      return Math.ceil((days + start.getDay() + 1) / 7);
+    }
+
+    const report: Promise<Result>[] = inputData.map(async (data) => {
       const aCode =
         stores.find((s: any) =>
           s.labels.some((l: any) => l.code === data.labelCode)
@@ -44,26 +57,49 @@ const GenerateReportButton: React.FC<{
         data.labelCode,
         updatedStock
       );
-      const wastedValue =
-        ((afterProductionQ - data.endQuantity) / startQ) * 100;
+      const wastedValue = (1 - data.endQuantity / afterProductionQ) * 100;
+
+      // Calculate the week using the getWeekNumber function
+      const week = getWeekNumber(new Date());
 
       const labelId =
         stores
           .find((s: any) => s.aCode === aCode)
           ?.labels.find((l: any) => l.code === data.labelCode)?.$id || '';
 
-      return {
+      const reportRow = {
         aCode: aCode,
         labelCode: data.labelCode,
-        $id: labelId,
+        labelId: labelId,
         startQuantity: startQ,
         quantityAfterProduction: afterProductionQ,
         endQuantity: data.endQuantity,
-        wasted: wastedValue
+        wasted: wastedValue,
+        week: week
       };
-    });
-    setWeeklyReport(report);
 
+      await useWeeklyReportStore
+        .getState()
+        .createWeeklyProductionRow(reportRow);
+
+      return reportRow;
+    });
+
+    const result = await Promise.all(report);
+
+    const productionToDeleted = await useProductionStore
+      .getState()
+      .setProductsFromDB();
+
+    console.log('ProductionToDeleted', productionToDeleted);
+
+    productionToDeleted.forEach(async (p: any) => {
+      console.log('p', p, p.$id);
+
+      await useProductionProductStore.getState().deleteProduct(p.$id);
+    });
+
+    updateWeeklyReport(result);
     setModalVisible(false);
   };
 
@@ -76,6 +112,7 @@ const GenerateReportButton: React.FC<{
   return (
     <>
       <button
+        className='w-64 p-2 mb-4 bg-blue-600 text-white rounded hover:bg-blue-700'
         onClick={() => {
           const initialData = stores.flatMap((store: any) =>
             store.labels.map((label: any) => ({

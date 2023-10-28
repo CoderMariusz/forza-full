@@ -1,29 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Labels, useLabels, useLabelsStore } from '@/store/LabelsStore';
-import { Product, useProductsStore } from '@/store/ProductsStore';
+import { useProductsStore } from '@/store/ProductsStore';
 import mergeTables from '@/lib/MargeTables';
 import EditModal from './EditModal';
 import { ProductionProduct, useProductionStore } from '@/store/Production';
-import WeeklyReport from './WeeklyReport';
 import GenerateReportButton from './GenerateReportButton';
-import { useWeeklyReportsStore } from '@/store/WeeklyReportStore';
+import WeeklyReport from './WeeklyReport';
+import { useWeeklyReportStore } from '@/store/WeeklyReportStore';
 
 interface Stores {
   aCode?: string;
   $id?: string;
   packetInBox?: number;
   labels?: Labels[];
-}
-
-interface Result {
-  aCode: string;
-  $id: string;
-  labelCode: string;
-  startQuantity: number;
-  quantityAfterProduction: number;
-  endQuantity: number;
-  wasted: number;
 }
 
 function StoresPage() {
@@ -35,7 +25,7 @@ function StoresPage() {
   const [storesBookmark, setStoresBookmark] = useState(0);
   const [production, setProduction] = useState<ProductionProduct[]>([]);
 
-  const [weeklyReport, setWeeklyReport] = useState<Result[]>([]);
+  const [weeklyReport, setWeeklyReport] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +46,7 @@ function StoresPage() {
       fetchData();
       setLoading(true);
     }
-  }, [stores, loading]);
+  }, [stores, loading, weeklyReport]);
 
   const handleRemove = (aCode: string | undefined) => {
     // Handle remove logic here
@@ -193,25 +183,33 @@ function StoresPage() {
     }
   };
 
-  const setWeeklyReportInDB = async (report: Result[]) => {
-    setWeeklyReport(report);
-    console.log('weeklyReport', weeklyReport);
-
+  const updateWeeklyReportInDBandStores = async () => {
     const updatedStores = [...stores]; // make a copy of current stores
 
-    for (const item of report) {
-      await useLabels.getState().updateLabel(item.$id, item.endQuantity); // Update DB
+    const data = await useWeeklyReportStore.getState().setWeeklyReportFromDB();
+    setWeeklyReport(data);
+
+    // Flatten all production items from all weeks into a single array
+    const allProductionItems = data.flatMap((weekData) => weekData.production);
+
+    for (const item of allProductionItems) {
+      if (item.labelId === undefined) {
+        console.warn('item.$id is undefined');
+        continue;
+      } else {
+        await useLabels.getState().updateLabel(item.labelId, item.endQuantity); // Update DB
+      }
 
       // Update local state
       for (const store of updatedStores) {
-        const label = store.labels?.find((l) => l.$id === item.$id);
+        const label = store.labels?.find((l) => l.$id === item.labelId);
         if (label) {
           label.quantity = item.endQuantity;
         }
       }
     }
 
-    setStores(updatedStores); // Assuming you have a function `setStores` to update the local state for stores
+    setStores(updatedStores);
   };
 
   return (
@@ -234,9 +232,9 @@ function StoresPage() {
       </div>
       <div>
         <GenerateReportButton
-          updatedStock={updatedStock}
           stores={stores}
-          setWeeklyReport={setWeeklyReportInDB}
+          updatedStock={updatedStock}
+          updateWeeklyReport={updateWeeklyReportInDBandStores}
         />
       </div>
 
@@ -331,7 +329,8 @@ function StoresPage() {
               </table>
             );
           case 2:
-            return <WeeklyReport data={weeklyReport} />;
+            return <WeeklyReport data={weeklyReport} />; // use the WeeklyReport component as a value
+
           default:
             return (
               <table className='min-w-full bg-white'>

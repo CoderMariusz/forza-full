@@ -1,8 +1,9 @@
 'use client';
+import { useProductionProductStore } from '@/store/Production';
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 
-function ExcelReader({ setData }: any) {
+function ExcelReader({ dataFromPage, setData }: any) {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event: any) => {
@@ -27,8 +28,27 @@ function ExcelReader({ setData }: any) {
           date: row[2] // C
         }));
 
-        console.log(formattedData);
-        setData(formattedData);
+        const formatDate = (dateStr: any) => {
+          const [day, month, year] = dateStr.split('/');
+          return `${year}-${month}-${day}`;
+        };
+
+        formattedData.forEach(async (row: any) => {
+          try {
+            await useProductionProductStore.getState().createProduct({
+              aCode: row.aCode,
+              quantity: row.quantity,
+              date: formatDate(row.date)
+            });
+
+            const withAddProduct = [...dataFromPage, ...formattedData];
+            console.log('withAddProduct', withAddProduct);
+
+            setData(withAddProduct);
+          } catch (e) {
+            console.log(e);
+          }
+        });
         setSelectedFile(file.name); // Just to show the file name after selection
       };
       reader.readAsBinaryString(file);

@@ -1,118 +1,100 @@
 import { ID, database } from '@/appwrite';
+import { Models } from 'appwrite';
 import { create } from 'zustand';
 
-interface WeeklyReportState {
-  weeklyReports: WeeklyReport[];
-  setWeeklyReports: (weeklyReports: WeeklyReport[]) => void;
-  setWeeklyReportsFromDB: () => Promise<WeeklyReport[]>;
+export interface WeeklyReportStore {
+  week: number;
+  production: WeeklyProductionRow[];
 }
-
-export interface WeeklyReport {
+export interface WeeklyProductionRow {
   aCode: string;
   labelCode: string;
+  $id?: string;
+  labelId?: string;
   startQuantity: number;
   quantityAfterProduction: number;
   endQuantity: number;
   wasted: number;
+  week: number;
+}
+interface WeeklyProductionState extends WeeklyProductionRow {}
+
+interface WeeklyReportState extends WeeklyReportStore {
+  setWeek: (week: number) => void;
+  setProduction: (production: WeeklyProductionRow[]) => void;
+  setWeeklyReportFromDB: () => Promise<WeeklyReportStore[]>;
+  createWeeklyProductionRow: (
+    row: WeeklyProductionRow
+  ) => Promise<Models.Document>;
 }
 
-interface WeeklyReportState extends WeeklyReport {
-  setWeeklyReports: (weeklyReports: WeeklyReport[]) => void;
-  setWeeklyReportsFromDB: () => Promise<WeeklyReport[]>;
-}
-
-interface WeeklyReportActions {
-  setACode: (aCode: string) => void;
-  setLabelCode: (labelCode: string) => void;
-  setStartQuantity: (startQuantity: number) => void;
-  setQuantityAfterProduction: (quantityAfterProduction: number) => void;
-  setEndQuantity: (endQuantity: number) => void;
-  setWasted: (wasted: number) => void;
-  createWeeklyReport: (weeklyReport: WeeklyReport) => void;
-  createWeeklyReportInDB: (weeklyReport: WeeklyReport) => void;
-  editWeeklyReport: (id: string, weeklyReport: WeeklyReport) => void;
-  deleteWeeklyReport: (id: string) => void;
-}
-
-type WeeklyReportStore = WeeklyReportState & WeeklyReportActions;
-
-const useWeeklyReportsStore = create<WeeklyReportStore>((set) => ({
-  weeklyReports: [],
-  aCode: '',
-  labelCode: '',
-  startQuantity: 0,
-  quantityAfterProduction: 0,
-  endQuantity: 0,
-  wasted: 0,
-  setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
-  setLabelCode: (labelCode: string) =>
-    set((state) => ({ ...state, labelCode })),
-  setStartQuantity: (startQuantity: number) =>
-    set((state) => ({ ...state, startQuantity })),
-  setQuantityAfterProduction: (quantityAfterProduction: number) =>
-    set((state) => ({ ...state, quantityAfterProduction })),
-  setEndQuantity: (endQuantity: number) =>
-    set((state) => ({ ...state, endQuantity })),
-  setWasted: (wasted: number) => set((state) => ({ ...state, wasted })),
-  createWeeklyReport: (weeklyReport: WeeklyReport) =>
-    set((state) => ({
-      ...state,
-      weeklyReports: [...state.weeklyReports, weeklyReport]
-    })),
-  editWeeklyReport: (id: string, weeklyReport: WeeklyReport) =>
-    set((state) => ({
-      ...state,
-      weeklyReports: state.weeklyReports.map((wr) =>
-        wr.aCode === id ? weeklyReport : wr
-      )
-    })),
-  deleteWeeklyReport: (id: string) =>
-    set((state) => ({
-      ...state,
-      weeklyReports: state.weeklyReports.filter((wr) => wr.aCode !== id)
-    })),
-  setWeeklyReports: (weeklyReports: WeeklyReport[]) =>
-    set((state) => ({ ...state, weeklyReports })),
-  setWeeklyReportsFromDB: async () => {
+const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
+  week: 0,
+  production: [],
+  setWeek: (week: number) => set((state) => ({ ...state, week })),
+  setProduction: (production: WeeklyProductionRow[]) => {
+    set((state) => ({ ...state, production }));
+  },
+  setWeeklyReportFromDB: async (): Promise<WeeklyReportStore[]> => {
     const data = await database.listDocuments(
       '6510bb07873546043cae',
-      '6510bb1f8f240bd7c3b2'
+      '653a6ee8c9c891c8eaec'
     );
-    const weeklyReports = data.documents.map((weeklyReport) => {
+
+    // Convert the data into a more manageable format
+    const convertedData: WeeklyProductionRow[] = data.documents.map((doc) => {
       return {
-        aCode: weeklyReport.aCode,
-        labelCode: weeklyReport.labelCode,
-        startQuantity: weeklyReport.startQuantity,
-        quantityAfterProduction: weeklyReport.quantityAfterProduction,
-        endQuantity: weeklyReport.endQuantity,
-        wasted: weeklyReport.wasted
+        week: doc.week || 0,
+        aCode: doc.aCode || '',
+        labelCode: doc.labelCode || '',
+        labelId: doc.labelId || '',
+        $id: doc.$id || '',
+        startQuantity: doc.startQuantity || 0,
+        quantityAfterProduction: doc.quantityAfterProduction || 0,
+        endQuantity: doc.endQuantity || 0,
+        wasted: doc.wasted || 0
       };
     });
-    set((state) => ({ ...state, weeklyReports }));
+
+    // Organize the data by week
+    const weeklyReportsMap: { [key: number]: WeeklyProductionRow[] } = {};
+
+    for (let entry of convertedData) {
+      if (!weeklyReportsMap[entry.week]) {
+        weeklyReportsMap[entry.week] = [];
+      }
+      weeklyReportsMap[entry.week].push(entry);
+    }
+
+    // Convert the organized data into the desired array format
+    const weeklyReports: WeeklyReportStore[] = Object.keys(weeklyReportsMap)
+      .map((week: any) => ({
+        week: parseInt(week),
+        production: weeklyReportsMap[week]
+      }))
+      .sort((a, b) => a.week - b.week); // Sort by week in ascending order
+
     return weeklyReports;
   },
-  createWeeklyReportInDB: async (weeklyReport: WeeklyReport) => {
+  createWeeklyProductionRow: async (row: WeeklyProductionRow) => {
     const data = await database.createDocument(
       '6510bb07873546043cae',
-      '652fd1f24e89305872fd',
+      '653a6ee8c9c891c8eaec',
       ID.unique(),
       {
-        aCode: weeklyReport.aCode,
-        labelCode: weeklyReport.labelCode,
-        startQuantity: weeklyReport.startQuantity,
-        quantityAfterProduction: weeklyReport.quantityAfterProduction,
-        endQuantity: weeklyReport.endQuantity,
-        wasted: weeklyReport.wasted
+        aCode: row.aCode,
+        labelCode: row.labelCode,
+        labelId: row.labelId,
+        startQuantity: row.startQuantity,
+        quantityAfterProduction: row.quantityAfterProduction,
+        endQuantity: row.endQuantity,
+        wasted: row.wasted,
+        week: row.week
       }
     );
 
-    console.log('data', data);
-
-    set((state) => ({
-      ...state,
-      weeklyReports: [...state.weeklyReports, weeklyReport]
-    }));
+    return data;
   }
 }));
 
-export { useWeeklyReportsStore };
+export { useWeeklyReportStore };
