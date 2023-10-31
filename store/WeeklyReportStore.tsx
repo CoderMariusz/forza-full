@@ -16,15 +16,21 @@ export interface WeeklyProductionRow {
   endQuantity: number;
   wasted: number;
   week: number;
+  avgWaste?: number;
 }
 interface WeeklyProductionState extends WeeklyProductionRow {}
 
 interface WeeklyReportState extends WeeklyReportStore {
   setWeek: (week: number) => void;
   setProduction: (production: WeeklyProductionRow[]) => void;
+  setWeeklyReportFromDBinRow: () => Promise<WeeklyProductionRow[]>;
   setWeeklyReportFromDB: () => Promise<WeeklyReportStore[]>;
   createWeeklyProductionRow: (
     row: WeeklyProductionRow
+  ) => Promise<Models.Document>;
+  updateWeeklyProductionRowToAvgWaste: (
+    id: string,
+    avgWaste: number
   ) => Promise<Models.Document>;
 }
 
@@ -34,6 +40,38 @@ const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
   setWeek: (week: number) => set((state) => ({ ...state, week })),
   setProduction: (production: WeeklyProductionRow[]) => {
     set((state) => ({ ...state, production }));
+  },
+
+  updateWeeklyProductionRowToAvgWaste: async (id, avgWaste) => {
+    const data = await database.updateDocument(
+      '6510bb07873546043cae',
+      '653a6ee8c9c891c8eaec',
+      id,
+      {
+        avgWaste: avgWaste
+      }
+    );
+    return data;
+  },
+
+  setWeeklyReportFromDBinRow: async (): Promise<WeeklyProductionRow[]> => {
+    const data = await database.listDocuments(
+      '6510bb07873546043cae',
+      '653a6ee8c9c891c8eaec'
+    );
+    return data.documents.map((doc) => {
+      return {
+        aCode: doc.aCode || '',
+        labelCode: doc.labelCode || '',
+        labelId: doc.labelId || '',
+        $id: doc.$id || '',
+        startQuantity: doc.startQuantity || 0,
+        quantityAfterProduction: doc.quantityAfterProduction || 0,
+        endQuantity: doc.endQuantity || 0,
+        wasted: doc.wasted || 0,
+        week: doc.week || 0
+      };
+    });
   },
   setWeeklyReportFromDB: async (): Promise<WeeklyReportStore[]> => {
     const data = await database.listDocuments(
@@ -52,7 +90,8 @@ const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
         startQuantity: doc.startQuantity || 0,
         quantityAfterProduction: doc.quantityAfterProduction || 0,
         endQuantity: doc.endQuantity || 0,
-        wasted: doc.wasted || 0
+        wasted: doc.wasted || 0,
+        avgWaste: doc.avgWaste || 0
       };
     });
 

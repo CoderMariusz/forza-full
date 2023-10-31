@@ -41,7 +41,12 @@ function StoresPage() {
         setStores(labels);
       }
       setProduction(await useProductionStore.getState().setProductsFromDB());
+      const weekly = await useWeeklyReportStore
+        .getState()
+        .setWeeklyReportFromDB();
+      setWeeklyReport(weekly);
     };
+
     if (!loading) {
       fetchData();
       setLoading(true);
@@ -267,6 +272,7 @@ function StoresPage() {
                     <th className='w-1/4 py-2'>A-Code</th>
                     <th className='w-1/4 py-2'>Label Code</th>
                     <th className='w-1/4 py-2'>Quantity</th>
+
                     <th className='w-1/4 py-2'>Actions</th>
                   </tr>
                 </thead>
@@ -305,6 +311,7 @@ function StoresPage() {
                     <th className='w-1/4 py-2'>A-Code</th>
                     <th className='w-1/4 py-2'>Label Code</th>
                     <th className='w-1/4 py-2'>Quantity</th>
+                    <th className='w-1/4 py-2'>Available to produce</th>
                     <th className='w-1/4 py-2'>Actions</th>
                   </tr>
                 </thead>
@@ -317,6 +324,7 @@ function StoresPage() {
                         <td className='py-2'>{item.aCode}</td>
                         <td>{item.labelCode}</td>
                         <td>{item.quantity}</td>
+                        <td>{item.labelCode}</td>
                         <td>
                           <button className='bg-blue-500 text-white px-4 py-1 rounded'>
                             Action
@@ -328,8 +336,9 @@ function StoresPage() {
                 </tbody>
               </table>
             );
-          case 2:
+          case 2: {
             return <WeeklyReport data={weeklyReport} />; // use the WeeklyReport component as a value
+          }
 
           default:
             return (

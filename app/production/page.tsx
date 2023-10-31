@@ -7,6 +7,12 @@ import {
 } from '@/store/Production';
 import AddModal from './AddModal';
 import { useProductsStore } from '@/store/ProductsStore';
+import Production from './Production';
+import Available from './Available';
+import {
+  WeeklyProductionRow,
+  useWeeklyReportStore
+} from '@/store/WeeklyReportStore';
 
 interface MyData {
   aCode: string;
@@ -14,10 +20,22 @@ interface MyData {
   date: string | Date | number;
 }
 
+// Define a type for the labelMap object
+type LabelMap = {
+  [labelCode: string]: {
+    count: number;
+    totalWaste: number;
+    labelId: string;
+  };
+};
+
 function ProductionPage() {
   const [data, setData] = useState<MyData[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-  const [isModalOpen, setModalOpen] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [Bookmark, setBookmark] = useState(0);
+  const [availableData, setAvailableData] = useState<any[]>([]);
+  const [processedData, setProcessedData] = useState<any[]>([]);
 
   function formatDate(inputStr: string | number | Date) {
     const date = new Date(inputStr); // create a Date object
@@ -33,20 +51,26 @@ function ProductionPage() {
 
     const fetchData = async () => {
       const products = await useProductsStore.getState().setProductsFromDB();
-      console.log('products', products);
+
       setProducts(products);
-      console.log('products form set', products);
 
-      const data = await useProductionStore.getState().setProductsFromDB();
-      console.log('production', data);
+      const production = await useProductionStore
+        .getState()
+        .setProductsFromDB();
 
-      data.map((row) => {
+      const weeklyReport = await useWeeklyReportStore
+        .getState()
+        .setWeeklyReportFromDBinRow();
+
+      production.map((row) => {
         row.date = formatDate(row.date) as unknown as string;
       });
 
-      setData(data);
+      setData(production);
+      setAvailableData(weeklyReport);
     };
 
+    console.log('ava', availableData);
     fetchData();
   }, []);
 
@@ -84,6 +108,54 @@ function ProductionPage() {
     useProductionProductStore.getState().createProduct(production);
   };
 
+  function processData(data: WeeklyProductionRow[]): any {
+    const labelMap: LabelMap = {};
+
+    // Loop through each data entry
+    data.forEach((entry) => {
+      const { labelCode, wasted, labelId } = entry;
+
+      // Check if the labelCode exists in the labelMap
+      if (!labelMap[labelCode]) {
+        labelMap[labelCode] = {
+          count: 0,
+          totalWaste: 0,
+          labelId: labelId!
+        };
+      }
+
+      // Increment the count for this labelCode
+      labelMap[labelCode].count += 1;
+
+      // Add to the total waste for this labelCode
+      labelMap[labelCode].totalWaste += wasted;
+    });
+
+    // Convert the labelMap to the desired array format
+    const result = [];
+    for (const labelCode in labelMap) {
+      const { count, totalWaste, labelId } = labelMap[labelCode];
+      const avgWaste = totalWaste / count;
+
+      result.push({
+        labelCode,
+        timesProduced: count,
+        averageWaste: avgWaste.toFixed(2),
+        labelId
+      });
+    }
+
+    return result;
+  }
+
+  const changeStoresBookmark = (number: number) => {
+    if (number >= 0 && number <= 3) {
+      setBookmark(number);
+    } else {
+      console.warn('Invalid bookmark number');
+    }
+  };
+
   return (
     <div className='w-full my-4'>
       <div className='flex flex-col pl-3'>
@@ -99,33 +171,42 @@ function ProductionPage() {
         </button>
       </div>
       <hr className='mb-4' />
+      <div className='flex bg-slate-100 mb-2 rounded-md'>
+        <button
+          className='p-3 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2 rounded-tl-md rounded-bl-md'
+          onClick={() => changeStoresBookmark(0)}>
+          Production
+        </button>
+        <button
+          className='p-3 px-4 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2'
+          onClick={() => changeStoresBookmark(1)}>
+          Available to produce.
+        </button>
+      </div>
+      {(() => {
+        switch (Bookmark) {
+          case 0: {
+            console.log('sortedData', sortedData);
 
-      <table className='min-w-full bg-white divide-y divide-gray-200'>
-        <thead className='bg-gray-800 text-white'>
-          <tr>
-            <th className='py-2'>A-Code</th>
-            <th className='py-2'>Quantity</th>
-            <th className='py-2'>Date</th>
-          </tr>
-        </thead>
-        <tbody className='text-gray-700'>
-          {sortedData.map((row: MyData, index) => {
-            return (
-              <React.Fragment key={index}>
-                <tr>
-                  <td className='border p-2'>{row.aCode}</td>
-                  <td className='border p-2'>{row.quantity}</td>
-                  <td className='border p-2'>
-                    {row.date instanceof Date
-                      ? row.date.toLocaleDateString()
-                      : String(row.date)}
-                  </td>
-                </tr>
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
+            return <Production sortedData={sortedData} />;
+          }
+
+          case 1: {
+            if (availableData.length > 0 && processedData.length === 0) {
+              const processedData = processData(availableData);
+              console.log('processedData', processedData);
+
+              setProcessedData(processedData);
+            }
+
+            return <Available data={processedData} />;
+          }
+
+          default:
+            return <Production sortedData={sortedData} />;
+        }
+      })()}
+
       <AddModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}

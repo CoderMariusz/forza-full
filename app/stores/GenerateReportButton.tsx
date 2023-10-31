@@ -37,8 +37,6 @@ const GenerateReportButton: React.FC<{
   };
 
   const handleSubmit = async () => {
-    const production = await useProductionStore.getState().setProductsFromDB();
-
     function getWeekNumber(date: any) {
       const target = new Date(date);
       const start = new Date(target.getFullYear(), 0, 1);
