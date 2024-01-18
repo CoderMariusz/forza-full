@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useUserStore } from '@/store/UserStore';
 import { linksList } from '@/lib/LinkList';
 
@@ -33,9 +32,13 @@ function BurgerMenu() {
           isOpen ? 'translate-x-0' : 'translate-x-full'
         } transform fixed top-0 right-0 w-64 h-full bg-gray-600 shadow-lg p-4 transition-transform duration-300 ease-in-out`}>
         <div className='flex flex-col gap-4 mx-4 mt-4'>
-          <h2 className='text-gray-800 font-semibold text-lg'>
-            Hi, You need to be login
-          </h2>
+          {!name ? (
+            <h2 className='text-gray-800 font-semibold text-lg'>
+              Hi, You need to be login
+            </h2>
+          ) : (
+            <h2 className='text-gray-800 font-semibold text-lg'>Hi, {name}</h2>
+          )}
           <nav>
             <ul className='flex flex-col gap-2 mx-2'>
               {linksList(name, setName, setIsOpen)}

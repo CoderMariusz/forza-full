@@ -1,5 +1,5 @@
 'use client';
-import { account } from '@/appwrite';
+
 import { redirect } from 'next/navigation';
 import { useUserStore } from '@/store/UserStore';
 import React, { useState } from 'react';
@@ -7,25 +7,34 @@ import React, { useState } from 'react';
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, userEmail, id, setName, setUserEmail, setId] = useUserStore(
-    (state) => [
-      state.name,
-      state.email,
-      state.id,
-      state.setName,
-      state.setEmail,
-      state.setId
-    ]
-  );
+  const [
+    name,
+    userEmail,
+    id,
+    setName,
+    setUserEmail,
+    setId,
+    loginUser,
+    loginUserBySession
+  ] = useUserStore((state) => [
+    state.name,
+    state.email,
+    state.id,
+    state.setName,
+    state.setEmail,
+    state.setId,
+    state.loginUser,
+    state.loginUserBySession
+  ]);
   const loginFunction = async (email: string, password: string) => {
-    const user = await account.createEmailSession(email, password);
     try {
-      const userWithName = await account.get();
-      setName(userWithName.name);
-      setId(userWithName.$id);
-      setUserEmail(user.providerUid);
+      const userWithName = await loginUser(email, password);
+      if (userWithName !== undefined) {
+        console.log(userWithName);
+        console.log(localStorage.getItem('session'));
+      }
 
-      return user;
+      return userWithName;
     } catch (error) {
       console.log(error);
     }
@@ -35,6 +44,8 @@ function LoginForm() {
     e.preventDefault();
     console.log('Email:', email, 'Password:', password);
     loginFunction(email, password);
+    setName(email);
+    setEmail(email);
   };
 
   name && redirect('/dashboard');
