@@ -44,7 +44,6 @@ export const linksList = (
   const logoutFun = async () => {
     await logout();
     setName('');
-    console.log('logout');
   };
 
   if (!name || name === '') {
