@@ -3,19 +3,33 @@ import { useStoresHcStore } from '@/store/StoresHc';
 import { useUserStore } from '@/store/UserStore';
 import React, { useEffect, useState } from 'react';
 import { StoresHcObject } from '@/store/StoresHc';
+import Webs from './Webs';
 import AddModal from './AddModal';
+import ChangeModal from './ChangeModal';
 import * as XLSX from 'xlsx';
 
-function StoresHc() {
+function StoresHcPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState<StoresHcObject[]>([]);
   const [user] = useUserStore((state) => [state.name]);
-  const [loadDataDB, addStoresHcToDB] = useStoresHcStore((state) => [
-    state.loadStoresHcFromDB,
-    state.addStoresHcToDB
-  ]);
+  const [loadDataDB, addStoresHcToDB, updateStoresHcToDB] = useStoresHcStore(
+    (state) => [
+      state.loadStoresHcFromDB,
+      state.addStoresHcToDB,
+      state.updateStoresHcToDB
+    ]
+  );
+  const [currentView, setCurrentView] = useState('StoresHc');
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenChange, setIsOpenChange] = useState(false);
+  const [item, setItem] = useState<StoresHcObject>();
+
+  const getBookmarkClass = (viewName: string) => {
+    return currentView === viewName
+      ? 'bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200'
+      : 'bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition duration-200';
+  };
 
   const exportToExcel = () => {
     const processedData = data.map((item) => ({
@@ -35,6 +49,14 @@ function StoresHc() {
   const loadData = async () => {
     const data = await loadDataDB();
     setData(data);
+  };
+
+  const updateItemQuantity = (itemId: string, newQuantities: Array<number>) => {
+    setData(
+      data.map((item: StoresHcObject) =>
+        item.id === itemId ? { ...item, quantity: newQuantities } : item
+      )
+    );
   };
 
   useEffect(() => {
@@ -71,7 +93,7 @@ function StoresHc() {
 
   return (
     <div className='container mx-auto p-4'>
-      <h1 className='text-3xl font-bold mb-2'>Store Items</h1>
+      <h1 className='text-3xl font-bold mb-2'>Store HC</h1>
       <hr className='mb-4' />
 
       <div className='mb-4 flex justify-between'>
@@ -93,57 +115,99 @@ function StoresHc() {
         )}
       </div>
 
+      <div className='mb-4 flex justify-center space-x-4'>
+        <button
+          className={getBookmarkClass('StoresHc')}
+          onClick={() => setCurrentView('StoresHc')}>
+          StoresHc
+        </button>
+        <button
+          className={getBookmarkClass('Webs')}
+          onClick={() => setCurrentView('Webs')}>
+          Webs
+        </button>
+        <button
+          className={getBookmarkClass('Trays')}
+          onClick={() => setCurrentView('Trays')}>
+          Trays
+        </button>
+      </div>
+
       {!loading && (
         <h3>
           <i className='fas fa-spinner fa-spin w-10 h-10 bg-red-200'></i>
           <span className='px-3'>Loading...</span>
         </h3>
       )}
-
-      <table className='min-w-full table-auto'>
-        <thead>
-          <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
-            <th className='py-3 px-6 text-left'>Code</th>
-            <th className='py-3 px-6 text-left'>Name</th>
-            <th className='py-3 px-6 text-center'>Quantity</th>
-            {user === 'storeshc@forzafoods.com' && (
-              <th className='py-3 px-6 text-center'>Actions</th>
-            )}
-          </tr>
-        </thead>
-
-        <tbody className='text-gray-600 text-sm font-light'>
-          {sortedData &&
-            sortedData.map((item: StoresHcObject, index: number) => (
-              <tr
-                key={index}
-                className='border-b border-gray-200 hover:bg-gray-100'>
-                <td className='py-3 px-6 text-left whitespace-nowrap'>
-                  {item.code}
-                </td>
-                <td className='py-3 px-6 text-left'>{item.name}</td>
-                <td className='py-3 px-6 text-center'>
-                  {item.quantity.join(', ')}
-                </td>
+      {currentView === 'StoresHc' && (
+        <div className='container mx-auto p-4'>
+          <h1 className='text-3xl font-bold mb-2'>Store</h1>
+          <hr className='mb-4' />
+          <table className='min-w-full table-auto'>
+            <thead>
+              <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
+                <th className='py-3 px-6 text-left'>Code</th>
+                <th className='py-3 px-6 text-left'>Name</th>
+                <th className='py-3 px-6 text-center'>Quantity</th>
                 {user === 'storeshc@forzafoods.com' && (
-                  <td className='py-3 px-6 text-center'>
-                    <button
-                      onClick={() => alert('change quantity')}
-                      className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
-                      change
-                    </button>
-                  </td>
+                  <th className='py-3 px-6 text-center'>Actions</th>
                 )}
               </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
+
+            <tbody className='text-gray-600 text-sm font-light'>
+              {sortedData &&
+                sortedData.map((item: StoresHcObject, index: number) => (
+                  <tr
+                    key={index}
+                    className='border-b border-gray-200 hover:bg-gray-100'>
+                    <td className='py-3 px-6 text-left whitespace-nowrap'>
+                      {item.code}
+                    </td>
+                    <td className='py-3 px-6 text-left'>{item.name}</td>
+                    <td className='py-3 px-6 text-center'>
+                      {item.quantity.join(', ')}
+                    </td>
+                    {user === 'storeshc@forzafoods.com' && (
+                      <td className='py-3 px-6 text-center'>
+                        <button
+                          onClick={() => {
+                            setIsOpenChange(true);
+                            setItem(item);
+                          }}
+                          className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
+                          change
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {currentView === 'Webs' && <Webs />}
+
       <AddModal
         isOpen={isOpen}
         onClose={setIsOpen}
         onAdd={addObject}
       />
-      <div>
+      <ChangeModal
+        isOpen={isOpenChange}
+        onClose={() => {
+          setIsOpenChange(false);
+        }}
+        onEdit={(updateItem) => {
+          console.log('edit');
+          item && updateStoresHcToDB(updateItem);
+          updateItemQuantity(updateItem.id, updateItem.quantity);
+          setIsOpenChange(false);
+        }}
+        item={item}
+      />
+      <div className='pt-4'>
         <button
           onClick={exportToExcel}
           className='bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600'>
@@ -154,4 +218,4 @@ function StoresHc() {
   );
 }
 
-export default StoresHc;
+export default StoresHcPage;
