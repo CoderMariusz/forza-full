@@ -3,6 +3,7 @@ import Menu from './Menu';
 import './globals.css';
 import type { Metadata } from 'next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'Forza App',
@@ -21,6 +22,7 @@ export default function RootLayout({
         <BurgerMenu />
         {children}
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
