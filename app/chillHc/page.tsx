@@ -7,6 +7,8 @@ import AddRMItemModal from './AddModal';
 import EditRMItemModal from './EditModal';
 import RepackTable from './RepackTable';
 import EditRepackItemModal from './EditModalRepack';
+import AddRepackItemModal from './AddModalRepack';
+import { rm } from 'fs';
 
 // Define a mock RMObject type (adjust as per your actual data structure)
 
@@ -16,6 +18,7 @@ function ChillStockPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenChange, setIsOpenChange] = useState(false);
   const [isOpenRepack, setIsOpenRepack] = useState(false);
+  const [isOpenRepackChange, setIsOpenRepackChange] = useState(false);
   const [data, setData] = useState<ChillHcObject[]>([]); // Replace with your RMObject type
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState<ChillHcObject>();
@@ -59,6 +62,14 @@ function ChillStockPage() {
       date,
       weight,
       id
+    });
+    setData([...data, chillHc]);
+    setLoading(false);
+  };
+
+  const addObjectRepack = async (obj: any) => {
+    const chillHc = await useChillHcState.getState().addChillHcToDB({
+      ...obj
     });
     setData([...data, chillHc]);
     setLoading(false);
@@ -156,13 +167,22 @@ function ChillStockPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className='p-2 border rounded'
         />
-        {user === 'process@forzafoods.com' && (
+        {user === 'process@forzafoods.com' && currentView === 'ChillHc' && (
           <button
             onClick={() => {
               setIsOpen(true);
             }}
             className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
             Add Material +
+          </button>
+        )}
+        {user === 'process@forzafoods.com' && currentView === 'Repacks' && (
+          <button
+            onClick={() => {
+              setIsOpenRepack(true);
+            }}
+            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
+            Add Repack +
           </button>
         )}
       </div>
@@ -248,16 +268,18 @@ function ChillStockPage() {
           data={repacks}
           setItem={(item) => setItem(item)}
           setIsOpenChange={() => {
-            setIsOpenRepack(true);
+            setIsOpenRepackChange(true);
           }}
-          removeObject={() => removeObject}
+          removeObject={(id) => removeObject(id)}
           user={user}
         />
       )}
       <AddRMItemModal
         isOpen={isOpen}
         onClose={setIsOpen}
-        onAdd={addObject}
+        onAdd={(item: ChillHcObject) =>
+          addObject(item.rmCode, item.name, item.date, item.weight, item.id)
+        }
       />
       <EditRMItemModal
         isOpen={isOpenChange}
@@ -268,9 +290,14 @@ function ChillStockPage() {
         }}
         item={item}
       />
-      <EditRepackItemModal
+      <AddRepackItemModal
         isOpen={isOpenRepack}
         onClose={() => setIsOpenRepack(false)}
+        onAdd={(obj) => addObjectRepack(obj)}
+      />
+      <EditRepackItemModal
+        isOpen={isOpenRepackChange}
+        onClose={() => setIsOpenRepackChange(false)}
         onEdit={(updateItem) => {
           updateObject(updateItem);
           setIsOpenRepack(false);

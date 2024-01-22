@@ -58,7 +58,11 @@ const RepackTable: React.FC<RepackTableProps> = ({
                 </button>
                 <button
                   className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2'
-                  onClick={() => removeObject(item.id)}>
+                  onClick={() => {
+                    console.log(item);
+
+                    removeObject(item.id);
+                  }}>
                   Delete
                 </button>
               </td>

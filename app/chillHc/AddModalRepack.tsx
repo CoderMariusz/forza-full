@@ -7,7 +7,7 @@ function AddRepackItemModal({
 }: {
   isOpen: boolean;
   onClose: any;
-  onAdd: any;
+  onAdd: (item: any) => void;
 }) {
   const [aCode, setACode] = useState('');
   const [rmCode, setRmCode] = useState('');
@@ -17,14 +17,17 @@ function AddRepackItemModal({
   const [repack, setRepack] = useState(false);
 
   const handleSubmit = () => {
+    setRepack(true);
     const newItem = {
       aCode,
       rmCode,
       name,
       weight: parseFloat(weight),
       date,
-      repack // Repack field as a boolean
+      repack
     };
+    console.log(newItem);
+
     onAdd(newItem);
     handleClose();
   };
@@ -36,7 +39,6 @@ function AddRepackItemModal({
     setName('');
     setWeight('');
     setDate('');
-    setRepack(false);
     onClose();
   };
 
@@ -110,19 +112,6 @@ function AddRepackItemModal({
             onChange={(e) => setDate(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           />
-        </div>
-
-        <div className='mb-4'>
-          <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Repack
-          </label>
-          <select
-            value={repack ? 'true' : 'false'}
-            onChange={(e) => setRepack(e.target.value === 'true')}
-            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
-            <option value='true'>Yes</option>
-            <option value='false'>No</option>
-          </select>
         </div>
 
         <div className='flex items-center justify-between'>
