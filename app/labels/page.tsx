@@ -18,11 +18,9 @@ function LabelPage() {
     };
     // This can be replaced by an API call or other logic to fetch the labels
     fetchData();
-    console.log('Labels', labels);
   }, []);
 
   const handleClose = () => {
-    console.log('Close Modal Clicked');
     setIsAddModalOpen(false);
   };
 
@@ -30,7 +28,6 @@ function LabelPage() {
     labels && labels.filter((label) => label.code?.includes(searchQuery));
 
   const onAddLabel = async (newLabel: Labels) => {
-    console.log('Add Label Clicked');
     setLabels([...labels, newLabel]);
     try {
       await useLabels.getState().createLabel(newLabel);

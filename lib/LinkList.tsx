@@ -17,18 +17,10 @@ export const linksList = (
     'production',
     'stores',
     'storesHc',
-    'ChillHc',
+    'chillHc',
     'settings'
   ];
-  const linksChillHc = [
-    'dashboard',
-    'products',
-    'labels',
-    'orders',
-    'production',
-    'stores',
-    'settings'
-  ];
+  const linksProcess = ['dashboard', 'chillHc', 'settings'];
   const linksProduction = [
     'dashboard',
     'products',
@@ -62,13 +54,14 @@ export const linksList = (
   }
   if (name === 'storeshc@forzafoods.com') links = linksStoreHc;
   if (name === 'planning@forzafoods.com') links = linksPlanning;
+  if (name === 'process@forzafoods.com') links = linksProcess;
 
   return (
     <>
       {links.map((link) => (
         <li
           key={link}
-          className='transition-all duration-200 hover:bg-blue-300 w-full p-1'>
+          className='transition-all duration-300 hover:bg-blue-300 w-full p-1'>
           <Link
             href={`/${link}`}
             onClick={() => {

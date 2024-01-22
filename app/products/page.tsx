@@ -15,13 +15,10 @@ function ProductPage() {
     const fetchData = async () => {
       const dateProduct = await useProductsStore.getState().setProductsFromDB();
       const dateLabels = await useLabelsStore.getState().setLabelsFromDB();
-      console.log(dateLabels);
 
       setProducts(dateProduct);
       setLabels(dateLabels);
-      console.log(dateProduct);
     };
-    console.log('fetching data');
 
     fetchData();
   }, []);
@@ -35,8 +32,6 @@ function ProductPage() {
     packetInBox,
     labels
   }: Product) => {
-    console.log('Add Product Clicked');
-
     const newProduct = {
       name,
       aCode,

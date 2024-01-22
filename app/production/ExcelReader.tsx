@@ -42,7 +42,6 @@ function ExcelReader({ dataFromPage, setData }: any) {
             });
 
             const withAddProduct = [...dataFromPage, ...formattedData];
-            console.log('withAddProduct', withAddProduct);
 
             setData(withAddProduct);
           } catch (e) {

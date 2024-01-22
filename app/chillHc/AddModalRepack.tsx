@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function AddItemModal({
+function AddRepackItemModal({
   isOpen,
   onClose,
   onAdd
@@ -10,28 +10,20 @@ function AddItemModal({
   onAdd: any;
 }) {
   const [aCode, setACode] = useState('');
-  const [code, setCode] = useState('');
+  const [rmCode, setRmCode] = useState('');
   const [name, setName] = useState('');
-  const [quantities, setQuantities] = useState(['']);
-
-  const handleAddQuantity = () => {
-    setQuantities([...quantities, '']);
-  };
-
-  const handleQuantityChange = (index: number, value: string) => {
-    const newQuantities = [...quantities];
-    newQuantities[index] = value;
-    setQuantities(newQuantities);
-  };
+  const [weight, setWeight] = useState('');
+  const [date, setDate] = useState('');
+  const [repack, setRepack] = useState(false);
 
   const handleSubmit = () => {
     const newItem = {
       aCode,
-      code,
+      rmCode,
       name,
-      quantity: quantities
-        .map((qty) => Number(qty))
-        .filter((qty) => !isNaN(qty) && qty > 0)
+      weight: parseFloat(weight),
+      date,
+      repack // Repack field as a boolean
     };
     onAdd(newItem);
     handleClose();
@@ -40,9 +32,11 @@ function AddItemModal({
   const handleClose = () => {
     // Reset the form
     setACode('');
-    setCode('');
+    setRmCode('');
     setName('');
-    setQuantities(['']);
+    setWeight('');
+    setDate('');
+    setRepack(false);
     onClose();
   };
 
@@ -51,7 +45,7 @@ function AddItemModal({
   return (
     <div className='fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full'>
       <div className='relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white'>
-        <h2 className='text-lg font-bold mb-4'>Add New Item</h2>
+        <h2 className='text-lg font-bold mb-4'>Add New Repack Item</h2>
 
         <div className='mb-4'>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
@@ -59,7 +53,7 @@ function AddItemModal({
           </label>
           <input
             type='text'
-            placeholder='Code'
+            placeholder='A-Code'
             value={aCode}
             onChange={(e) => setACode(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
@@ -68,13 +62,13 @@ function AddItemModal({
 
         <div className='mb-4'>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Code
+            RM-Code
           </label>
           <input
             type='text'
-            placeholder='Code'
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
+            placeholder='RM-Code'
+            value={rmCode}
+            onChange={(e) => setRmCode(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           />
         </div>
@@ -92,28 +86,44 @@ function AddItemModal({
           />
         </div>
 
-        {quantities.map((quantity, index) => (
-          <div
-            key={index}
-            className='mb-4 flex'>
-            <div className='flex-grow'>
-              <input
-                type='number'
-                placeholder='Quantity'
-                value={quantity}
-                onChange={(e) => handleQuantityChange(index, e.target.value)}
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              />
-            </div>
-            {index === quantities.length - 1 && (
-              <button
-                onClick={handleAddQuantity}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2'>
-                +
-              </button>
-            )}
-          </div>
-        ))}
+        <div className='mb-4'>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Weight
+          </label>
+          <input
+            type='number'
+            placeholder='Weight'
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+          />
+        </div>
+
+        <div className='mb-4'>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Date
+          </label>
+          <input
+            type='date'
+            placeholder='Date'
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+          />
+        </div>
+
+        <div className='mb-4'>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Repack
+          </label>
+          <select
+            value={repack ? 'true' : 'false'}
+            onChange={(e) => setRepack(e.target.value === 'true')}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
+            <option value='true'>Yes</option>
+            <option value='false'>No</option>
+          </select>
+        </div>
 
         <div className='flex items-center justify-between'>
           <button
@@ -132,4 +142,4 @@ function AddItemModal({
   );
 }
 
-export default AddItemModal;
+export default AddRepackItemModal;

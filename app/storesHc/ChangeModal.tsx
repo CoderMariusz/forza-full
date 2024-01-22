@@ -40,7 +40,6 @@ function EditItemModal({
       ...item,
       quantity: quantities.filter((qty) => !isNaN(qty) && qty > 0)
     };
-    console.log('updatedItem:', updatedItem);
 
     onEdit(updatedItem);
     onClose();

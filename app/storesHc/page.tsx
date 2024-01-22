@@ -65,18 +65,23 @@ function StoresHcPage() {
     });
   }, [loading]);
 
-  const filteredData = data.filter(
-    (item) =>
-      item.code.includes(searchQuery) ||
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const sortByCode = (data: any, searchQuery: string) => {
+    const searchTerm = searchQuery.toLowerCase(); // Convert the search query to lowercase for case-insensitive search
 
-  const sortByCode = (data: any) => {
-    return data.sort((a: StoresHcObject, b: StoresHcObject) => {
-      if (a.code < b.code) {
+    const filteredData = data.filter(
+      (item: any) =>
+        item.code.toLowerCase().includes(searchTerm) ||
+        (item.aCode && item.aCode.toLowerCase().includes(searchTerm))
+    );
+
+    return filteredData.sort((a: StoresHcObject, b: StoresHcObject) => {
+      const aCodeToCompare = a.aCode || a.code;
+      const bCodeToCompare = b.aCode || b.code;
+
+      if (aCodeToCompare < bCodeToCompare) {
         return -1;
       }
-      if (a.code > b.code) {
+      if (aCodeToCompare > bCodeToCompare) {
         return 1;
       }
       return 0;
@@ -84,12 +89,26 @@ function StoresHcPage() {
   };
 
   const addObject = (newObject: StoresHcObject) => {
-    setData([...data, newObject]);
-    addStoresHcToDB(newObject);
-    console.log(data);
+    const existingWeb = data.find(
+      (item) => item.aCode === newObject.aCode || item.code === newObject.code
+    );
+
+    if (existingWeb) {
+      alert(
+        'Web is on the system. Please check the searcher and change the quantity.'
+      );
+
+      existingWeb.quantity = existingWeb.quantity.concat(newObject.quantity);
+
+      updateStoresHcToDB(existingWeb);
+    } else {
+      setData([...data, newObject]);
+
+      addStoresHcToDB(newObject);
+    }
   };
 
-  const sortedData = sortByCode(filteredData);
+  const sortedData = sortByCode(data, searchQuery);
 
   return (
     <div className='container mx-auto p-4'>
@@ -146,6 +165,7 @@ function StoresHcPage() {
           <table className='min-w-full table-auto'>
             <thead>
               <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
+                <th className='py-3 px-6 text-left'>A-Code</th>
                 <th className='py-3 px-6 text-left'>Code</th>
                 <th className='py-3 px-6 text-left'>Name</th>
                 <th className='py-3 px-6 text-center'>Quantity</th>
@@ -161,6 +181,9 @@ function StoresHcPage() {
                   <tr
                     key={index}
                     className='border-b border-gray-200 hover:bg-gray-100'>
+                    <td className='py-3 px-6 text-left whitespace-nowrap'>
+                      {item.aCode}
+                    </td>
                     <td className='py-3 px-6 text-left whitespace-nowrap'>
                       {item.code}
                     </td>

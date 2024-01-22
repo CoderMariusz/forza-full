@@ -42,10 +42,9 @@ function LoginForm() {
 
   const handleLogin = (e: any) => {
     e.preventDefault();
-    console.log('Email:', email, 'Password:', password);
     loginFunction(email, password);
-    setName(email);
-    setEmail(email);
+    setName(email.toLocaleLowerCase());
+    setEmail(email.toLocaleLowerCase());
   };
 
   name && redirect('/dashboard');

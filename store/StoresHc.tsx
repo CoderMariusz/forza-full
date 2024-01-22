@@ -2,6 +2,7 @@ import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 
 export interface StoresHcObject {
+  aCode: string;
   code: string;
   name: string;
   quantity: number[];
@@ -16,6 +17,7 @@ interface StoresHcState extends StoresHcObject {
 }
 
 const useStoresHcStore = create<StoresHcState>((set: any) => ({
+  aCode: '',
   code: '',
   name: '',
   quantity: [],
@@ -30,6 +32,7 @@ const useStoresHcStore = create<StoresHcState>((set: any) => ({
     );
     const storesHc = data.documents.map((store) => {
       return {
+        aCode: store.aCode,
         code: store.code,
         name: store.name,
         quantity: store.quantity,

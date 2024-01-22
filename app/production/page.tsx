@@ -47,8 +47,6 @@ function ProductionPage() {
   }
 
   useEffect(() => {
-    console.log('useEffect');
-
     const fetchData = async () => {
       const products = await useProductsStore.getState().setProductsFromDB();
 
@@ -70,7 +68,6 @@ function ProductionPage() {
       setAvailableData(weeklyReport);
     };
 
-    console.log('ava', availableData);
     fetchData();
   }, []);
 
@@ -103,7 +100,6 @@ function ProductionPage() {
     quantity: number;
     date: Date;
   }) => {
-    console.log(production);
     setData([...data, production]);
     useProductionProductStore.getState().createProduct(production);
   };
@@ -186,15 +182,12 @@ function ProductionPage() {
       {(() => {
         switch (Bookmark) {
           case 0: {
-            console.log('sortedData', sortedData);
-
             return <Production sortedData={sortedData} />;
           }
 
           case 1: {
             if (availableData.length > 0 && processedData.length === 0) {
               const processedData = processData(availableData);
-              console.log('processedData', processedData);
 
               setProcessedData(processedData);
             }
