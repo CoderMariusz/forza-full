@@ -14,7 +14,7 @@ function AddRepackItemModal({
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [date, setDate] = useState('');
-  const [repack, setRepack] = useState(false);
+  const [repack, setRepack] = useState(true);
 
   const handleSubmit = () => {
     setRepack(true);
