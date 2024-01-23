@@ -4,6 +4,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Forza App',
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='bg-slate-300 text-slate-600 flex min-h-screen'>
+      <body className='bg-slate-100 text-slate-600 flex min-h-screen w-screen'>
         <Menu />
         <BurgerMenu />
         {children}

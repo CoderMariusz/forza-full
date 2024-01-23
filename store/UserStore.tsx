@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { account } from '@/appwrite';
+import { account, database } from '@/appwrite';
 interface UserState {
   name: string;
   email: string;
@@ -10,6 +10,7 @@ interface UserState {
   loginUser: (email: string, password: string) => void;
   loginUserBySession: (session: string) => void;
   logOut: () => void;
+  getAllUsers: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -43,5 +44,16 @@ export const useUserStore = create<UserState>((set) => ({
     session && (await account.deleteSession(session));
     localStorage.removeItem('session');
     localStorage.removeItem('uid');
+  },
+  getAllUsers: async () => {
+    try {
+      const users = await database.listDocuments(
+        '6510bb07873546043cae',
+        '6511407bd301d46b4694'
+      );
+      return users;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }));

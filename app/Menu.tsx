@@ -2,6 +2,7 @@
 import { useUserStore } from '@/store/UserStore';
 import { linksList } from '@/lib/LinkList';
 import { use, useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 
 function Menu() {
   const [name, setName] = useUserStore((state) => [state.name, state.setName]);
@@ -23,6 +24,7 @@ function Menu() {
         } catch (error) {
           console.log(error);
         }
+      } else {
       }
     }
   }

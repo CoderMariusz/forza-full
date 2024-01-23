@@ -152,7 +152,13 @@ function ChillStockPage() {
   const sortedData = sortByCode(data, searchQuery);
 
   // Render the Chill Stock page
+  console.log(user);
 
+  if (user === '') {
+    console.log('no user');
+
+    return <div>You need to be log in!</div>;
+  }
   return (
     <div className='container mx-auto p-4'>
       <h1 className='text-3xl font-bold mb-2'>Chill Stock</h1>

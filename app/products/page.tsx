@@ -4,12 +4,14 @@ import ProductsList from './ProductsList';
 import { Product, useProduct, useProductsStore } from '@/store/ProductsStore';
 import AddModal from './AddModal';
 import { Labels, useLabelsStore } from '@/store/LabelsStore';
+import { useUserStore } from '@/store/UserStore';
 
 function ProductPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [labels, setLabels] = useState<Labels[]>([]);
+  const user = useUserStore((state) => state.name);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +72,12 @@ function ProductPage() {
       (products.name &&
         products.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  if (user === '') {
+    console.log('no user');
+
+    return <div>You need to be log in!</div>;
+  }
 
   return (
     <div className='container mx-auto p-4'>

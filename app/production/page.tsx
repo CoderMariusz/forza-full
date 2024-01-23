@@ -13,6 +13,7 @@ import {
   WeeklyProductionRow,
   useWeeklyReportStore
 } from '@/store/WeeklyReportStore';
+import { useUserStore } from '@/store/UserStore';
 
 interface MyData {
   aCode: string;
@@ -36,6 +37,7 @@ function ProductionPage() {
   const [Bookmark, setBookmark] = useState(0);
   const [availableData, setAvailableData] = useState<any[]>([]);
   const [processedData, setProcessedData] = useState<any[]>([]);
+  const user = useUserStore((state) => state.name);
 
   function formatDate(inputStr: string | number | Date) {
     const date = new Date(inputStr); // create a Date object
@@ -151,6 +153,12 @@ function ProductionPage() {
       console.warn('Invalid bookmark number');
     }
   };
+
+  if (user === '') {
+    console.log('no user');
+
+    return <div>You need to be log in!</div>;
+  }
 
   return (
     <div className='w-full my-4'>

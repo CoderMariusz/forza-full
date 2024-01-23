@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.18",
+    "@heroicons/react": "^2.1.1",
+    "@iconify/icons-heroicons-solid": "^1.2.6",
+    "@react-icons/all-files": "^4.1.0",
     "@types/node": "20.6.5",
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.1.2",
@@ -18,6 +20,7 @@
     "autoprefixer": "10.4.16",
     "eslint": "8.50.0",
     "eslint-config-next": "13.5.2",
+    "heroicons-react": "^1.4.1",
     "next": "13.5.2",
     "postcss": "8.4.30",
     "react": "18.2.0",
