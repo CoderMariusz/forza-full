@@ -2,10 +2,14 @@
 import { AnyNaptrRecord } from 'dns';
 import React, { useState } from 'react';
 
+interface TaskWorkDone {
+  [key: string]: number;
+}
+
 const Plan = () => {
   const [efficiencies, setEfficiencies] = useState({
-    am: { minPeopleRequired: 0, efficiency: 0 },
-    pm: { minPeopleRequired: 0, efficiency: 0 }
+    am: { minPeopleRequired: 0, efficiency: 0, taskWorkDone: {} },
+    pm: { minPeopleRequired: 0, efficiency: 0, taskWorkDone: {} }
   });
 
   const [optimizedTasks, setOptimizedTasks] = useState<{
@@ -31,34 +35,27 @@ const Plan = () => {
   function calculateShiftEfficiency(shiftTasks: any) {
     const timeLimit = 8; // 8-hour shift
     const peopleNeeded = { racking: 8, mix1: 5, mix2: 3, take_in: 2 };
+    const taskWorkDone: TaskWorkDone = {}; // Declare taskWorkDone outside the reduce method
 
-    let totalManHours = Object.keys(shiftTasks).reduce(
-      (acc, task) =>
-        acc +
+    let totalManHours = Object.keys(shiftTasks).reduce((acc, task) => {
+      const hoursWorked =
         shiftTasks[task as keyof typeof shiftTasks] *
-          peopleNeeded[task as keyof typeof peopleNeeded],
-      0
-    );
+        peopleNeeded[task as keyof typeof peopleNeeded];
+
+      taskWorkDone[task as keyof typeof taskWorkDone] = hoursWorked; // Update taskWorkDone for each task
+      return acc + hoursWorked;
+    }, 0);
 
     let minPeopleRequired = Math.ceil(totalManHours / timeLimit);
     let efficiency = (totalManHours / (minPeopleRequired * timeLimit)) * 100;
 
-    return { minPeopleRequired, efficiency };
-  }
+    console.log(taskWorkDone);
 
-  function calculateTotalHours(shiftTasks: any) {
-    const peopleNeeded = { racking: 8, mix1: 5, mix2: 3, take_in: 2 };
-    return Object.keys(shiftTasks).reduce(
-      (acc, task) =>
-        acc +
-        shiftTasks[task as keyof typeof shiftTasks] *
-          peopleNeeded[task as keyof typeof peopleNeeded],
-      0
-    );
+    return { minPeopleRequired, efficiency, taskWorkDone };
   }
 
   function optimizeTaskAllocation(amShiftTasks: any, pmShiftTasks: any) {
-    // Copy the original task distributions
+    // Initial task distributions
     const optimizedAmShift = { ...amShiftTasks };
     const optimizedPmShift = { ...pmShiftTasks };
 
@@ -70,39 +67,46 @@ const Plan = () => {
       take_in: amShiftTasks.take_in + pmShiftTasks.take_in
     };
 
-    // Ensure at least 80% of Racking is in AM shift and 60% of each task in each shift
+    // Ensure at least 80% of Racking in AM shift
     optimizedAmShift.racking = Math.max(
       amShiftTasks.racking,
       totalHours.racking * 0.8
     );
     optimizedPmShift.racking = totalHours.racking - optimizedAmShift.racking;
 
-    for (let task in totalHours) {
+    // Function to adjust task hours to balance the load
+    const adjustTasks = (task: any) => {
       if (task !== 'racking') {
-        const amTaskHours = Math.max(
-          amShiftTasks[task],
-          totalHours[task as keyof typeof totalHours] * 0.6
-        );
-        const pmTaskHours =
-          totalHours[task as keyof typeof totalHours] - amTaskHours;
+        const amAvailable = calculateAvailableHours(optimizedAmShift);
+        const pmAvailable = calculateAvailableHours(optimizedPmShift);
+        const taskHours = totalHours[task as keyof typeof totalHours];
 
-        // Adjust tasks to avoid overloading a shift
-        const amTotalHours = calculateTotalHours(optimizedAmShift);
-        const pmTotalHours = calculateTotalHours(optimizedPmShift);
-        const maxShiftHours = 8 * 8; // Assuming 5 people max per task
-
-        if (amTotalHours + amTaskHours > maxShiftHours) {
-          optimizedAmShift[task] = maxShiftHours - amTotalHours;
-          optimizedPmShift[task] =
-            pmTaskHours + (amTaskHours - optimizedAmShift[task]);
+        if (amAvailable < pmAvailable) {
+          // Shift task hours from PM to AM if possible
+          const shiftAmount = Math.min(
+            pmAvailable - amAvailable,
+            taskHours * 0.4
+          );
+          optimizedAmShift[task] += shiftAmount;
+          optimizedPmShift[task] -= shiftAmount;
         } else {
-          optimizedAmShift[task] = amTaskHours;
-          optimizedPmShift[task] = pmTaskHours;
+          // Shift task hours from AM to PM if possible
+          const shiftAmount = Math.min(
+            amAvailable - pmAvailable,
+            taskHours * 0.4
+          );
+          optimizedAmShift[task] -= shiftAmount;
+          optimizedPmShift[task] += shiftAmount;
         }
       }
+    };
+
+    // Adjust each task
+    for (let task in totalHours) {
+      adjustTasks(task);
     }
 
-    // Calculate efficiencies for optimized shifts
+    // Recalculate efficiencies
     const efficiencyAm = calculateShiftEfficiency(optimizedAmShift);
     const efficiencyPm = calculateShiftEfficiency(optimizedPmShift);
 
@@ -112,6 +116,20 @@ const Plan = () => {
       efficiencyAm,
       efficiencyPm
     };
+  }
+
+  function calculateAvailableHours(shiftTasks: any) {
+    const timeLimit = 7.15; // 8-hour shift
+    const peopleNeeded = { racking: 8, mix1: 5, mix2: 3, take_in: 2 };
+
+    let totalManHours = Object.keys(shiftTasks).reduce(
+      (acc, task) =>
+        acc +
+        shiftTasks[task] * peopleNeeded[task as keyof typeof peopleNeeded],
+      0
+    );
+
+    return timeLimit * 6 - totalManHours; // Assuming 5 people per task
   }
 
   const handleInputChange = (shift: any, task: any, value: any) => {
@@ -136,6 +154,8 @@ const Plan = () => {
 
     setOptimizedTasks(optimizationResult);
   };
+
+  console.log(efficiencies);
 
   return (
     <div className='container mx-auto p-4'>
@@ -200,6 +220,7 @@ const Plan = () => {
               PM Shift: {efficiencies.pm.efficiency.toFixed(2)}% (People Needed:{' '}
               {efficiencies.pm.minPeopleRequired})
             </p>
+            <p>Works Done on Am: {}</p>
           </div>
           {optimizedTasks && (
             <div>

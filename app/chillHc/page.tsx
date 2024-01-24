@@ -203,11 +203,6 @@ function ChillStockPage() {
           onClick={() => setCurrentView('Repacks')}>
           Repacks
         </button>
-        <button
-          className={getBookmarkClass('Trays')}
-          onClick={() => setCurrentView('Trays')}>
-          Trays
-        </button>
       </div>
 
       <div className='mb-4'>

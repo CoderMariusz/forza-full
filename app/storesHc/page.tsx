@@ -95,7 +95,7 @@ function StoresHcPage() {
 
     if (existingWeb) {
       alert(
-        'Web is on the system. Please check the searcher and change the quantity.'
+        'Web exists in the system. Please look it up in A-code or flm Code in searcher and change the quantity.'
       );
 
       existingWeb.quantity = existingWeb.quantity.concat(newObject.quantity);
