@@ -9,6 +9,7 @@ export interface ChillHcObject {
   repack?: boolean;
   aCode?: string;
   id: string;
+  line?: string;
 }
 
 interface ChillHcState extends ChillHcObject {
@@ -26,6 +27,7 @@ const useChillHcState = create<ChillHcState>((set) => ({
   repack: false,
   aCode: '',
   id: '',
+  line: '',
   loadChillHcFromDB: async () => {
     // Implementation for loading ChillHc from DB
     const data = await database.listDocuments(
@@ -41,7 +43,8 @@ const useChillHcState = create<ChillHcState>((set) => ({
         weight: chill.weight,
         repack: chill.repack,
         aCode: chill.aCode,
-        id: chill.$id
+        id: chill.$id,
+        line: chill.line
       };
     });
     set((state) => ({ ...state, chillHc }));

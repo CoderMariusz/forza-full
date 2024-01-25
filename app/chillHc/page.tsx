@@ -9,6 +9,7 @@ import RepackTable from './RepackTable';
 import EditRepackItemModal from './EditModalRepack';
 import AddRepackItemModal from './AddModalRepack';
 import { rm } from 'fs';
+import TrimTable from './TrimTable';
 
 // Define a mock RMObject type (adjust as per your actual data structure)
 
@@ -153,6 +154,7 @@ function ChillStockPage() {
 
   // Render the Chill Stock page
   console.log(user);
+  console.log(currentView);
 
   if (user === '') {
     console.log('no user');
@@ -202,6 +204,11 @@ function ChillStockPage() {
           className={getBookmarkClass('Repacks')}
           onClick={() => setCurrentView('Repacks')}>
           Repacks
+        </button>
+        <button
+          className={getBookmarkClass('Trim')}
+          onClick={() => setCurrentView('Trim')}>
+          Trim
         </button>
       </div>
 
@@ -275,6 +282,7 @@ function ChillStockPage() {
           user={user}
         />
       )}
+      {loading && currentView === 'Trim' && <TrimTable isLoggedIn={true} />}
       <AddRMItemModal
         isOpen={isOpen}
         onClose={setIsOpen}

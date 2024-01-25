@@ -21,8 +21,9 @@ const RepackTable: React.FC<RepackTableProps> = ({
     <table>
       <thead>
         <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
+          <th className='py-3 px-6 text-left'>Line</th>
           <th className='py-3 px-6 text-left'>RM-Code</th>
-          <th className='py-3 px-6 text-left'>Ticket Id</th>
+          <th className='py-3 px-6 text-left'>Name</th>
           <th className='py-3 px-6 text-left'>Date</th>
           <th className='py-3 px-6 text-left'>Weight</th>
           {user === 'process@forzafoods.com' ? (
@@ -35,6 +36,9 @@ const RepackTable: React.FC<RepackTableProps> = ({
           <tr
             key={index}
             className='border-b border-gray-200 hover:bg-gray-100'>
+            <td className='py-3 px-6 text-left whitespace-nowrap'>
+              {item.line}
+            </td>
             <td className='py-3 px-6 text-left whitespace-nowrap'>
               {item.rmCode}
             </td>
