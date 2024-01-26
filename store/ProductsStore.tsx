@@ -2,6 +2,12 @@ import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 import { Labels } from './LabelsStore';
 
+interface ProductsState {
+  products: Product[];
+  setProducts: (products: Product[]) => void;
+  setProductsFromDB: () => Promise<Product[]>;
+}
+
 export interface Product {
   name: string;
   aCode: string;
@@ -11,7 +17,6 @@ export interface Product {
   rates: number;
   labels: Labels[];
   packetInBox: number;
-  rmCode: string;
 }
 
 interface ProductState extends Product {
@@ -28,6 +33,32 @@ interface ProductState extends Product {
   deleteProduct: (id: string) => void;
 }
 
+const useProductsStore = create<ProductsState>((set) => ({
+  products: [],
+  setProducts: (products: Product[]) =>
+    set((state) => ({ ...state, products })),
+  setProductsFromDB: async () => {
+    const data = await database.listDocuments(
+      '6510bb07873546043cae',
+      '6510bb1f8f240bd7c3b2'
+    );
+    const products = data.documents.map((product) => {
+      return {
+        name: product.name,
+        aCode: product.aCode,
+        $id: product.$id,
+        version: product.version,
+        web: product.web,
+        rates: product.rates,
+        labels: product.labels,
+        packetInBox: product.packetInBox
+      };
+    });
+    set((state) => ({ ...state, products }));
+    return products;
+  }
+}));
+
 const useProduct = create<ProductState>((set) => ({
   name: '',
   aCode: '',
@@ -36,7 +67,6 @@ const useProduct = create<ProductState>((set) => ({
   rates: 0,
   labels: [],
   packetInBox: 0,
-  rmCode: '',
 
   setName: (name: string) => set((state) => ({ ...state, name })),
   setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
@@ -62,8 +92,7 @@ const useProduct = create<ProductState>((set) => ({
         web: product.web,
         rates: product.rates,
         labels: product.labels,
-        packetInBox: product.packetInBox,
-        rmCode: product.rmCode
+        packetInBox: product.packetInBox
       };
     });
     set((state) => ({ ...state, products }));
@@ -119,4 +148,4 @@ const useProduct = create<ProductState>((set) => ({
   }
 }));
 
-export { useProduct };
+export { useProductsStore, useProduct };
