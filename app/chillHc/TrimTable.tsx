@@ -2,19 +2,21 @@ import useTrimState from '@/store/Trim';
 import { log } from 'console';
 import React, { use, useEffect, useState } from 'react';
 import { TrimObject } from '@/store/Trim';
+import { useUserStore } from '@/store/UserStore';
+
 interface TrimTableProps {
   isLoggedIn: boolean;
+  trim: TrimObject[];
+  setTrim: (trim: any) => void;
 }
 
-const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn }) => {
+const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
   const [newKg, setNewKg] = useState('');
-  const [trim, setTrim] = useState<TrimObject[]>([]);
+  const user = useUserStore.getState().name;
   const [newDate, setNewDate] = useState('');
   const [selectedName, setSelectedName] = useState<string>();
 
   const groupedData = trim.reduce((acc: any, item: TrimObject) => {
-    console.log(item);
-
     acc[item.name] = acc[item.name] || [];
     acc[item.name].push(item);
     return acc;
@@ -40,7 +42,7 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn }) => {
       console.log(addItem);
 
       try {
-        setTrim((trim) => [...trim, { ...newItem, id: addItem.$id }]);
+        setTrim((trim: any) => [...trim, { ...newItem, id: addItem.$id }]);
         setNewKg('');
         setNewDate('');
         setSelectedName('');
@@ -50,8 +52,6 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn }) => {
 
       console.log(addItem);
     }
-    console.log('New item added to DB');
-    console.log('New item:', trim);
   };
 
   const handleDelete = async (id: string) => {
@@ -64,55 +64,44 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn }) => {
     console.log(item);
   };
 
-  useEffect(() => {
-    const uploadData = async () => {
-      const trimData = await useTrimState.getState().loadTrimFromDB();
-
-      try {
-        setTrim(trimData);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    uploadData();
-  }, []);
-
   return (
     <div className='container mx-auto'>
-      <div className='mt-4'>
-        <input
-          type='text'
-          value={newKg}
-          onChange={(e) => setNewKg(e.target.value)}
-          placeholder='Enter kg'
-          className='border px-4 py-2 mr-2'
-        />
-        <input
-          type='date'
-          value={newDate}
-          onChange={(e) => setNewDate(e.target.value)}
-          placeholder='Enter date'
-          className='border px-4 py-2 mr-2'
-        />
-        <select
-          value={selectedName}
-          onChange={(e) => setSelectedName(e.target.value)}
-          className='border px-4 py-2'>
-          <option value=''>Select Name</option>
-          {trimNames.map((trim: string, index: number) => (
-            <option
-              key={index}
-              value={trim}>
-              {trim}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleNewRecord}
-          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2'>
-          Add KG
-        </button>
-      </div>
+      {user === 'process@forzafoods.com' ? (
+        <div className='mt-4'>
+          <input
+            type='text'
+            value={newKg}
+            onChange={(e) => setNewKg(e.target.value)}
+            placeholder='Enter kg'
+            className='border px-4 py-2 mr-2'
+          />
+          <input
+            type='date'
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            placeholder='Enter date'
+            className='border px-4 py-2 mr-2'
+          />
+          <select
+            value={selectedName}
+            onChange={(e) => setSelectedName(e.target.value)}
+            className='border px-4 py-2'>
+            <option value=''>Select Name</option>
+            {trimNames.map((trim: string, index: number) => (
+              <option
+                key={index}
+                value={trim}>
+                {trim}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleNewRecord}
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2'>
+            Add KG
+          </button>
+        </div>
+      ) : null}
       <table className='table-auto'>
         <thead>
           <tr>

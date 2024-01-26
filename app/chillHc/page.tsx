@@ -1,5 +1,9 @@
 'use client';
-import { ChillHcObject, useChillHcState } from '@/store/ChillHc';
+import {
+  ChillHcObject,
+  NewChillHcObject,
+  useChillHcState
+} from '@/store/ChillHc';
 import { useUserStore } from '@/store/UserStore';
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
@@ -10,6 +14,8 @@ import EditRepackItemModal from './EditModalRepack';
 import AddRepackItemModal from './AddModalRepack';
 import { rm } from 'fs';
 import TrimTable from './TrimTable';
+import { Product, useProduct } from '@/store/ProductsStore';
+import useTrimState, { TrimObject } from '@/store/Trim';
 
 // Define a mock RMObject type (adjust as per your actual data structure)
 
@@ -25,6 +31,8 @@ function ChillStockPage() {
   const [item, setItem] = useState<ChillHcObject>();
   const [currentView, setCurrentView] = useState('ChillHc');
   const [repacks, setRepacks] = useState<ChillHcObject[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [trim, setTrim] = useState<TrimObject[]>([]);
 
   // Function to load RM data (you can replace this with your actual data loading logic)
   const loadRMData = async () => {
@@ -32,14 +40,35 @@ function ChillStockPage() {
     setData(chillHc);
   };
 
+  const loadProducts = async () => {
+    const products = await useProduct.getState().loadProductFromDB();
+    setProducts(products);
+  };
+
   // Function to export RM data to Excel
   const exportToExcel = () => {
-    const processedData = data.map((item) => ({
-      ...item,
-      // Convert date to a formatted string if needed
-      date: item.date
-    }));
-
+    let processedData: any[] = [];
+    if (currentView === 'ChillHc') {
+      processedData = data.map((item) => ({
+        ...item,
+        // Convert date to a formatted string if needed
+        date: item.date
+      }));
+    }
+    if (currentView === 'Repacks') {
+      processedData = repacks.map((item) => ({
+        ...item,
+        // Convert date to a formatted string if needed
+        date: item.date
+      }));
+    }
+    if (currentView === 'Trim') {
+      processedData = trim.map((item) => ({
+        ...item,
+        // Convert date to a formatted string if needed
+        date: item.date
+      }));
+    }
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(processedData);
 
@@ -50,19 +79,9 @@ function ChillStockPage() {
     XLSX.writeFile(wb, 'RMDataExport.xlsx');
   };
 
-  const addObject = async (
-    rmCode: string,
-    name: string,
-    date: string,
-    weight: number,
-    id: string
-  ) => {
+  const addObject = async (obj: NewChillHcObject) => {
     const chillHc = await useChillHcState.getState().addChillHcToDB({
-      rmCode,
-      name,
-      date,
-      weight,
-      id
+      ...obj
     });
     setData([...data, chillHc]);
     setLoading(false);
@@ -133,6 +152,34 @@ function ChillStockPage() {
     });
   };
 
+  const sortByCodeRepacks = (data: any, searchQuery: string) => {
+    const filteredDataRepacks = data.filter((item: any) => {
+      return (
+        (item.repack === true &&
+          item.rmCode?.toLowerCase().includes(searchQuery)) ||
+        (item.repack === true &&
+          item.date &&
+          item.date.toLowerCase().includes(searchQuery)) ||
+        (item.repack === true &&
+          item.line &&
+          item.line.toLowerCase().includes(searchQuery))
+      );
+    });
+    filteredDataRepacks.sort((a: ChillHcObject, b: ChillHcObject) => {
+      const aCodeToCompare = a.name || a.rmCode;
+      const bCodeToCompare = b.name || b.rmCode;
+
+      if (aCodeToCompare < bCodeToCompare) {
+        return -1;
+      }
+      if (aCodeToCompare > bCodeToCompare) {
+        return 1;
+      }
+      return 0;
+    });
+    return filteredDataRepacks;
+  };
+
   const loadRepackData = () => {
     const repacks = data.filter((item) => item.repack === true);
     setRepacks(repacks);
@@ -144,6 +191,19 @@ function ChillStockPage() {
       useUserStore.getState().loginUserBySession(session);
     }
 
+    const uploadDataTrim = async () => {
+      const trimData = await useTrimState.getState().loadTrimFromDB();
+
+      try {
+        setTrim(trimData);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    uploadDataTrim();
+
+    loadProducts();
+
     loadRMData().then(() => {
       loadRepackData();
       setLoading(true);
@@ -151,6 +211,7 @@ function ChillStockPage() {
   }, [loading]);
 
   const sortedData = sortByCode(data, searchQuery);
+  const sortedRepacks = sortByCodeRepacks(repacks, searchQuery);
 
   // Render the Chill Stock page
   console.log(user);
@@ -273,7 +334,7 @@ function ChillStockPage() {
       )}
       {loading && currentView === 'Repacks' && (
         <RepackTable
-          data={repacks}
+          data={sortedRepacks}
           setItem={(item) => setItem(item)}
           setIsOpenChange={() => {
             setIsOpenRepackChange(true);
@@ -282,13 +343,17 @@ function ChillStockPage() {
           user={user}
         />
       )}
-      {loading && currentView === 'Trim' && <TrimTable isLoggedIn={true} />}
+      {loading && currentView === 'Trim' && (
+        <TrimTable
+          isLoggedIn={true}
+          trim={trim}
+          setTrim={setTrim}
+        />
+      )}
       <AddRMItemModal
         isOpen={isOpen}
         onClose={setIsOpen}
-        onAdd={(item: ChillHcObject) =>
-          addObject(item.rmCode, item.name, item.date, item.weight, item.id)
-        }
+        onAdd={(item: NewChillHcObject) => addObject(item)}
       />
       <EditRMItemModal
         isOpen={isOpenChange}
@@ -301,6 +366,7 @@ function ChillStockPage() {
       />
       <AddRepackItemModal
         isOpen={isOpenRepack}
+        products={products}
         onClose={() => setIsOpenRepack(false)}
         onAdd={(obj) => addObjectRepack(obj)}
       />

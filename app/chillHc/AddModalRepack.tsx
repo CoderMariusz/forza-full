@@ -1,20 +1,72 @@
-import React, { useState } from 'react';
+import { Product } from '@/store/ProductsStore';
+import React, { use, useEffect, useState } from 'react';
 
 function AddRepackItemModal({
   isOpen,
   onClose,
+  products,
   onAdd
 }: {
   isOpen: boolean;
   onClose: any;
+  products: Product[];
   onAdd: (item: any) => void;
 }) {
   const [aCode, setACode] = useState('');
+  const [line, setLine] = useState('');
   const [rmCode, setRmCode] = useState('');
   const [name, setName] = useState('');
   const [weight, setWeight] = useState('');
   const [date, setDate] = useState('');
   const [repack, setRepack] = useState(true);
+
+  const dummyProducts = [
+    {
+      aCode: 'A-0001',
+      rmCode: 'RM0001',
+      name: 'British ham 120g'
+    },
+    {
+      aCode: 'A-0002',
+      rmCode: 'RM0002',
+      name: 'Cornedbeef 100g'
+    },
+    {
+      aCode: 'A-0003',
+      rmCode: 'RM0003',
+      name: 'Chicken 180g'
+    },
+    {
+      aCode: 'A-0004',
+      rmCode: 'RM0004',
+      name: 'Chicken 200g'
+    },
+    {
+      aCode: 'A-0005',
+      rmCode: 'RM0005',
+      name: 'Stuffed Chicken 120g'
+    }
+  ];
+
+  const handleACodeSearch = (aCodeValue: string) => {
+    // Find product by aCode
+    const foundProduct = dummyProducts.find(
+      (product) => product.aCode === aCodeValue
+    );
+
+    if (foundProduct) {
+      // Set RM-Code and Name based on the found product
+      setRmCode(foundProduct.rmCode);
+      setName(foundProduct.name);
+    } else {
+      // Reset RM-Code and Name if no product is found
+      setRmCode('');
+      setName('');
+    }
+
+    // Update A-Code state
+    setACode(aCodeValue);
+  };
 
   const handleSubmit = () => {
     setRepack(true);
@@ -32,9 +84,14 @@ function AddRepackItemModal({
     handleClose();
   };
 
+  useEffect(() => {
+    handleACodeSearch(aCode);
+  }, [aCode]);
+
   const handleClose = () => {
     // Reset the form
     setACode('');
+    setLine('');
     setRmCode('');
     setName('');
     setWeight('');
@@ -58,6 +115,18 @@ function AddRepackItemModal({
             placeholder='A-Code'
             value={aCode}
             onChange={(e) => setACode(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+          />
+        </div>
+        <div className='mb-4'>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Line
+          </label>
+          <input
+            type='text'
+            placeholder='Line'
+            value={line}
+            onChange={(e) => setLine(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           />
         </div>

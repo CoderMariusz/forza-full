@@ -2,12 +2,6 @@ import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 import { Labels } from './LabelsStore';
 
-interface ProductsState {
-  products: Product[];
-  setProducts: (products: Product[]) => void;
-  setProductsFromDB: () => Promise<Product[]>;
-}
-
 export interface Product {
   name: string;
   aCode: string;
@@ -17,6 +11,7 @@ export interface Product {
   rates: number;
   labels: Labels[];
   packetInBox: number;
+  rmCode: string;
 }
 
 interface ProductState extends Product {
@@ -27,16 +22,33 @@ interface ProductState extends Product {
   setWeb: (web: string) => void;
   setRates: (rates: number) => void;
   setLabels: (labels: Labels[]) => void;
+  loadProductFromDB: () => Promise<Product[]>;
   createProduct: (product: Product) => void;
   editProduct: (id: string, product: Product) => void;
   deleteProduct: (id: string) => void;
 }
 
-const useProductsStore = create<ProductsState>((set) => ({
-  products: [],
-  setProducts: (products: Product[]) =>
-    set((state) => ({ ...state, products })),
-  setProductsFromDB: async () => {
+const useProduct = create<ProductState>((set) => ({
+  name: '',
+  aCode: '',
+  version: 0,
+  web: '',
+  rates: 0,
+  labels: [],
+  packetInBox: 0,
+  rmCode: '',
+
+  setName: (name: string) => set((state) => ({ ...state, name })),
+  setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
+  setId: (id: string) => set((state) => ({ ...state, id })),
+  setVersion: (version: number) => set((state) => ({ ...state, version })),
+  setWeb: (web: string) => set((state) => ({ ...state, web })),
+  setRates: (rates: number) => set((state) => ({ ...state, rates })),
+  setLabels: (labels: Labels[]) => set((state) => ({ ...state, labels })),
+  setPacketInBox: (packetInBox: number) =>
+    set((state) => ({ ...state, packetInBox })),
+
+  loadProductFromDB: async () => {
     const data = await database.listDocuments(
       '6510bb07873546043cae',
       '6510bb1f8f240bd7c3b2'
@@ -50,32 +62,13 @@ const useProductsStore = create<ProductsState>((set) => ({
         web: product.web,
         rates: product.rates,
         labels: product.labels,
-        packetInBox: product.packetInBox
+        packetInBox: product.packetInBox,
+        rmCode: product.rmCode
       };
     });
     set((state) => ({ ...state, products }));
     return products;
-  }
-}));
-
-const useProduct = create<ProductState>((set) => ({
-  name: '',
-  aCode: '',
-  version: 0,
-  web: '',
-  rates: 0,
-  labels: [],
-  packetInBox: 0,
-
-  setName: (name: string) => set((state) => ({ ...state, name })),
-  setACode: (aCode: string) => set((state) => ({ ...state, aCode })),
-  setId: (id: string) => set((state) => ({ ...state, id })),
-  setVersion: (version: number) => set((state) => ({ ...state, version })),
-  setWeb: (web: string) => set((state) => ({ ...state, web })),
-  setRates: (rates: number) => set((state) => ({ ...state, rates })),
-  setLabels: (labels: Labels[]) => set((state) => ({ ...state, labels })),
-  setPacketInBox: (packetInBox: number) =>
-    set((state) => ({ ...state, packetInBox })),
+  },
 
   createProduct: async (product: Product) => {
     console.log('product send', product);
@@ -126,4 +119,4 @@ const useProduct = create<ProductState>((set) => ({
   }
 }));
 
-export { useProductsStore, useProduct };
+export { useProduct };

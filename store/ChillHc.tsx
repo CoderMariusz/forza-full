@@ -12,9 +12,19 @@ export interface ChillHcObject {
   line?: string;
 }
 
+export interface NewChillHcObject {
+  rmCode: string;
+  name: string;
+  date: string;
+  weight: number;
+  repack?: boolean;
+  aCode?: string;
+  line?: string;
+}
+
 interface ChillHcState extends ChillHcObject {
   loadChillHcFromDB: () => Promise<ChillHcObject[]>;
-  addChillHcToDB: (chillHc: ChillHcObject) => Promise<any>;
+  addChillHcToDB: (chillHc: NewChillHcObject) => Promise<any>;
   updateChillHcToDB: (chillHc: ChillHcObject) => Promise<any>;
   removeChillHcFromDB: (id: string) => Promise<any>;
 }
@@ -52,6 +62,8 @@ const useChillHcState = create<ChillHcState>((set) => ({
   },
 
   addChillHcToDB: async (chillHc) => {
+    console.log(chillHc);
+
     // Implementation for adding ChillHc to DB
     const data = await database.createDocument(
       '6510bb07873546043cae',

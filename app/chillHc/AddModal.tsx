@@ -22,7 +22,7 @@ function AddRMItemModal({
       weight: parseFloat(weight) // Parse weight as a float
     };
 
-    onAdd(newItem.rmCode, newItem.name, newItem.date, newItem.weight);
+    onAdd(newItem);
     handleClose();
   };
 
@@ -57,7 +57,7 @@ function AddRMItemModal({
 
         <div className='mb-4'>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Name
+            Ticket ID
           </label>
           <input
             type='text'
