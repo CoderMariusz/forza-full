@@ -41,10 +41,9 @@ const OrderHcToLrPage: React.FC = () => {
   };
 
   const fetchData = async () => {
-    const data = await fetch(
-      'https://https://forza-function-kubd.vercel.app/json',
-      { method: 'GET' }
-    ).then((res) => res.json());
+    const data = await fetch('https://first-program.onrender.com/', {
+      method: 'GET'
+    }).then((res) => res.json());
     console.log(data);
   };
 
