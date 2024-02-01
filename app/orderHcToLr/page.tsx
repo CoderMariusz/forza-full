@@ -41,7 +41,7 @@ const OrderHcToLrPage: React.FC = () => {
   };
 
   const fetchData = async () => {
-    const data = await fetch('https://first-program.onrender.com/', {
+    const data = await fetch('https://first-program.onrender.com/get_counter', {
       method: 'GET'
     }).then((res) => res.json());
     console.log(data);
