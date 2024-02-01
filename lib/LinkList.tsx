@@ -8,7 +8,7 @@ export const linksList = (
   logout: Function
 ) => {
   let links = ['dashboard', 'settings'];
-  const linksStoreHc = ['dashboard', 'storesHc', 'settings'];
+  const linksStoreHc = ['dashboard', 'storesHc', 'orderHcToLr', 'settings'];
   const linksPlanning = [
     'dashboard',
     'products',
@@ -30,8 +30,6 @@ export const linksList = (
     'stores',
     'settings'
   ];
-
-  console.log('linksList', name);
 
   const logoutFun = async () => {
     await logout();
@@ -69,7 +67,7 @@ export const linksList = (
               setIsOpen(false);
             }}
             className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 block rounded'>
-            {link}
+            {link && link === 'orderHcToLr' ? 'Order HC to LR' : link}
           </Link>
         </li>
       ))}

@@ -22,27 +22,27 @@ function AddRepackItemModal({
 
   const dummyProducts = [
     {
-      aCode: 'A-0001',
+      aCode: 'A0001',
       rmCode: 'RM0001',
       name: 'British ham 120g'
     },
     {
-      aCode: 'A-0002',
+      aCode: 'A0002',
       rmCode: 'RM0002',
       name: 'Cornedbeef 100g'
     },
     {
-      aCode: 'A-0003',
+      aCode: 'A0003',
       rmCode: 'RM0003',
       name: 'Chicken 180g'
     },
     {
-      aCode: 'A-0004',
+      aCode: 'A0004',
       rmCode: 'RM0004',
       name: 'Chicken 200g'
     },
     {
-      aCode: 'A-0005',
+      aCode: 'A 0005',
       rmCode: 'RM0005',
       name: 'Stuffed Chicken 120g'
     }
