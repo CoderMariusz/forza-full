@@ -4,15 +4,18 @@ import { create } from 'zustand';
 export interface OrderObject {
   webNumber: string;
   quantity: number;
-  id: string;
+  $id: string;
   done?: boolean;
   orderId?: number;
+  archive?: boolean;
+  date?: string;
 }
 export interface NewOrderObject {
   webNumber: string;
   quantity: number;
   done?: boolean;
   orderId: number;
+  archive?: boolean;
 }
 interface OrderState extends OrderObject {
   loadOrders: () => void;
@@ -24,9 +27,11 @@ interface OrderState extends OrderObject {
 const useOrderStore = create<OrderState>((set, get) => ({
   webNumber: '',
   quantity: 0,
-  id: '',
+  $id: '',
   done: false,
+  archive: false,
   oderId: 0,
+  date: '',
   loadOrders: async () => {
     const data = await database.listDocuments(
       '6510bb07873546043cae',
@@ -66,7 +71,9 @@ const useOrderStore = create<OrderState>((set, get) => ({
       {
         webNumber: order.webNumber,
         quantity: order.quantity,
-        done: order.done
+        done: order.done,
+        archive: order.archive,
+        date: order.date
       }
     );
     set((state) => ({ ...state, data }));
