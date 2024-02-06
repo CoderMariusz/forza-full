@@ -38,7 +38,7 @@ const options: any = {
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
-export let dataChart = {
+let dataChart = {
   labels,
   datasets: [
     {
@@ -59,7 +59,7 @@ export let dataChart = {
   ]
 };
 
-export let dataChart2 = {
+let dataChart2 = {
   labels: ['Line 1', 'Line 2', 'Line 3'],
   datasets: [
     {
