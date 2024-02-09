@@ -50,7 +50,7 @@ function ProductionPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const products = await useProductsStore.getState().setProductsFromDB();
+      const products = await useProductsStore.getState().loadProductsFromDB();
 
       setProducts(products);
 
