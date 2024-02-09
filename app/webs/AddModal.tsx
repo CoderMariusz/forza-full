@@ -1,36 +1,36 @@
-import { LabelItem } from '@/store/LabelsStore';
+'use client';
 import React, { useState } from 'react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: LabelItem) => void; // Use the LabelItem type for more precise typing
+  onAdd: (data: any) => void;
 }
 
-const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
-  const [formData, setFormData] = useState<LabelItem>({
+// Modal Component
+const AddWebModal = ({ isOpen, onClose, onAdd }: Props) => {
+  const [formData, setFormData] = useState({
     code: '',
     name: '',
-    group: ''
+    supplier: '',
+    supCode: ''
   });
 
   const inputFields = [
     { name: 'code', placeholder: 'Code' },
     { name: 'name', placeholder: 'Name' },
-    { name: 'group', placeholder: 'Group' }
+    { name: 'supplier', placeholder: 'Supplier' },
+    { name: 'supCode', placeholder: 'Sup. Code' }
   ];
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof LabelItem
-  ) => {
+  const handleChange = (e: any, fieldName: string) => {
     setFormData({ ...formData, [fieldName]: e.target.value });
   };
 
   const handleAdd = () => {
     onAdd(formData);
     onClose(); // Close modal after adding
-    setFormData({ code: '', name: '', group: '' }); // Reset form data
+    setFormData({ code: '', name: '', supplier: '', supCode: '' }); // Reset form data
   };
 
   if (!isOpen) return null;
@@ -38,14 +38,14 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
       <div className='bg-white p-4 rounded-lg max-w-sm w-full'>
-        <h2 className='text-lg font-semibold mb-4'>Add New Label</h2>
+        <h2 className='text-lg font-semibold mb-4'>Add New Web</h2>
         {inputFields.map((field) => (
           <input
             key={field.name}
             type='text'
             placeholder={field.placeholder}
             value={formData[field.name as keyof typeof formData]}
-            onChange={(e) => handleChange(e, field.name as keyof LabelItem)} // Fix: Cast field.name to keyof LabelItem
+            onChange={(e) => handleChange(e, field.name)}
             className='mb-4 p-2 border border-gray-300 rounded w-full'
           />
         ))}
@@ -66,4 +66,4 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
   );
 };
 
-export default AddLabelModal;
+export default AddWebModal;

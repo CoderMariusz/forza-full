@@ -89,7 +89,7 @@ const Plan = () => {
     amTasks: { [x: string]: number },
     pmTasks: { [x: string]: number },
     peopleNeeded: { [x: string]: number },
-    maxHoursPerTeam = 14.5,
+    maxHoursPerTeam = 12.5,
     maxShiftHours = 7.25
   ) {
     function balanceTaskHours(

@@ -19,7 +19,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const [order, setOrder] = useState<NewOrderObject[]>([]);
   const [webNumber, setWebNumber] = useState('');
   const [quantity, setQuantity] = useState(0);
-  const [id, setId] = useState(0);
   const submitOrderToDB = (e: NewOrderObject, orderId: number) => {
     useOrderStore.getState().addOrder({
       webNumber: e.webNumber,
@@ -45,6 +44,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
+    setLoading(false);
     setOrder([]);
   };
 

@@ -1,28 +1,32 @@
-import { LabelItem } from '@/store/LabelsStore';
 import React, { useState } from 'react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: LabelItem) => void; // Use the LabelItem type for more precise typing
+  onAdd: (data: any) => void; // Consider specifying the type more precisely than 'any' if possible
 }
 
-const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
-  const [formData, setFormData] = useState<LabelItem>({
-    code: '',
+// Modal Component for RMMaterials
+const AddRmMaterialModal = ({ isOpen, onClose, onAdd }: Props) => {
+  const [formData, setFormData] = useState({
+    rmCode: '',
     name: '',
-    group: ''
+    supplier: '',
+    supCode: '', // Adjusted from supCode to supplierCode
+    additionalInfo: '' // Adjusted from additionalInfo
   });
 
   const inputFields = [
-    { name: 'code', placeholder: 'Code' },
+    { name: 'rmCode', placeholder: 'RM Code' }, // Adjusted placeholder for clarity
     { name: 'name', placeholder: 'Name' },
-    { name: 'group', placeholder: 'Group' }
+    { name: 'supplier', placeholder: 'Supplier' },
+    { name: 'supCode', placeholder: 'Supplier Code' }, // Adjusted to match the state key
+    { name: 'additionalInfo', placeholder: 'Additional Information' } // Adjusted to match the state key
   ];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof LabelItem
+    fieldName: string
   ) => {
     setFormData({ ...formData, [fieldName]: e.target.value });
   };
@@ -30,7 +34,14 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
   const handleAdd = () => {
     onAdd(formData);
     onClose(); // Close modal after adding
-    setFormData({ code: '', name: '', group: '' }); // Reset form data
+    // Reset form data
+    setFormData({
+      rmCode: '',
+      name: '',
+      supplier: '',
+      supCode: '',
+      additionalInfo: ''
+    });
   };
 
   if (!isOpen) return null;
@@ -38,14 +49,14 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
       <div className='bg-white p-4 rounded-lg max-w-sm w-full'>
-        <h2 className='text-lg font-semibold mb-4'>Add New Label</h2>
+        <h2 className='text-lg font-semibold mb-4'>Add New RM Material</h2>
         {inputFields.map((field) => (
           <input
             key={field.name}
             type='text'
             placeholder={field.placeholder}
             value={formData[field.name as keyof typeof formData]}
-            onChange={(e) => handleChange(e, field.name as keyof LabelItem)} // Fix: Cast field.name to keyof LabelItem
+            onChange={(e) => handleChange(e, field.name)}
             className='mb-4 p-2 border border-gray-300 rounded w-full'
           />
         ))}
@@ -66,4 +77,4 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
   );
 };
 
-export default AddLabelModal;
+export default AddRmMaterialModal;

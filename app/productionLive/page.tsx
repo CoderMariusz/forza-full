@@ -93,7 +93,13 @@ type ProductionData = {
 
 // TODO: Replace this with actual fetch function
 const fetchData = (): Promise<LineData[]> => {
-  return fetch('https://first-program.onrender.com/get_counter')
+  return fetch('https://first-program.onrender.com/get_counter', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    mode: 'no-cors'
+  })
     .then((response) => {
       if (!response.ok) {
         throw new Error('Network response was not ok');

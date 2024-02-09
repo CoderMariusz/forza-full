@@ -1,5 +1,5 @@
 'use client';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 
 interface line {
@@ -176,6 +176,10 @@ const AllocatePeople = ({
     }
   };
 
+  useEffect(() => {
+    handelAllocate();
+  }, [peopleAvailable]);
+
   return (
     <div className='container mx-auto p-4'>
       <div>
@@ -199,7 +203,7 @@ const AllocatePeople = ({
             <table className='min-w-full table-auto border-collapse border border-gray-200'>
               <thead>
                 <tr>
-                  <th className='border-b border-gray-200 bg-gray-100 p-2 text-left'>
+                  <th className='border-b border-gray-200 bg-gray-100 p-2 text-left w-1/2'>
                     Position
                   </th>
                   <th className='border-b border-gray-200 bg-gray-100 p-2 text-left'>
@@ -209,8 +213,10 @@ const AllocatePeople = ({
               </thead>
               <tbody>
                 <tr>
-                  <td className='border-b border-gray-200 p-2'>Packers</td>
-                  <td className='border-b border-gray-200 p-2'>
+                  <td className='border-b border-gray-200 p-2 text-left'>
+                    Packers
+                  </td>
+                  <td className='border-b border-gray-200 p-2 text-left'>
                     {((people as any).packers || []).join(', ')}
                   </td>
                 </tr>
@@ -224,7 +230,7 @@ const AllocatePeople = ({
             </table>
           </div>
         ))}
-      <div className='mt-6'>
+      <div className='mt-6 max-w-sm'>
         <h3 className='text-lg font-semibold mb-2'>Extras</h3>
         <p className='p-2 bg-gray-100 border border-gray-200'>
           {extras.join(', ') || 'None'}

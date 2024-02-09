@@ -8,7 +8,6 @@ const OrderHcToLrPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [totalWebOrders, setTotalWebOrders] = useState<OrderObject[]>([]);
-  //const [fetchData, setFetchData] = useState(0);
 
   const loadOrders = async () => {
     const data = await useOrderStore.getState().loadOrders();
@@ -52,12 +51,12 @@ const OrderHcToLrPage: React.FC = () => {
 
     return grouped;
   }
-  // archive done orders
 
   const handleArchiveDoneOrders = () => {
     const doneOrders = totalWebOrders.filter((order) => order.done);
 
     console.log(doneOrders);
+    setLoading(!loading);
     doneOrders.forEach((order) => {
       useOrderStore
         .getState()
@@ -68,18 +67,6 @@ const OrderHcToLrPage: React.FC = () => {
   const handleOpenModal = () => {
     setIsOpen(true);
   };
-
-  // const fetchDataFun = async () => {
-  //   console.log('fetching data');
-
-  //   const data = await fetch('https://first-program.onrender.com/get_counter', {
-  //     method: 'GET'
-  //   }).then((res) => res.json());
-
-  //   setFetchData(data.count);
-
-  //   console.log(fetchData);
-  // };
 
   useEffect(() => {
     loadOrders();

@@ -30,6 +30,14 @@ export const linksList = (
     'stores',
     'settings'
   ];
+  const linksNpd = [
+    'dashboard',
+    'products',
+    'labels',
+    'webs',
+    'rmMaterials',
+    'settings'
+  ];
 
   const logoutFun = async () => {
     await logout();
@@ -53,6 +61,7 @@ export const linksList = (
   if (name === 'storeshc@forzafoods.com') links = linksStoreHc;
   if (name === 'planning@forzafoods.com') links = linksPlanning;
   if (name === 'process@forzafoods.com') links = linksProcess;
+  if (name === 'npd@forzafoods.com') links = linksNpd;
 
   return (
     <>
@@ -67,7 +76,9 @@ export const linksList = (
               setIsOpen(false);
             }}
             className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 block rounded'>
-            {link && link === 'orderHcToLr' ? 'Order HC to LR' : link}
+            {link && link === 'orderHcToLr'
+              ? 'ORDER HC-LR'
+              : link.toUpperCase()}
           </Link>
         </li>
       ))}
