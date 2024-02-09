@@ -3,7 +3,7 @@ import { create } from 'zustand';
 
 export interface OrderObject {
   webNumber: string;
-  quantity: number;
+  quantities: number;
   $id: string;
   done?: boolean;
   orderId?: number;
@@ -12,7 +12,7 @@ export interface OrderObject {
 }
 export interface NewOrderObject {
   webNumber: string;
-  quantity: number;
+  quantities: number;
   done?: boolean;
   orderId: number;
   archive?: boolean;
@@ -26,7 +26,7 @@ interface OrderState extends OrderObject {
 
 const useOrderStore = create<OrderState>((set, get) => ({
   webNumber: '',
-  quantity: 0,
+  quantities: 0,
   $id: '',
   done: false,
   archive: false,
@@ -48,7 +48,7 @@ const useOrderStore = create<OrderState>((set, get) => ({
       ID.unique(),
       {
         webNumber: order.webNumber,
-        quantity: order.quantity,
+        quantities: order.quantities,
         done: false,
         orderId: order.orderId
       }
@@ -70,7 +70,7 @@ const useOrderStore = create<OrderState>((set, get) => ({
       id,
       {
         webNumber: order.webNumber,
-        quantity: order.quantity,
+        quantities: order.quantities,
         done: order.done,
         archive: order.archive,
         date: order.date

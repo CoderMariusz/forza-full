@@ -7,11 +7,15 @@ import Webs from './Webs';
 import AddModal from './AddModal';
 import ChangeModal from './ChangeModal';
 import * as XLSX from 'xlsx';
+import { WebTrays, WebTraysStore, useWebTraysStore } from '@/store/WebTrays';
+import { Product, useProductsStore } from '@/store/Products';
 
 function StoresHcPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState<StoresHcObject[]>([]);
   const [user] = useUserStore((state) => [state.name]);
+  const [websData, setWebsData] = useState<WebTrays[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loadDataDB, addStoresHcToDB, updateStoresHcToDB] = useStoresHcStore(
     (state) => [
       state.loadStoresHcFromDB,
@@ -34,7 +38,7 @@ function StoresHcPage() {
   const exportToExcel = () => {
     const processedData = data.map((item) => ({
       ...item,
-      quantity: item.quantity.join(', ') // Convert array to comma-separated string
+      quantities: item.quantities.join(', ') // Convert array to comma-separated string
     }));
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(processedData);
@@ -48,13 +52,20 @@ function StoresHcPage() {
 
   const loadData = async () => {
     const data = await loadDataDB();
+    const websData = await useWebTraysStore.getState().loadWebTraysFromDB();
+    const productsData = await useProductsStore.getState().loadProductsFromDB();
+    setWebsData(websData);
+    setProducts(productsData);
     setData(data);
   };
 
-  const updateItemQuantity = (itemId: string, newQuantities: Array<number>) => {
+  const updateItemquantities = (
+    itemId: string,
+    newQuantities: Array<number>
+  ) => {
     setData(
       data.map((item: StoresHcObject) =>
-        item.id === itemId ? { ...item, quantity: newQuantities } : item
+        item.id === itemId ? { ...item, quantities: newQuantities } : item
       )
     );
   };
@@ -95,16 +106,12 @@ function StoresHcPage() {
 
     if (existingWeb) {
       alert(
-        'Web exists in the system. Please look it up in A-code or flm Code in searcher and change the quantity.'
+        'Web exists in the system. Please look it up in A-code or flm Code in searcher and change the quantities.'
       );
-
-      existingWeb.quantity = existingWeb.quantity.concat(newObject.quantity);
-
-      updateStoresHcToDB(existingWeb);
+      return;
     } else {
-      setData([...data, newObject]);
-
       addStoresHcToDB(newObject);
+      setLoading(false);
     }
   };
 
@@ -168,7 +175,7 @@ function StoresHcPage() {
                 <th className='py-3 px-6 text-left'>A-Code</th>
                 <th className='py-3 px-6 text-left'>Code</th>
                 <th className='py-3 px-6 text-left'>Name</th>
-                <th className='py-3 px-6 text-center'>Quantity</th>
+                <th className='py-3 px-6 text-center'>quantities</th>
                 {user === 'storeshc@forzafoods.com' && (
                   <th className='py-3 px-6 text-center'>Actions</th>
                 )}
@@ -189,7 +196,7 @@ function StoresHcPage() {
                     </td>
                     <td className='py-3 px-6 text-left'>{item.name}</td>
                     <td className='py-3 px-6 text-center'>
-                      {item.quantity.join(', ')}
+                      {item.quantities.join(', ')}
                     </td>
                     {user === 'storeshc@forzafoods.com' && (
                       <td className='py-3 px-6 text-center'>
@@ -214,8 +221,10 @@ function StoresHcPage() {
 
       <AddModal
         isOpen={isOpen}
-        onClose={setIsOpen}
-        onAdd={addObject}
+        onClose={() => setIsOpen(false)}
+        onAdd={(e) => addObject(e)}
+        products={products}
+        webTraysData={websData}
       />
       <ChangeModal
         isOpen={isOpenChange}
@@ -225,7 +234,7 @@ function StoresHcPage() {
         onEdit={(updateItem) => {
           console.log('edit');
           item && updateStoresHcToDB(updateItem);
-          updateItemQuantity(updateItem.id, updateItem.quantity);
+          updateItemquantities(updateItem.id, updateItem.quantities);
           setIsOpenChange(false);
         }}
         item={item}

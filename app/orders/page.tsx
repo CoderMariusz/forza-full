@@ -11,7 +11,7 @@ function OrdersPage() {
           <tr>
             <th className='w-1/4 py-2'>Order Number</th>
             <th className='w-1/4 py-2'>Label Code</th>
-            <th className='w-1/4 py-2'>Quantity</th>
+            <th className='w-1/4 py-2'>quantities</th>
           </tr>
         </thead>
         <tbody className='text-gray-700'>

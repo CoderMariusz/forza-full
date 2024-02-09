@@ -18,11 +18,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
 }) => {
   const [order, setOrder] = useState<NewOrderObject[]>([]);
   const [webNumber, setWebNumber] = useState('');
-  const [quantity, setQuantity] = useState(0);
+  const [quantities, setQuantities] = useState(0);
   const submitOrderToDB = (e: NewOrderObject, orderId: number) => {
     useOrderStore.getState().addOrder({
       webNumber: e.webNumber,
-      quantity: e.quantity,
+      quantities: e.quantities,
       done: false,
       orderId: orderId
     });
@@ -31,15 +31,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const handleAddOrder = () => {
     const newOrder: NewOrderObject = {
       webNumber,
-      quantity,
+      quantities,
       done: false,
       orderId: webOrdersLength + 1
     };
     setOrder([...order, newOrder]);
     setWebNumber('');
-    setQuantity(0);
+    setQuantities(0);
     setWebNumber('');
-    setQuantity(0);
+    setQuantities(0);
   };
 
   const handleCloseModal = () => {
@@ -69,12 +69,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
         onChange={(e) => setWebNumber(e.target.value)}
         className='border border-gray-300 rounded-md p-2 m-2'
       />
-      <label htmlFor='quantity'>Quantity:</label>
+      <label htmlFor='quantities'>Quantities:</label>
       <input
         type='number'
-        id='quantity'
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        id='quantities'
+        value={quantities}
+        onChange={(e) => setQuantities(Number(e.target.value))}
         className='border border-gray-300 rounded-md p-2 m-2'
       />
       <button
@@ -87,14 +87,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
         <thead className='bg-gray-800 text-white'>
           <tr>
             <th className='p-2'>Web Number</th>
-            <th className='p-2'>Quantity</th>
+            <th className='p-2'>Quantities</th>
           </tr>
         </thead>
         <tbody>
           {order.map((item: NewOrderObject, index: number) => (
             <tr key={index}>
               <td className='p-2'>{item.webNumber}</td>
-              <td className='p-2'>{item.quantity}</td>
+              <td className='p-2'>{item.quantities}</td>
             </tr>
           ))}
         </tbody>

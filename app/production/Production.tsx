@@ -2,7 +2,7 @@ import React from 'react';
 
 interface MyData {
   aCode: string;
-  quantity: number | null;
+  quantities: number | null;
   date: string | Date | number;
 }
 
@@ -12,7 +12,7 @@ function Production({ sortedData }: { sortedData: MyData[] }) {
       <thead className='bg-gray-800 text-white'>
         <tr>
           <th className='py-2'>A-Code</th>
-          <th className='py-2'>Quantity</th>
+          <th className='py-2'>quantities</th>
           <th className='py-2'>Date</th>
         </tr>
       </thead>
@@ -22,7 +22,7 @@ function Production({ sortedData }: { sortedData: MyData[] }) {
             <React.Fragment key={index}>
               <tr>
                 <td className='border p-2'>{row.aCode}</td>
-                <td className='border p-2'>{row.quantity}</td>
+                <td className='border p-2'>{row.quantities}</td>
                 <td className='border p-2'>
                   {row.date instanceof Date
                     ? row.date.toLocaleDateString()

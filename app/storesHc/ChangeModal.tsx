@@ -16,21 +16,21 @@ function EditItemModal({
 
   useEffect(() => {
     if (item) {
-      setQuantities(item.quantity);
+      setQuantities(item.quantities);
     }
   }, [item]);
 
-  const handleQuantityChange = (index: number, value: any) => {
+  const handlequantitiesChange = (index: number, value: any) => {
     const newQuantities = [...quantities];
     newQuantities[index] = Number(value);
     setQuantities(newQuantities);
   };
 
-  const handleAddQuantity = () => {
+  const handleAddquantities = () => {
     setQuantities([...quantities, 0]);
   };
 
-  const handleRemoveQuantity = (index: number) => {
+  const handleRemovequantities = (index: number) => {
     const newQuantities = quantities.filter((_, i) => i !== index);
     setQuantities(newQuantities);
   };
@@ -38,7 +38,7 @@ function EditItemModal({
   const handleSubmit = () => {
     const updatedItem = {
       ...item,
-      quantity: quantities.filter((qty) => !isNaN(qty) && qty > 0)
+      quantities: quantities.filter((qty) => !isNaN(qty) && qty > 0)
     };
 
     onEdit(updatedItem);
@@ -76,27 +76,27 @@ function EditItemModal({
           />
         </div>
 
-        {quantities.map((quantity, index) => (
+        {quantities.map((quantities, index) => (
           <div
             key={index}
             className='mb-4 flex'>
             <input
               type='number'
-              value={quantity}
-              onChange={(e) => handleQuantityChange(index, e.target.value)}
+              value={quantities}
+              onChange={(e) => handlequantitiesChange(index, e.target.value)}
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
             />
             <button
-              onClick={() => handleRemoveQuantity(index)}
+              onClick={() => handleRemovequantities(index)}
               className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2'>
               -
             </button>
           </div>
         ))}
         <button
-          onClick={handleAddQuantity}
+          onClick={handleAddquantities}
           className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4'>
-          Add Quantity
+          Add quantities
         </button>
 
         <div className='flex items-center justify-between'>

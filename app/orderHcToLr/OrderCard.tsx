@@ -55,7 +55,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
             key={Math.random() * 1000}
             className='flex justify-between '>
             <p className='text-lg text-gray-800'>{item.webNumber}</p>
-            <p className='text-lg text-gray-800 '>{item.quantity}</p>
+            <p className='text-lg text-gray-800 '>{item.quantities}</p>
           </div>
         ))}
         {!order[0].done && (
