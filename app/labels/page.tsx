@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import AddLabelModal from './AddModal'; // Adjust the path as needed
 import { LabelItem } from '@/store/LabelsStore';

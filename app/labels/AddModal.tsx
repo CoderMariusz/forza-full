@@ -1,3 +1,4 @@
+'use client';
 import { LabelItem } from '@/store/LabelsStore';
 import React, { useState } from 'react';
 
