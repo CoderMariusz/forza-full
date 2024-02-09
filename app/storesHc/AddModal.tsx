@@ -31,9 +31,9 @@ function AddItemModal({
     console.log('relatedProducts', relatedProducts);
   }, [selectedWebCode, products]);
 
-  const handleAddquantities = () => setQuantities([...quantities, '']);
+  const handleAddQuantities = () => setQuantities([...quantities, '']);
 
-  const handlequantitiesChange = (index: number, value: string) => {
+  const handleQuantitiesChange = (index: number, value: string) => {
     const newQuantities = [...quantities];
     newQuantities[index] = value;
     setQuantities(newQuantities);
@@ -116,7 +116,7 @@ function AddItemModal({
         )}
 
         <div className='flex items-center max-w-fit flex-wrap'>
-          {quantities.map((quantities, index) => (
+          {quantities.map((q, index) => (
             <div
               key={index}
               className='mb-4 flex align-items-center'>
@@ -126,18 +126,19 @@ function AddItemModal({
               <input
                 type='number'
                 placeholder='quantities'
-                value={quantities}
-                onChange={(e) => handlequantitiesChange(index, e.target.value)}
+                value={q}
+                onChange={(e) => handleQuantitiesChange(index, e.target.value)}
                 className='shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-grow'
               />
               <div className='flex items-center'>
-                {quantities.length > 1 && (
+                {q.length > 1 && (
                   <button
                     onClick={() => {
                       // Function to remove the current quantities field
                       const newQuantities = quantities.filter(
                         (_, qtyIndex) => qtyIndex !== index
                       );
+
                       setQuantities(newQuantities);
                     }}
                     type='button'
@@ -147,7 +148,7 @@ function AddItemModal({
                 )}
                 {index === quantities.length - 1 && (
                   <button
-                    onClick={handleAddquantities}
+                    onClick={handleAddQuantities}
                     type='button'
                     className='ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded'>
                     +
