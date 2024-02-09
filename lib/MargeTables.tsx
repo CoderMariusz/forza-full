@@ -11,7 +11,7 @@ function mergeTables(products: any, labels: any) {
 
         return {
           code: label.code,
-          quantity: foundLabel ? foundLabel.quantity : 0,
+          quantities: foundLabel ? foundLabel.quantities : 0,
           $id: foundLabel ? foundLabel.$id : null // Here we are adding id to the label as well.
         };
       })

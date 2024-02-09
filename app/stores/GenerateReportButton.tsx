@@ -9,15 +9,15 @@
 // interface InputData {
 //   labelCode: string;
 //   $id: string;
-//   endQuantity: number;
+//   endquantities: number;
 // }
 
 // interface Result {
 //   aCode: string;
 //   labelCode: string;
-//   startQuantity: number;
-//   quantityAfterProduction: number;
-//   endQuantity: number;
+//   startquantities: number;
+//   quantitiesAfterProduction: number;
+//   endquantities: number;
 //   week: number;
 //   labelId: string;
 // }
@@ -30,10 +30,10 @@
 //   const [modalVisible, setModalVisible] = useState(false);
 //   const [inputData, setInputData] = useState<InputData[]>([]);
 
-//   const findQuantity = (aCode: string, labelCode: string, source: any) => {
+//   const findquantities = (aCode: string, labelCode: string, source: any) => {
 //     const product = source.find((p: any) => p.aCode === aCode);
 //     const label = product?.labels.find((l: any) => l.code === labelCode);
-//     return label?.quantity || 0;
+//     return label?.quantities || 0;
 //   };
 
 //   const handleSubmit = async () => {
@@ -49,13 +49,13 @@
 //         stores.find((s: any) =>
 //           s.labels.some((l: any) => l.code === data.labelCode)
 //         )?.aCode || '';
-//       const startQ = findQuantity(aCode, data.labelCode, stores);
-//       const afterProductionQ = findQuantity(
+//       const startQ = findquantities(aCode, data.labelCode, stores);
+//       const afterProductionQ = findquantities(
 //         aCode,
 //         data.labelCode,
 //         updatedStock
 //       );
-//       const wastedValue = (1 - data.endQuantity / afterProductionQ) * 100;
+//       const wastedValue = (1 - data.endquantities / afterProductionQ) * 100;
 
 //       // Calculate the week using the getWeekNumber function
 //       const week = getWeekNumber(new Date());
@@ -69,9 +69,9 @@
 //         aCode: aCode,
 //         labelCode: data.labelCode,
 //         labelId: labelId,
-//         startQuantity: startQ,
-//         quantityAfterProduction: afterProductionQ,
-//         endQuantity: data.endQuantity,
+//         startquantities: startQ,
+//         quantitiesAfterProduction: afterProductionQ,
+//         endquantities: data.endquantities,
 //         wasted: wastedValue,
 //         week: week
 //       };
@@ -103,7 +103,7 @@
 
 //   const handleInputChange = (index: number, value: number) => {
 //     const updatedData = [...inputData];
-//     updatedData[index].endQuantity = value;
+//     updatedData[index].endquantities = value;
 //     setInputData(updatedData);
 //   };
 
@@ -115,7 +115,7 @@
 //           const initialData = stores.flatMap((store: any) =>
 //             store.labels.map((label: any) => ({
 //               labelCode: label.code,
-//               endQuantity: 0
+//               endquantities: 0
 //             }))
 //           );
 //           setInputData(initialData);
@@ -134,7 +134,7 @@
 //                   <input
 //                     className='ml-2 w-20 p-1 border rounded'
 //                     type='number'
-//                     value={data.endQuantity}
+//                     value={data.endquantities}
 //                     onChange={(e) =>
 //                       handleInputChange(index, Number(e.target.value))
 //                     }

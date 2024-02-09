@@ -3,22 +3,22 @@
 // interface Props {
 //   isOpen: boolean;
 //   labelCode: string;
-//   initialQuantity: number;
+//   initialquantities: number;
 //   onClose: () => void;
-//   onUpdate: (quantity: number | null) => void;
+//   onUpdate: (quantities: number | null) => void;
 // }
 
 // const EditModal: React.FC<Props> = ({
 //   isOpen,
 //   labelCode,
-//   initialQuantity,
+//   initialquantities,
 //   onClose,
 //   onUpdate
 // }) => {
-//   const [quantity, setQuantity] = useState(initialQuantity);
+//   const [quantities, setquantities] = useState(initialquantities);
 
 //   const handleUpdate = () => {
-//     onUpdate(quantity);
+//     onUpdate(quantities);
 //     onClose();
 //   };
 
@@ -28,20 +28,20 @@
 //     <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50'>
 //       <div className='bg-white p-4 rounded-md'>
 //         <h2 className='text-xl font-bold mb-4'>
-//           Update Quantity for {labelCode}
+//           Update quantities for {labelCode}
 //         </h2>
 
 //         <div className='mb-4'>
 //           <label
-//             htmlFor='quantity'
+//             htmlFor='quantities'
 //             className='block text-gray-700 text-sm font-bold mb-2'>
-//             Quantity:
+//             quantities:
 //           </label>
 //           <input
 //             type='number'
-//             id='quantity'
-//             value={quantity}
-//             onChange={(e) => setQuantity(Number(e.target.value))}
+//             id='quantities'
+//             value={quantities}
+//             onChange={(e) => setquantities(Number(e.target.value))}
 //             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 //           />
 //         </div>

@@ -70,11 +70,11 @@
 //     setSelectedStore(null);
 //   };
 
-//   const onUpdate = async (quantity: number | null) => {
+//   const onUpdate = async (quantities: number | null) => {
 //     const updatedStores = stores.map((store) => {
 //       const updatedLabels = store.labels?.map((label: any) => {
 //         if (selectedStore && label.code === selectedStore[0]?.code) {
-//           return { ...label, quantity };
+//           return { ...label, quantities };
 //         } else {
 //           return label;
 //         }
@@ -89,7 +89,7 @@
 //     stores.map((store) => {
 //       store.labels?.map((label: any) => {
 //         if (selectedStore && label.code === selectedStore[0]?.code) {
-//           useLabels.getState().updateLabel(label.$id, quantity as number);
+//           useLabels.getState().updateLabel(label.$id, quantities as number);
 //         }
 //       });
 
@@ -112,7 +112,7 @@
 //         );
 
 //         if (existing) {
-//           existing.quantity = (existing.quantity ?? 0) + (item.quantity ?? 0);
+//           existing.quantities = (existing.quantities ?? 0) + (item.quantities ?? 0);
 //         } else {
 //           acc.push({ ...item });
 //         }
@@ -132,10 +132,10 @@
 //         return;
 //       }
 
-//       const prodLabelQty = (prodItem.quantity ?? 0) * storeItem.packetInBox;
+//       const prodLabelQty = (prodItem.quantities ?? 0) * storeItem.packetInBox;
 
 //       storeItem.labels.forEach((label: Labels) => {
-//         label.quantity = (label.quantity ?? 0) - prodLabelQty;
+//         label.quantities = (label.quantities ?? 0) - prodLabelQty;
 //       });
 //     });
 
@@ -167,7 +167,7 @@
 //     return item.labels.map((label: any) => ({
 //       aCode: item.aCode,
 //       labelCode: label.code,
-//       quantity: label.quantity
+//       quantities: label.quantities
 //     }));
 //   });
 
@@ -202,14 +202,14 @@
 //         console.warn('item.$id is undefined');
 //         continue;
 //       } else {
-//         await useLabels.getState().updateLabel(item.labelId, item.endQuantity); // Update DB
+//         await useLabels.getState().updateLabel(item.labelId, item.endquantities); // Update DB
 //       }
 
 //       // Update local state
 //       for (const store of updatedStores) {
 //         const label = store.labels?.find((l) => l.$id === item.labelId);
 //         if (label) {
-//           label.quantity = item.endQuantity;
+//           label.quantities = item.endquantities;
 //         }
 //       }
 //     }
@@ -271,7 +271,7 @@
 //                   <tr>
 //                     <th className='w-1/4 py-2'>A-Code</th>
 //                     <th className='w-1/4 py-2'>Label Code</th>
-//                     <th className='w-1/4 py-2'>Quantity</th>
+//                     <th className='w-1/4 py-2'>quantities</th>
 
 //                     <th className='w-1/4 py-2'>Actions</th>
 //                   </tr>
@@ -284,7 +284,7 @@
 //                         <tr key={idx}>
 //                           <td className='text-center py-2'>{store.aCode}</td>
 //                           <td className='text-center py-2'>{label.code}</td>
-//                           <td className='text-center py-2'>{label.quantity}</td>
+//                           <td className='text-center py-2'>{label.quantities}</td>
 //                           <td className='text-center py-2 flex space-x-2'>
 //                             <button
 //                               onClick={() => handleOpen(store, label.code)}
@@ -310,7 +310,7 @@
 //                   <tr>
 //                     <th className='w-1/4 py-2'>A-Code</th>
 //                     <th className='w-1/4 py-2'>Label Code</th>
-//                     <th className='w-1/4 py-2'>Quantity</th>
+//                     <th className='w-1/4 py-2'>quantities</th>
 //                     <th className='w-1/4 py-2'>Available to produce</th>
 //                     <th className='w-1/4 py-2'>Actions</th>
 //                   </tr>
@@ -323,7 +323,7 @@
 //                         className='bg-gray-100'>
 //                         <td className='py-2'>{item.aCode}</td>
 //                         <td>{item.labelCode}</td>
-//                         <td>{item.quantity}</td>
+//                         <td>{item.quantities}</td>
 //                         <td>{item.labelCode}</td>
 //                         <td>
 //                           <button className='bg-blue-500 text-white px-4 py-1 rounded'>
@@ -347,7 +347,7 @@
 //                   <tr>
 //                     <th className='w-1/4 py-2'>A-Code</th>
 //                     <th className='w-1/4 py-2'>Label Code</th>
-//                     <th className='w-1/4 py-2'>Quantity</th>
+//                     <th className='w-1/4 py-2'>quantities</th>
 //                     <th className='w-1/4 py-2'>Actions</th>
 //                   </tr>
 //                 </thead>
@@ -359,7 +359,7 @@
 //                         <tr key={idx}>
 //                           <td className='text-center py-2'>{store.aCode}</td>
 //                           <td className='text-center py-2'>{label.code}</td>
-//                           <td className='text-center py-2'>{label.quantity}</td>
+//                           <td className='text-center py-2'>{label.quantities}</td>
 //                           <td className='text-center py-2 flex space-x-2'>
 //                             <button
 //                               onClick={() => handleOpen(store, label.code)}
@@ -384,7 +384,7 @@
 //         <EditModal
 //           isOpen={isModalOpen}
 //           labelCode={(selectedStore && selectedStore[0]?.code) || ''}
-//           initialQuantity={(selectedStore && selectedStore[0]?.quantity) || 0}
+//           initialquantities={(selectedStore && selectedStore[0]?.quantities) || 0}
 //           onClose={handleClose}
 //           onUpdate={onUpdate}
 //         />

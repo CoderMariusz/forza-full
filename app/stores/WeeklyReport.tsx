@@ -2,9 +2,9 @@
 // interface ReportItem {
 //   aCode: string;
 //   labelCode: string;
-//   startQuantity: number;
-//   quantityAfterProduction: number;
-//   endQuantity: number;
+//   startquantities: number;
+//   quantitiesAfterProduction: number;
+//   endquantities: number;
 //   wasted: number;
 //   week: number;
 // }
@@ -47,9 +47,9 @@
 //           <tr>
 //             <th className='py-2'>A-Code</th>
 //             <th className='py-2'>Label Code</th>
-//             <th className='py-2'>Start Quantity</th>
-//             <th className='py-2'>Quantity After Production</th>
-//             <th className='py-2'>End Quantity</th>
+//             <th className='py-2'>Start quantities</th>
+//             <th className='py-2'>quantities After Production</th>
+//             <th className='py-2'>End quantities</th>
 //             <th className='py-2'>Difference (%)</th>
 //           </tr>
 //         </thead>
@@ -59,15 +59,15 @@
 //               <tr
 //                 key={index}
 //                 className={`${
-//                   item.quantityAfterProduction < 0
+//                   item.quantitiesAfterProduction < 0
 //                     ? 'bg-red-600 text-yellow-100'
 //                     : 'bg-gray-100'
 //                 }`}>
 //                 <td className='py-2'>{item.aCode}</td>
 //                 <td>{item.labelCode}</td>
-//                 <td>{item.startQuantity}</td>
-//                 <td>{item.quantityAfterProduction}</td>
-//                 <td>{item.endQuantity}</td>
+//                 <td>{item.startquantities}</td>
+//                 <td>{item.quantitiesAfterProduction}</td>
+//                 <td>{item.endquantities}</td>
 //                 <td>{item.wasted.toFixed(2)}%</td>
 //               </tr>
 //             );

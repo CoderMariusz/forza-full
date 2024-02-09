@@ -24,7 +24,7 @@ function ExcelReader({ dataFromPage, setData }: any) {
         // Assuming data is in columns A, B, and C and we skip the header row
         const formattedData = data.slice(1).map((row: any) => ({
           aCode: row[0], // A
-          quantity: row[1], // B
+          quantities: row[1], // B
           date: row[2] // C
         }));
 
@@ -37,7 +37,7 @@ function ExcelReader({ dataFromPage, setData }: any) {
           try {
             await useProductionProductStore.getState().createProduct({
               aCode: row.aCode,
-              quantity: row.quantity,
+              quantities: row.quantities,
               date: formatDate(row.date)
             });
 

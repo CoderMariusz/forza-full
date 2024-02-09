@@ -59,10 +59,13 @@ function StoresHcPage() {
     setData(data);
   };
 
-  const updateItemQuantity = (itemId: string, newQuantities: Array<number>) => {
+  const updateItemquantities = (
+    itemId: string,
+    newQuantities: Array<number>
+  ) => {
     setData(
       data.map((item: StoresHcObject) =>
-        item.id === itemId ? { ...item, quantity: newQuantities } : item
+        item.id === itemId ? { ...item, quantities: newQuantities } : item
       )
     );
   };
@@ -103,7 +106,7 @@ function StoresHcPage() {
 
     if (existingWeb) {
       alert(
-        'Web exists in the system. Please look it up in A-code or flm Code in searcher and change the quantity.'
+        'Web exists in the system. Please look it up in A-code or flm Code in searcher and change the quantities.'
       );
       return;
     } else {
@@ -172,7 +175,7 @@ function StoresHcPage() {
                 <th className='py-3 px-6 text-left'>A-Code</th>
                 <th className='py-3 px-6 text-left'>Code</th>
                 <th className='py-3 px-6 text-left'>Name</th>
-                <th className='py-3 px-6 text-center'>Quantity</th>
+                <th className='py-3 px-6 text-center'>quantities</th>
                 {user === 'storeshc@forzafoods.com' && (
                   <th className='py-3 px-6 text-center'>Actions</th>
                 )}
@@ -231,7 +234,7 @@ function StoresHcPage() {
         onEdit={(updateItem) => {
           console.log('edit');
           item && updateStoresHcToDB(updateItem);
-          updateItemQuantity(updateItem.id, updateItem.quantity);
+          updateItemquantities(updateItem.id, updateItem.quantities);
           setIsOpenChange(false);
         }}
         item={item}

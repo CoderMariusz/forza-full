@@ -10,7 +10,7 @@ export interface StoresHcObject {
 }
 
 interface StoresHcState extends StoresHcObject {
-  setQuantity: (quantity: number[]) => void;
+  setquantities: (quantities: number[]) => void;
   loadStoresHcFromDB: () => Promise<StoresHcObject[]>;
   addStoresHcToDB: (storesHc: StoresHcObject) => Promise<any>;
   updateStoresHcToDB: (storesHc: StoresHcObject) => Promise<any>;
@@ -23,8 +23,8 @@ const useStoresHcStore = create<StoresHcState>((set: any) => ({
   quantities: [],
   id: '',
 
-  setQuantity: (quantity: number[]) =>
-    set((state: any) => ({ ...state, quantity })),
+  setquantities: (quantities: number[]) =>
+    set((state: any) => ({ ...state, quantities })),
   loadStoresHcFromDB: async () => {
     const data = await database.listDocuments(
       '6510bb07873546043cae',

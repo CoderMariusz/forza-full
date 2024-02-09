@@ -17,7 +17,7 @@ import { useUserStore } from '@/store/UserStore';
 
 interface MyData {
   aCode: string;
-  quantity: number | null;
+  quantities: number | null;
   date: string | Date | number;
 }
 
@@ -99,7 +99,7 @@ function ProductionPage() {
 
   const onAdd = (production: {
     aCode: string;
-    quantity: number;
+    quantities: number;
     date: Date;
   }) => {
     setData([...data, production]);

@@ -11,9 +11,9 @@ export interface WeeklyProductionRow {
   labelCode: string;
   $id?: string;
   labelId?: string;
-  startQuantity: number;
-  quantityAfterProduction: number;
-  endQuantity: number;
+  startquantities: number;
+  quantitiesAfterProduction: number;
+  endquantities: number;
   wasted: number;
   week: number;
   avgWaste?: number;
@@ -65,9 +65,9 @@ const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
         labelCode: doc.labelCode || '',
         labelId: doc.labelId || '',
         $id: doc.$id || '',
-        startQuantity: doc.startQuantity || 0,
-        quantityAfterProduction: doc.quantityAfterProduction || 0,
-        endQuantity: doc.endQuantity || 0,
+        startquantities: doc.startquantities || 0,
+        quantitiesAfterProduction: doc.quantitiesAfterProduction || 0,
+        endquantities: doc.endquantities || 0,
         wasted: doc.wasted || 0,
         week: doc.week || 0
       };
@@ -87,9 +87,9 @@ const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
         labelCode: doc.labelCode || '',
         labelId: doc.labelId || '',
         $id: doc.$id || '',
-        startQuantity: doc.startQuantity || 0,
-        quantityAfterProduction: doc.quantityAfterProduction || 0,
-        endQuantity: doc.endQuantity || 0,
+        startquantities: doc.startquantities || 0,
+        quantitiesAfterProduction: doc.quantitiesAfterProduction || 0,
+        endquantities: doc.endquantities || 0,
         wasted: doc.wasted || 0,
         avgWaste: doc.avgWaste || 0
       };
@@ -124,9 +124,9 @@ const useWeeklyReportStore = create<WeeklyReportState>((set) => ({
         aCode: row.aCode,
         labelCode: row.labelCode,
         labelId: row.labelId,
-        startQuantity: row.startQuantity,
-        quantityAfterProduction: row.quantityAfterProduction,
-        endQuantity: row.endQuantity,
+        startquantities: row.startquantities,
+        quantitiesAfterProduction: row.quantitiesAfterProduction,
+        endquantities: row.endquantities,
         wasted: row.wasted,
         week: row.week
       }

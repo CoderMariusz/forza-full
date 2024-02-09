@@ -15,7 +15,7 @@ function StoresHc(
           <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
             <th className='py-3 px-6 text-left'>Code</th>
             <th className='py-3 px-6 text-left'>Name</th>
-            <th className='py-3 px-6 text-center'>Quantity</th>
+            <th className='py-3 px-6 text-center'>quantities</th>
             {user === 'storeshc@forzafoods.com' && (
               <th className='py-3 px-6 text-center'>Actions</th>
             )}
@@ -33,7 +33,7 @@ function StoresHc(
                 </td>
                 <td className='py-3 px-6 text-left'>{item.name}</td>
                 <td className='py-3 px-6 text-center'>
-                  {item.quantity.join(', ')}
+                  {item.quantities.join(', ')}
                 </td>
                 {user === 'storeshc@forzafoods.com' && (
                   <td className='py-3 px-6 text-center'>

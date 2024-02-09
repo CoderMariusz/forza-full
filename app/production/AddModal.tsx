@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 interface Product {
   name: string;
   aCode: string;
-  labels: { code: string; group: string; quantity: number }[];
+  labels: { code: string; group: string; quantities: number }[];
   packetInBox: number;
   // ... other fields can be added as required
 }
@@ -11,13 +11,17 @@ interface Product {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (production: { aCode: string; quantity: number; date: Date }) => void;
+  onAdd: (production: {
+    aCode: string;
+    quantities: number;
+    date: Date;
+  }) => void;
   products: Product[];
 }
 
 const AddModal: React.FC<Props> = ({ isOpen, onClose, onAdd, products }) => {
   const [aCode, setACode] = useState<string>('');
-  const [quantity, setQuantity] = useState<number | string>('');
+  const [quantities, setquantities] = useState<number | string>('');
   const [date, setDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -34,11 +38,11 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onAdd, products }) => {
 
     onAdd({
       aCode,
-      quantity: Number(quantity),
+      quantities: Number(quantities),
       date: new Date(date)
     });
     setACode('');
-    setQuantity('');
+    setquantities('');
 
     function formatDate(inputStr: string | number | Date) {
       const date = new Date(inputStr); // create a Date object
@@ -87,14 +91,14 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onAdd, products }) => {
         <div className='mb-4'>
           <label
             className='block text-sm font-bold mb-2'
-            htmlFor='quantity'>
-            Quantity
+            htmlFor='quantities'>
+            quantities
           </label>
           <input
             type='number'
-            id='quantity'
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            id='quantities'
+            value={quantities}
+            onChange={(e) => setquantities(e.target.value)}
             className='w-full p-2 border rounded'
           />
         </div>
