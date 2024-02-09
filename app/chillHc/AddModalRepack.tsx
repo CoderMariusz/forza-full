@@ -1,4 +1,4 @@
-import { Product } from '@/store/ProductsStore';
+import { Product } from '@/store/Products';
 import React, { use, useEffect, useState } from 'react';
 
 function AddRepackItemModal({

@@ -1,21 +1,26 @@
 import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 
-export interface RmMaterial {
+export interface NewRmMaterial {
   rmCode: string;
   name: string;
   supplier: string;
   supCode: string;
   additionalInfo?: string; // Assuming this field is optional
 }
+export interface RmMaterial extends NewRmMaterial {
+  $id: string;
+  // Assuming this field is optional
+}
 interface RmMaterialsStore extends RmMaterial {
   loadRmMaterialsFromDB: () => Promise<RmMaterial[]>;
-  AddNewRmMaterial: (newItem: RmMaterial) => Promise<any>;
+  AddNewRmMaterial: (newItem: NewRmMaterial) => Promise<any>;
   removeRmMaterial: (rmCode: string) => Promise<any>;
   updateRmMaterial: (rmCode: string, newItem: RmMaterial) => Promise<any>;
 }
 
 export const useRmMaterialsStore = create<RmMaterialsStore>((set) => ({
+  $id: '',
   rmCode: '',
   name: '',
   supplier: '',
@@ -28,6 +33,7 @@ export const useRmMaterialsStore = create<RmMaterialsStore>((set) => ({
 
     const rmMaterials = data.documents.map((rmMaterials) => {
       return {
+        $id: rmMaterials.$id,
         rmCode: rmMaterials.rmCode,
         name: rmMaterials.name,
         supplier: rmMaterials.supplier,

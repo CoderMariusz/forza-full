@@ -2,7 +2,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import AddRmMaterialModal from './AddRmMaterialModal'; // You'll create this modal component
-import { RmMaterial, useRmMaterialsStore } from '@/store/RmMaterials'; // Adjust the import paths according to your project structure
+import {
+  NewRmMaterial,
+  RmMaterial,
+  useRmMaterialsStore
+} from '@/store/RmMaterials'; // Adjust the import paths according to your project structure
 
 const RmMaterialsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,12 +25,11 @@ const RmMaterialsPage = () => {
         data.name.toLowerCase().includes(searchTerm.toLowerCase()) // If you want to search by name as well
     );
 
-  const handleAddNewRmMaterial = async (newItem: RmMaterial) => {
+  const handleAddNewRmMaterial = async (newItem: NewRmMaterial) => {
     console.log(newItem);
     const newI = await useRmMaterialsStore.getState().AddNewRmMaterial(newItem);
     if (newI) {
-      setLoading(true);
-      setRmData([...rmData, newI]);
+      setLoading(!loading);
     }
   };
 
@@ -36,6 +39,7 @@ const RmMaterialsPage = () => {
       setRmData(data);
     };
     fetchData();
+    setLoading(false);
   }, [loading]);
 
   return (

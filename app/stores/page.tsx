@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Labels, useLabels, useLabelsStore } from '@/store/LabelsStore';
-import { useProductsStore } from '@/store/ProductsStore';
+import { useProductsStore } from '@/store/Products';
 import mergeTables from '@/lib/MargeTables';
 import EditModal from './EditModal';
 import { ProductionProduct, useProductionStore } from '@/store/Production';

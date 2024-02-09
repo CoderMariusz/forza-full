@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import AddWebModal from './AddModal';
-import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
+import { NewWebTrays, WebTrays, useWebTraysStore } from '@/store/WebTrays';
 
 const WebTraysPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,13 +15,37 @@ const WebTraysPage = () => {
       data.supCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const HandleAddNewWeb = async (newItem: WebTrays) => {
+  const HandleAddNewWeb = async (newItem: NewWebTrays) => {
     console.log(newItem);
 
-    const newI = await useWebTraysStore.getState().AddNewWeb(newItem);
+    await useWebTraysStore.getState().AddNewWeb(newItem);
+    try {
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const HandleEditWeb = async (editItem: WebTrays) => {
+    console.log(editItem);
+
+    const newI = await useWebTraysStore
+      .getState()
+      .updateWeb(editItem.code, editItem);
     if (newI) {
-      setLoading(true);
+      setLoading(false);
       setWebData([...webData, newI]);
+    }
+  };
+  const HandleDeleteWeb = async (id: string) => {
+    console.log(id);
+
+    await useWebTraysStore.getState().removeWeb(id);
+    try {
+      const newA = webData.filter((item) => item.$id !== id);
+      setWebData(newA);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -31,6 +55,7 @@ const WebTraysPage = () => {
       setWebData(data);
     };
     fetchData();
+    setLoading(true);
   }, [loading]);
 
   return (
@@ -59,6 +84,7 @@ const WebTraysPage = () => {
               <th className='px-4 py-2'>Name</th>
               <th className='px-4 py-2'>Supplier</th>
               <th className='px-4 py-2'>Sup. Code</th>
+              <th className='px-4 py-2'>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +96,16 @@ const WebTraysPage = () => {
                 <td className='border px-4 py-2'>{data.name}</td>
                 <td className='border px-4 py-2'>{data.supplier}</td>
                 <td className='border px-4 py-2'>{data.supCode}</td>
+                <td className='border px-4 py-2'>
+                  <button className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700'>
+                    Edit
+                  </button>
+                  <button
+                    className='px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700'
+                    onClick={() => HandleDeleteWeb(data.$id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

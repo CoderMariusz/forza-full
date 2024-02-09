@@ -6,7 +6,7 @@ import {
   useProductionStore
 } from '@/store/Production';
 import AddModal from './AddModal';
-import { useProductsStore } from '@/store/ProductsStore';
+import { useProductsStore } from '@/store/Products';
 import Production from './Production';
 import Available from './Available';
 import {

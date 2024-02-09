@@ -1,15 +1,15 @@
 'use client';
-import { LabelItem } from '@/store/LabelsStore';
+import { LabelItem, NewLabelItem } from '@/store/LabelsStore';
 import React, { useState } from 'react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: LabelItem) => void; // Use the LabelItem type for more precise typing
+  onAdd: (data: NewLabelItem) => void; // Use the LabelItem type for more precise typing
 }
 
 const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
-  const [formData, setFormData] = useState<LabelItem>({
+  const [formData, setFormData] = useState<NewLabelItem>({
     code: '',
     name: '',
     group: ''
@@ -40,16 +40,31 @@ const AddLabelModal = ({ isOpen, onClose, onAdd }: Props) => {
     <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
       <div className='bg-white p-4 rounded-lg max-w-sm w-full'>
         <h2 className='text-lg font-semibold mb-4'>Add New Label</h2>
-        {inputFields.map((field) => (
-          <input
-            key={field.name}
-            type='text'
-            placeholder={field.placeholder}
-            value={formData[field.name as keyof typeof formData]}
-            onChange={(e) => handleChange(e, field.name as keyof LabelItem)} // Fix: Cast field.name to keyof LabelItem
-            className='mb-4 p-2 border border-gray-300 rounded w-full'
-          />
-        ))}
+        {inputFields.map((field) =>
+          field.name === 'group' ? (
+            <select
+              key={field.name}
+              value={formData[field.name as keyof typeof formData]}
+              onChange={(e) =>
+                handleChange(e as any, field.name as keyof LabelItem)
+              }
+              className='mb-4 p-2 border border-gray-300 rounded w-full'>
+              <option value=''>Select a group</option>
+              <option value='top'>Top</option>
+              <option value='bottom'>Bottom</option>
+              <option value='sticker'>Sticker</option>
+            </select>
+          ) : (
+            <input
+              key={field.name}
+              type='text'
+              placeholder={field.placeholder}
+              value={formData[field.name as keyof typeof formData]}
+              onChange={(e) => handleChange(e, field.name as keyof LabelItem)} // Fix: Cast field.name to keyof LabelItem
+              className='mb-4 p-2 border border-gray-300 rounded w-full'
+            />
+          )
+        )}
         <div className='flex justify-end gap-2'>
           <button
             onClick={handleAdd}

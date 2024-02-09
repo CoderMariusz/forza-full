@@ -1,113 +1,157 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import ProductsList from './ProductsList';
-import { Product, useProduct, useProductsStore } from '@/store/ProductsStore';
-import AddModal from './AddModal';
-import { Labels, useLabelsStore } from '@/store/LabelsStore';
-import { useUserStore } from '@/store/UserStore';
+import { LabelItem, useLabelsStore } from '@/store/LabelsStore';
+import { Product, useProductsStore } from '@/store/Products';
+import { RmMaterial, useRmMaterialsStore } from '@/store/RmMaterials';
+import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
+import React, { use, useEffect, useState } from 'react';
+import EditAddProductModal from './EditAddModal';
 
-function ProductPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [labels, setLabels] = useState<Labels[]>([]);
-  const user = useUserStore((state) => state.name);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const dateProduct = await useProductsStore.getState().setProductsFromDB();
-      const dateLabels = await useLabelsStore.getState().setLabelsFromDB();
-
-      setProducts(dateProduct);
-      setLabels(dateLabels);
-    };
-
-    fetchData();
-  }, []);
-
-  const onAddProduct = async ({
-    name,
-    aCode,
-    web,
-    version,
-    rates,
-    packetInBox,
-    labels
-  }: Product) => {
-    const newProduct = {
-      name,
-      aCode,
-      web,
-      rates,
-      version,
-      packetInBox,
-      labels
-    };
-
-    setProducts([...products, newProduct]);
-
-    useProductsStore.setState((state) => ({
-      products: [...state.products, newProduct]
-    }));
-
-    try {
-      await useProduct.getState().createProduct(newProduct);
-      console.log('Product Created');
-    } catch (error) {
-      console.log(error);
-    }
-
-    setIsAddModalOpen(false);
-  };
-
-  const handleClose = () => {
-    console.log('Close Modal Clicked');
-
-    setIsAddModalOpen(false);
-  };
-
-  const filteredProduct = products.filter(
-    (products) =>
-      (products.aCode && products.aCode.includes(searchQuery)) ||
-      (products.name &&
-        products.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const [rmData, setRmData] = useState<RmMaterial[]>([]);
+  const [labelData, setLabelData] = useState<LabelItem[]>([]);
+  const [websData, setWebsData] = useState<WebTrays[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | undefined>(
+    undefined
   );
 
-  if (user === '') {
-    console.log('no user');
+  const fetchData = async () => {
+    const products = await useProductsStore.getState().loadProductsFromDB();
+    setProducts(products);
+    const rmData = await useRmMaterialsStore.getState().loadRmMaterialsFromDB();
+    setRmData(rmData);
+    const labelData = await useLabelsStore.getState().loadLabelsFromDB();
+    setLabelData(labelData);
+    const WebsData = await useWebTraysStore.getState().loadWebTraysFromDB();
+    setWebsData(WebsData);
+  };
 
-    return <div>You need to be log in!</div>;
-  }
+  const editProduct = (product: Product) => {
+    setProductToEdit(product);
+    setIsOpen(true);
+  };
+
+  const handleProductSubmit = async (newOrEditedProduct: any) => {
+    console.log(newOrEditedProduct);
+
+    if (
+      products.some(
+        (p) =>
+          p.aCode === newOrEditedProduct.aCode ||
+          p.$id === newOrEditedProduct.$id
+      )
+    ) {
+      // Handle the case where the product is being edited
+      console.log('editing product');
+
+      await useProductsStore
+        .getState()
+        .updateProduct(newOrEditedProduct.$id, newOrEditedProduct);
+    } else {
+      // Handle adding a new product
+      console.log('adding new product');
+      await useProductsStore.getState().AddNewProduct(newOrEditedProduct);
+    }
+    setLoading(!loading);
+    setIsOpen(false); // Close the modal after submission
+  };
+  useEffect(() => {
+    fetchData();
+    setLoading(true);
+  }, [loading]);
+
+  // Filter products based on searchTerm
+  const filteredProducts = products.filter(
+    (product) =>
+      product.aCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.rmCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.webCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.labelCode.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className='container mx-auto p-4'>
-      <h1 className='text-3xl font-bold mb-2'>Products</h1>
-      <hr className='mb-4' />
-
-      <div className='mb-4 flex justify-between'>
+    <div className='container mx-auto px-4'>
+      <h1 className='text-xl font-bold text-center my-4'>Products</h1>
+      <div className='p-2 flex justify-between items-baseline'>
         <input
           type='text'
-          placeholder='Search...'
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className='p-2 border rounded'
+          placeholder='Search by aCode, rmCode, webCode, labelCode'
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className='mb-4 p-2 border border-gray-300 rounded w-full max-w-md'
         />
         <button
-          onClick={() => setIsAddModalOpen(true)}
-          className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
-          Add Product +
+          onClick={() => setIsOpen(true)}
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+          Add New Product
         </button>
       </div>
+      <div className='overflow-x-auto'>
+        <table className='table-auto w-full'>
+          <thead className='bg-gray-700 text-white'>
+            <tr>
+              <th className='px-2 py-2'>aCode</th>
+              <th className='px-2 py-2'>Name</th>
+              <th className='px-2 py-2'>WebCode</th>
+              <th className='px-2 py-2'>LabelCode</th>
+              <th className='px-2 py-2'>RmCode</th>
+              <th className='px-2 py-2'>Rates</th>
+              <th className='px-2 py-2'>Version</th>
+              <th className='px-2 py-2'>PacketsInBox</th>
+              <th className='px-2 py-2'>AdditionalInfo</th>
+              <th className='px-2 py-2'>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product, index) => (
+              <tr
+                key={index}
+                className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <td className='border px-2 py-2'>{product.aCode}</td>
+                <td className='border px-2 py-2'>{product.name}</td>
+                <td className='border px-2 py-2'>{product.webCode}</td>
+                <td className='border px-2 py-2'>{product.labelCode}</td>
+                <td className='border px-2 py-2'>{product.rmCode}</td>
+                <td className='border px-2 py-2'>{product.rates}</td>
+                <td className='border px-2 py-2'>{product.version}</td>
+                <td className='border px-2 py-2'>{product.packetsInBox}</td>
+                <td className='border px-2 py-2'>
+                  {product.additionalInfo || 'N/A'}
+                </td>
+                <td className='border px-4 py-2'>
+                  <button
+                    onClick={() => editProduct(product)}
+                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2'>
+                    Edit
+                  </button>
 
-      <ProductsList products={filteredProduct} />
-      <AddModal
-        isOpen={isAddModalOpen}
-        onClose={handleClose}
-        onAdd={onAddProduct}
-        existingLabels={labels}
-      />
+                  <button className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <EditAddProductModal
+          isOpen={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            setProductToEdit(undefined);
+          }}
+          onSubmit={(e) => handleProductSubmit(e)}
+          existingProducts={products}
+          webCodes={websData.map((web) => web.code)}
+          rmCodes={rmData.map((rm) => rm.rmCode)}
+          labelCodes={labelData.map((label) => label.code)}
+          productToEdit={productToEdit}
+        />
+      </div>
     </div>
   );
 }
 
-export default ProductPage;
+export default ProductsPage;

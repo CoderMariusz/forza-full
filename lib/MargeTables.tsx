@@ -1,4 +1,4 @@
-import { Product } from '@/store/ProductsStore';
+import { Product } from '@/store/Products';
 
 function mergeTables(products: any, labels: any) {
   return products.map((product: Product) => {

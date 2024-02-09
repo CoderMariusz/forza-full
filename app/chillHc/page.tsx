@@ -14,7 +14,7 @@ import EditRepackItemModal from './EditModalRepack';
 import AddRepackItemModal from './AddModalRepack';
 import { rm } from 'fs';
 import TrimTable from './TrimTable';
-import { Product, useProduct } from '@/store/ProductsStore';
+import { Product, useProduct } from '@/store/Products';
 import useTrimState, { TrimObject } from '@/store/Trim';
 
 // Define a mock RMObject type (adjust as per your actual data structure)
