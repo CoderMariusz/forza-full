@@ -184,6 +184,51 @@ const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
         {/* Repeat the pattern for selects */}
         <div className='mb-4'>
           <label
+            htmlFor='webCode'
+            className='block text-sm font-medium text-gray-700'>
+            Web Code
+          </label>
+          <select
+            id='webCode'
+            name='webCode'
+            value={product.webCode}
+            onChange={handleChange}
+            className='mt-1 p-2 border border-gray-300 rounded w-full'>
+            <option value=''>Select Web Code</option>
+            {webCodes.map((code) => (
+              <option
+                key={code}
+                value={code}>
+                {code}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='mb-4'>
+          <label
+            htmlFor='labelCode'
+            className='block text-sm font-medium text-gray-700'>
+            Label Code
+          </label>
+          <select
+            id='labelCode'
+            name='labelCode'
+            value={product.labelCode}
+            onChange={handleChange}
+            className='mt-1 p-2 border border-gray-300 rounded w-full'>
+            <option value=''>Select Label Code</option>
+            {labelCodes.map((code) => (
+              <option
+                key={code}
+                value={code}>
+                {code}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='mb-4'>
+          <label
             htmlFor='rmCode'
             className='block text-sm font-medium text-gray-700'>
             RM Code

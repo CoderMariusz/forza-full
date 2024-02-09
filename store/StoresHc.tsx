@@ -2,10 +2,10 @@ import { ID, database } from '@/appwrite';
 import { create } from 'zustand';
 
 export interface StoresHcObject {
-  aCode: string;
+  aCode: string[];
   code: string;
-  name: string;
-  quantity: number[];
+  name: string[];
+  quantities: number[];
   id: string;
 }
 
@@ -17,10 +17,10 @@ interface StoresHcState extends StoresHcObject {
 }
 
 const useStoresHcStore = create<StoresHcState>((set: any) => ({
-  aCode: '',
+  aCode: [''],
   code: '',
-  name: '',
-  quantity: [],
+  name: [''],
+  quantities: [],
   id: '',
 
   setQuantity: (quantity: number[]) =>
@@ -35,7 +35,7 @@ const useStoresHcStore = create<StoresHcState>((set: any) => ({
         aCode: store.aCode,
         code: store.code,
         name: store.name,
-        quantity: store.quantity,
+        quantities: store.quantities,
         id: store.$id
       };
     });
@@ -58,7 +58,7 @@ const useStoresHcStore = create<StoresHcState>((set: any) => ({
         '65a989c11654114ef8aa',
         storesHc.id,
         {
-          quantity: storesHc.quantity
+          quantities: storesHc.quantities
         }
       );
       return data;

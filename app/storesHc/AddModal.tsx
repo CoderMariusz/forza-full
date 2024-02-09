@@ -1,22 +1,37 @@
-import React, { useState } from 'react';
+'use client';
+import { Product } from '@/store/Products';
+import { WebTrays } from '@/store/WebTrays';
+import React, { useState, useEffect } from 'react';
+
+interface AddItemModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (data: any) => void; // Consider using a more specific type here
+  webTraysData: WebTrays[];
+  products: Product[];
+}
 
 function AddItemModal({
   isOpen,
   onClose,
-  onAdd
-}: {
-  isOpen: boolean;
-  onClose: any;
-  onAdd: any;
-}) {
-  const [aCode, setACode] = useState('');
-  const [code, setCode] = useState('');
-  const [name, setName] = useState('');
+  onAdd,
+  webTraysData,
+  products
+}: AddItemModalProps) {
+  const [selectedWebCode, setSelectedWebCode] = useState('');
+  const [associatedProducts, setAssociatedProducts] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState(['']);
 
-  const handleAddQuantity = () => {
-    setQuantities([...quantities, '']);
-  };
+  // Update associated products based on selected web code
+  useEffect(() => {
+    const relatedProducts = products.filter(
+      (product) => product.webCode === selectedWebCode
+    );
+    setAssociatedProducts(relatedProducts);
+    console.log('relatedProducts', relatedProducts);
+  }, [selectedWebCode, products]);
+
+  const handleAddQuantity = () => setQuantities([...quantities, '']);
 
   const handleQuantityChange = (index: number, value: string) => {
     const newQuantities = [...quantities];
@@ -25,23 +40,19 @@ function AddItemModal({
   };
 
   const handleSubmit = () => {
-    const newItem = {
-      aCode,
-      code,
-      name,
-      quantity: quantities
-        .map((qty) => Number(qty))
-        .filter((qty) => !isNaN(qty) && qty > 0)
-    };
-    onAdd(newItem);
+    // Construct and submit new item details
+
+    onAdd({
+      code: selectedWebCode,
+      name: associatedProducts.map((product) => product.name),
+      aCode: associatedProducts.map((product) => product.aCode),
+      quantities: quantities.map(Number).filter((qty) => !isNaN(qty) && qty > 0)
+    });
     handleClose();
   };
 
   const handleClose = () => {
-    // Reset the form
-    setACode('');
-    setCode('');
-    setName('');
+    setSelectedWebCode('');
     setQuantities(['']);
     onClose();
   };
@@ -53,72 +64,105 @@ function AddItemModal({
       <div className='relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white'>
         <h2 className='text-lg font-bold mb-4'>Add New Item</h2>
 
+        {/* WebCode Selection */}
         <div className='mb-4'>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
-            A-Code
+            Web Code
           </label>
-          <input
-            type='text'
-            placeholder='Code'
-            value={aCode}
-            onChange={(e) => setACode(e.target.value)}
-            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          />
+          <select
+            value={selectedWebCode}
+            onChange={(e) => setSelectedWebCode(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
+            <option value=''>Select Web Code</option>
+            {webTraysData.map((web, index) => (
+              <option
+                key={index}
+                value={web.code}>
+                {web.code}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className='mb-4'>
-          <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Code
-          </label>
-          <input
-            type='text'
-            placeholder='Code'
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          />
-        </div>
+        {/* Associated ACode(s) and Name(s) */}
+        {associatedProducts.length > 0 && (
+          <>
+            <div className='mb-4'>
+              <label className='block text-gray-700 text-sm font-bold mb-2'>
+                A-Code(s)
+              </label>
+              {associatedProducts.map((product, index) => (
+                <p
+                  key={index}
+                  className='text-gray-700'>
+                  {product.aCode}
+                </p>
+              ))}
+            </div>
 
-        <div className='mb-4'>
-          <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Name
-          </label>
-          <input
-            type='text'
-            placeholder='Name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          />
-        </div>
+            <div className='mb-4'>
+              <label className='block text-gray-700 text-sm font-bold mb-2'>
+                Name(s)
+              </label>
+              {associatedProducts.map((product, index) => (
+                <p
+                  key={index}
+                  className='text-gray-700'>
+                  {product.name}
+                </p>
+              ))}
+            </div>
+          </>
+        )}
 
-        {quantities.map((quantity, index) => (
-          <div
-            key={index}
-            className='mb-4 flex'>
-            <div className='flex-grow'>
+        <div className='flex items-center max-w-fit flex-wrap'>
+          {quantities.map((quantity, index) => (
+            <div
+              key={index}
+              className='mb-4 flex align-items-center'>
+              <label className='block text-gray-700 text-sm font-bold mb-2 mr-2 max-w-fit'>
+                Quantity {index + 1}
+              </label>
               <input
                 type='number'
                 placeholder='Quantity'
                 value={quantity}
                 onChange={(e) => handleQuantityChange(index, e.target.value)}
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                className='shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex-grow'
               />
+              <div className='flex items-center'>
+                {quantities.length > 1 && (
+                  <button
+                    onClick={() => {
+                      // Function to remove the current quantity field
+                      const newQuantities = quantities.filter(
+                        (_, qtyIndex) => qtyIndex !== index
+                      );
+                      setQuantities(newQuantities);
+                    }}
+                    type='button'
+                    className='ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded'>
+                    -
+                  </button>
+                )}
+                {index === quantities.length - 1 && (
+                  <button
+                    onClick={handleAddQuantity}
+                    type='button'
+                    className='ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded'>
+                    +
+                  </button>
+                )}
+              </div>
             </div>
-            {index === quantities.length - 1 && (
-              <button
-                onClick={handleAddQuantity}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2'>
-                +
-              </button>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
 
-        <div className='flex items-center justify-between'>
+        {/* Submit and Cancel buttons */}
+        <div className='flex justify-end mt-4'>
           <button
             onClick={handleSubmit}
-            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2'>
             Add
           </button>
           <button
