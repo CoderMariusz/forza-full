@@ -15,6 +15,7 @@ import AddRepackItemModal from './AddModalRepack';
 import TrimTable from './TrimTable';
 import useTrimState, { TrimObject } from '@/store/Trim';
 import { Product, useProductsStore } from '@/store/Products';
+import { RmMaterial, useRmMaterialsStore } from '@/store/RmMaterials';
 
 // Define a mock RMObject type (adjust as per your actual data structure)
 
@@ -32,6 +33,7 @@ function ChillStockPage() {
   const [repacks, setRepacks] = useState<ChillHcObject[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [trim, setTrim] = useState<TrimObject[]>([]);
+  const [rmMaterials, setRmMaterials] = useState<RmMaterial[]>([]);
 
   // Function to load RM data (you can replace this with your actual data loading logic)
   const loadRMData = async () => {
@@ -41,7 +43,11 @@ function ChillStockPage() {
 
   const loadProducts = async () => {
     const products = await useProductsStore.getState().loadProductsFromDB();
+    const rmMaterials = await useRmMaterialsStore
+      .getState()
+      .loadRmMaterialsFromDB();
     setProducts(products);
+    setRmMaterials(rmMaterials);
   };
 
   // Function to export RM data to Excel
@@ -101,18 +107,21 @@ function ChillStockPage() {
   };
 
   const updateObject = async (item: ChillHcObject) => {
-    const { id, rmCode, name, date, weight } = item;
+    const { id, rmCode, name, date, weight, ticketId } = item;
 
     await useChillHcState.getState().updateChillHcToDB({
       id,
       rmCode,
       name,
       date,
-      weight
+      weight,
+      ticketId
     });
     setData(
       data.map((item) =>
-        item.id === id ? { ...item, rmCode, name, date, weight } : item
+        item.id === id
+          ? { ...item, rmCode, name, date, weight, ticketId }
+          : item
       )
     );
     setLoading(false);
@@ -213,7 +222,6 @@ function ChillStockPage() {
   const sortedRepacks = sortByCodeRepacks(repacks, searchQuery);
 
   // Render the Chill Stock page
-  console.log(user);
 
   if (user === '') {
     console.log('no user');
@@ -229,7 +237,7 @@ function ChillStockPage() {
       <div className='mb-4 flex justify-between'>
         <input
           type='text'
-          placeholder='Search...'
+          placeholder='Search by RM or date...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className='p-2 border rounded'
@@ -285,6 +293,7 @@ function ChillStockPage() {
           <thead>
             <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-normal'>
               <th className='py-3 px-6 text-left'>RM-Code</th>
+              <th className='py-3 px-6 text-left'>Name</th>
               <th className='py-3 px-6 text-left'>Ticket Id</th>
               <th className='py-3 px-6 text-left'>Date</th>
               <th className='py-3 px-6 text-left'>Weight</th>
@@ -305,6 +314,7 @@ function ChillStockPage() {
                 <td className='py-3 px-6 text-left whitespace-nowrap'>
                   {item.name}
                 </td>
+                <td className='py-3 px-6 text-left'>{item.ticketId}</td>
                 <td className='py-3 px-6 text-left'>{item.date}</td>
                 <td className='py-3 px-6 text-left'>{item.weight}</td>
                 {user === 'process@forzafoods.com' ? (
@@ -349,6 +359,7 @@ function ChillStockPage() {
         />
       )}
       <AddRMItemModal
+        rmMaterials={rmMaterials}
         isOpen={isOpen}
         onClose={setIsOpen}
         onAdd={(item: NewChillHcObject) => addObject(item)}
@@ -366,7 +377,11 @@ function ChillStockPage() {
         isOpen={isOpenRepack}
         products={products}
         onClose={() => setIsOpenRepack(false)}
-        onAdd={(obj) => addObjectRepack(obj)}
+        onAdd={(obj) => {
+          console.log(obj);
+
+          addObjectRepack(obj);
+        }}
       />
       <EditRepackItemModal
         isOpen={isOpenRepackChange}

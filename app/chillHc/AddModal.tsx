@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
+import { RmMaterial } from '@/store/RmMaterials';
+import React, { useState, useEffect } from 'react';
 
 function AddRMItemModal({
   isOpen,
   onClose,
-  onAdd
+  onAdd,
+  rmMaterials
 }: {
+  rmMaterials: RmMaterial[];
   isOpen: boolean;
   onClose: any;
   onAdd: any;
 }) {
   const [rmCode, setRmCode] = useState('');
-  const [name, setName] = useState('');
   const [date, setDate] = useState('');
   const [weight, setWeight] = useState('');
+
+  const [ticketId, setTicketId] = useState('');
+
+  // Automatically set the name based on selected rmCode
+  const [name, setName] = useState(''); // Declare the setName function using the useState hook
+
+  useEffect(() => {
+    const selectedMaterial = rmMaterials.find(
+      (material) => material.rmCode === rmCode
+    );
+    if (selectedMaterial) {
+      setName(selectedMaterial.name); // Automatically set name based on rmCode selection
+    }
+  }, [rmCode, rmMaterials]);
 
   const handleSubmit = () => {
     const newItem = {
       rmCode,
-      name,
+      name: name, // Set name based on rmCode selection
       date,
+      ticketId: ticketId,
       weight: parseFloat(weight) // Parse weight as a float
     };
 
@@ -31,6 +48,7 @@ function AddRMItemModal({
     setRmCode('');
     setName('');
     setDate('');
+    setTicketId('');
     setWeight('');
     onClose();
   };
@@ -46,24 +64,41 @@ function AddRMItemModal({
           <label className='block text-gray-700 text-sm font-bold mb-2'>
             RM-Code
           </label>
-          <input
-            type='text'
-            placeholder='RM-Code'
+          <select
             value={rmCode}
             onChange={(e) => setRmCode(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'>
+            <option value=''>Select RM Code</option>
+            {rmMaterials.map((material) => (
+              <option
+                key={material.rmCode}
+                value={material.rmCode}>
+                {material.rmCode}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Name
+          </label>
+          <input
+            type='text'
+            value={name}
+            disabled
+            onChange={(e) => setName(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           />
         </div>
-
-        <div className='mb-4'>
+        <div>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
             Ticket ID
           </label>
           <input
             type='text'
-            placeholder='Name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={ticketId}
+            onChange={(e) => setTicketId(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           />
         </div>
@@ -74,7 +109,6 @@ function AddRMItemModal({
           </label>
           <input
             type='date'
-            placeholder='Date'
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
@@ -87,7 +121,6 @@ function AddRMItemModal({
           </label>
           <input
             type='number'
-            placeholder='Weight'
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'

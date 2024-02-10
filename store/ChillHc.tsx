@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 export interface ChillHcObject {
   rmCode: string;
+  ticketId: string;
   name: string;
   date: string;
   weight: number;
@@ -14,6 +15,7 @@ export interface ChillHcObject {
 
 export interface NewChillHcObject {
   rmCode: string;
+  ticketId: string;
   name: string;
   date: string;
   weight: number;
@@ -38,6 +40,7 @@ const useChillHcState = create<ChillHcState>((set) => ({
   aCode: '',
   id: '',
   line: '',
+  ticketId: '',
   loadChillHcFromDB: async () => {
     // Implementation for loading ChillHc from DB
     const data = await database.listDocuments(
@@ -48,6 +51,7 @@ const useChillHcState = create<ChillHcState>((set) => ({
     const chillHc = data.documents.map((chill) => {
       return {
         rmCode: chill.rmCode,
+        ticketId: chill.ticketId,
         name: chill.name,
         date: chill.date,
         weight: chill.weight,
@@ -79,6 +83,8 @@ const useChillHcState = create<ChillHcState>((set) => ({
       chillHc.id,
       {
         name: chillHc.name,
+        rmCode: chillHc.rmCode,
+        ticketId: chillHc.ticketId,
         date: chillHc.date,
         weight: chillHc.weight,
         repack: chillHc.repack

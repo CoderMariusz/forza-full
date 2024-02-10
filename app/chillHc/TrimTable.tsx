@@ -108,7 +108,7 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
           </tr>
         </thead>
         <tbody>
-          {Object.keys(groupedData).map((name) => (
+          {Object.keys(groupedData).map((name, index) => (
             <>
               <tr key={name}>
                 <td className='border px-4 py-2'>{name}</td>

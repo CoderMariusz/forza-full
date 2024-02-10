@@ -14,12 +14,14 @@ function EditRMItemModal({
   const [data, setData] = useState('');
   const [weight, setWeight] = useState('');
   const [name, setName] = useState('');
+  const [ticketId, setTicketId] = useState('');
 
   useEffect(() => {
     if (item) {
       setData(item.date); // Initialize data field with item's date
       setWeight(item.weight.toString()); // Initialize weight field with item's weight
       setName(item.name); // Initialize ticketNumber field with item's ticketNumber
+      setTicketId(item.ticketId);
     }
   }, [item]);
 
@@ -28,7 +30,8 @@ function EditRMItemModal({
       ...item,
       date: data,
       weight: parseFloat(weight),
-      name: name
+      name: name,
+      ticketId: ticketId
     };
 
     onEdit(updatedItem);
@@ -50,18 +53,31 @@ function EditRMItemModal({
             type='text'
             value={item.rmCode}
             readOnly
+            disabled
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight bg-gray-100'
           />
         </div>
 
         <div className='mb-4'>
           <label className='block text-gray-700 text-sm font-bold mb-2'>
-            Ticket Number
+            Name
           </label>
           <input
             type='text'
             value={name}
+            readOnly
             onChange={(e) => setName(e.target.value)}
+            className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight  bg-gray-100'
+          />
+        </div>
+        <div className='mb-4'>
+          <label className='block text-gray-700 text-sm font-bold mb-2'>
+            Ticket Id
+          </label>
+          <input
+            type='text'
+            value={ticketId}
+            onChange={(e) => setTicketId(e.target.value)}
             className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight'
           />
         </div>

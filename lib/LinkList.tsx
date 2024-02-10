@@ -5,7 +5,8 @@ import {
   Cog6ToothIcon,
   CurrencyPoundIcon,
   FolderPlusIcon,
-  HomeIcon
+  HomeIcon,
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -98,6 +99,9 @@ export const linksList = (
             ) : null}
             {link === 'settings' ? (
               <Cog6ToothIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'chillHc' ? (
+              <SparklesIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
             {link && link === 'orderHcToLr'
               ? 'ORDER HC-LR'
