@@ -65,10 +65,12 @@ const QrScanner: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div className='w-full h-full'>
       <video
+        width={300}
+        height={300}
         ref={videoRef}
-        style={{ display: 'yes' }}></video>
+        style={{ display: 'block' }}></video>
       <canvas
         ref={canvasRef}
         style={{ display: 'none' }}></canvas>
@@ -84,7 +86,7 @@ const QrScanner: React.FC = () => {
           })}
         </p>
       )}
-    </>
+    </div>
   );
 };
 
