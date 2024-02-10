@@ -131,7 +131,7 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
                   ))}
                 </td>
                 <td className='border px-4 py-2 flex flex-col'>
-                  {isLoggedIn &&
+                  {user === 'process@forzafoods.com' &&
                     groupedData[name].map((item: TrimObject, index: number) => (
                       <button
                         key={item.id}

@@ -1,6 +1,7 @@
 'use client';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQRCode } from 'next-qrcode';
+import QrScanner from './scanner/page';
 
 export default function QRPage() {
   const [scanResult, setScanResult] = useState('');
@@ -36,7 +37,6 @@ export default function QRPage() {
           }}
         />
       </div>
-
       <div className='flex flex-col items-center mt-8'>
         <h2 className='text-2xl font-bold mb-4'>Generate QR Code</h2>
         <input
