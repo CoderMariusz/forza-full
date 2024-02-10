@@ -1,4 +1,3 @@
-'use client';
 import {
   ArrowLeftStartOnRectangleIcon,
   CircleStackIcon,
@@ -40,7 +39,7 @@ export const linksList = (
     'settings'
   ];
   const linksNpd = [
-    <HomeIcon className='h-6 w-6 text-gray-500' /> + 'dashboard',
+    'dashboard',
     'products',
     'labels',
     'webs',
@@ -84,7 +83,7 @@ export const linksList = (
               console.log('clicked');
               setIsOpen(false);
             }}
-            className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 rounded flex'>
+            className='text-cyan-200 hover:text-gray-700 hover:font-bold p-2 rounded flex'>
             {link === 'dashboard' ? (
               <HomeIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
@@ -95,7 +94,7 @@ export const linksList = (
               <FolderPlusIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
             {link === 'products' ? (
-              <CurrencyPoundIcon className='h-6 w-6 text-gray-200 mr-2' />
+              <CurrencyPoundIcon className='h-6 w-6 max-w-[24px] text-gray-200 mr-2' />
             ) : null}
             {link === 'settings' ? (
               <Cog6ToothIcon className='h-6 w-6 text-gray-200 mr-2' />
@@ -110,11 +109,11 @@ export const linksList = (
         </li>
       ))}
       {name && (
-        <li className='transition-all duration-200 hover:bg-blue-100 rounded p-1'>
+        <li className='transition-all duration-200 hover:bg-blue-300 rounded p-2'>
           <button
-            className='text-gray-200 hover:bg-blue-800 hover:font-bold p-2 flex rounded w-full'
+            className='text-gray-200 hover:font-bold hover:text-gray-600 p-2 flex rounded w-full h-full'
             onClick={logoutFun}>
-            <ArrowLeftStartOnRectangleIcon className='h-6 w-6 text-gray-200' />
+            <ArrowLeftStartOnRectangleIcon className='h-6 w-6 text-gray-200  mr-2' />
             Logout
           </button>
         </li>

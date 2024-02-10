@@ -65,9 +65,9 @@ const QrScanner: React.FC = () => {
   }, []);
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-full flex justify-center'>
       <video
-        width={300}
+        width={400}
         height={300}
         ref={videoRef}
         style={{ display: 'block' }}></video>
