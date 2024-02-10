@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useQRCode } from 'next-qrcode';
-import QrScanner from './scanner/page';
+import Link from 'next/link';
 
-export default function QRPage() {
+export default function QRPage(props: any) {
   const [scanResult, setScanResult] = useState('');
   const [inputData1, setInputData1] = useState('');
   const [inputData2, setInputData2] = useState('');
   const [inputData3, setInputData3] = useState('');
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
 
   const { Canvas } = useQRCode();
 
@@ -60,6 +62,14 @@ export default function QRPage() {
           onChange={(e) => setInputData3(e.target.value)}
           className='mb-2 p-2 border rounded'
         />
+      </div>
+      <div>
+        <Link href='/qr/Scanner'>
+          <p className='text-blue-500'>Go to Scanner</p>
+        </Link>
+        <h1>Strona QR</h1>
+        <p>Imię: {name}</p>
+        <p>Wiek: {age}</p>
       </div>
     </div>
   );

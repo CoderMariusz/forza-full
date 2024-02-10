@@ -68,11 +68,22 @@ const QrScanner: React.FC = () => {
     <>
       <video
         ref={videoRef}
-        style={{ display: 'none' }}></video>
+        style={{ display: 'yes' }}></video>
       <canvas
         ref={canvasRef}
         style={{ display: 'none' }}></canvas>
-      {qrCode && <p>Znaleziono kod QR: {qrCode}</p>}
+      {qrCode && (
+        <p>
+          Code:{' '}
+          {qrCode.split(' ').map((i, index) => {
+            return (
+              <p key={index}>
+                {index} {i}
+              </p>
+            );
+          })}
+        </p>
+      )}
     </>
   );
 };
