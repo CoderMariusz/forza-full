@@ -52,9 +52,6 @@ const RepackTable: React.FC<RepackTableProps> = ({
                 <button
                   className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
                   onClick={() => {
-                    console.log('edit');
-                    console.log(item);
-
                     setItem(item);
                     setIsOpenChange(true);
                   }}>
@@ -63,8 +60,6 @@ const RepackTable: React.FC<RepackTableProps> = ({
                 <button
                   className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2'
                   onClick={() => {
-                    console.log(item);
-
                     removeObject(item.id);
                   }}>
                   Delete

@@ -214,7 +214,6 @@ function ChillStockPage() {
 
   // Render the Chill Stock page
   console.log(user);
-  console.log(currentView);
 
   if (user === '') {
     console.log('no user');

@@ -62,8 +62,6 @@ const useChillHcState = create<ChillHcState>((set) => ({
   },
 
   addChillHcToDB: async (chillHc) => {
-    console.log(chillHc);
-
     // Implementation for adding ChillHc to DB
     const data = await database.createDocument(
       '6510bb07873546043cae',

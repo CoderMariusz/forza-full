@@ -14,8 +14,6 @@ const RmMaterialsPage = () => {
   const [loading, setLoading] = useState(false);
   const [rmData, setRmData] = useState<RmMaterial[]>([]);
 
-  console.log(rmData);
-
   const filteredData =
     rmData &&
     rmData.filter(
@@ -26,7 +24,6 @@ const RmMaterialsPage = () => {
     );
 
   const handleAddNewRmMaterial = async (newItem: NewRmMaterial) => {
-    console.log(newItem);
     const newI = await useRmMaterialsStore.getState().AddNewRmMaterial(newItem);
     if (newI) {
       setLoading(!loading);

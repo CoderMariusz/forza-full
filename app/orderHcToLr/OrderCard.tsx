@@ -1,4 +1,5 @@
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import React, { use, useState } from 'react';
 
 interface OrderCardProps {
@@ -8,8 +9,6 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
   const [order, setOrder] = useState<OrderObject[]>(data);
-
-  console.log(order);
 
   const markOrderAsDone = async (orderId: number | undefined) => {
     if (order.length === undefined || order.length === 0) {
@@ -53,9 +52,16 @@ const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
         {order.map((item: OrderObject) => (
           <div
             key={Math.random() * 1000}
-            className='flex justify-between '>
+            className={`flex justify-between ${
+              item.priority ? 'bg-red-400 rounded-sm p-2' : null
+            }`}>
             <p className='text-lg text-gray-800'>{item.webNumber}</p>
-            <p className='text-lg text-gray-800 '>{item.quantities}</p>
+            <p className='text-lg text-gray-800 flex justify-end gap-2 '>
+              {item.priority && (
+                <ExclamationCircleIcon className='h-7 w-7 text-red-500' />
+              )}
+              {item.quantities}
+            </p>
           </div>
         ))}
         {!order[0].done && (

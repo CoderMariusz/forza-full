@@ -30,7 +30,6 @@ function LoginForm() {
     try {
       const userWithName = await loginUser(email, password);
       if (userWithName !== undefined) {
-        console.log(userWithName);
         console.log(localStorage.getItem('session'));
       }
 

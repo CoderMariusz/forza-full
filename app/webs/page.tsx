@@ -16,8 +16,6 @@ const WebTraysPage = () => {
   );
 
   const HandleAddNewWeb = async (newItem: NewWebTrays) => {
-    console.log(newItem);
-
     await useWebTraysStore.getState().AddNewWeb(newItem);
     try {
       setLoading(false);
@@ -26,8 +24,6 @@ const WebTraysPage = () => {
     }
   };
   const HandleEditWeb = async (editItem: WebTrays) => {
-    console.log(editItem);
-
     const newI = await useWebTraysStore
       .getState()
       .updateWeb(editItem.code, editItem);
@@ -37,8 +33,6 @@ const WebTraysPage = () => {
     }
   };
   const HandleDeleteWeb = async (id: string) => {
-    console.log(id);
-
     await useWebTraysStore.getState().removeWeb(id);
     try {
       const newA = webData.filter((item) => item.$id !== id);

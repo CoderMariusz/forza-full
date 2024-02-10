@@ -1,4 +1,12 @@
 'use client';
+import {
+  ArrowLeftStartOnRectangleIcon,
+  CircleStackIcon,
+  Cog6ToothIcon,
+  CurrencyPoundIcon,
+  FolderPlusIcon,
+  HomeIcon
+} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export const linksList = (
@@ -31,7 +39,7 @@ export const linksList = (
     'settings'
   ];
   const linksNpd = [
-    'dashboard',
+    <HomeIcon className='h-6 w-6 text-gray-500' /> + 'dashboard',
     'products',
     'labels',
     'webs',
@@ -75,7 +83,22 @@ export const linksList = (
               console.log('clicked');
               setIsOpen(false);
             }}
-            className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 block rounded'>
+            className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 rounded flex'>
+            {link === 'dashboard' ? (
+              <HomeIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'storesHc' ? (
+              <CircleStackIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'orderHcToLr' ? (
+              <FolderPlusIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'products' ? (
+              <CurrencyPoundIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'settings' ? (
+              <Cog6ToothIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
             {link && link === 'orderHcToLr'
               ? 'ORDER HC-LR'
               : link.toUpperCase()}
@@ -85,8 +108,9 @@ export const linksList = (
       {name && (
         <li className='transition-all duration-200 hover:bg-blue-100 rounded p-1'>
           <button
-            className='text-gray-200 hover:text-blue-800 hover:font-bold p-2 block rounded'
+            className='text-gray-200 hover:bg-blue-800 hover:font-bold p-2 flex rounded w-full'
             onClick={logoutFun}>
+            <ArrowLeftStartOnRectangleIcon className='h-6 w-6 text-gray-200' />
             Logout
           </button>
         </li>

@@ -4,7 +4,6 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
-import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Forza App',

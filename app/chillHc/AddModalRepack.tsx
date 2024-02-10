@@ -48,8 +48,6 @@ function AddRepackItemModal({
     }
   ];
 
-  console.log(products);
-
   const handleACodeSearch = (aCodeValue: string) => {
     // Find product by aCode
     const foundProduct = dummyProducts.find(
@@ -80,7 +78,6 @@ function AddRepackItemModal({
       date,
       repack
     };
-    console.log(newItem);
 
     onAdd(newItem);
     handleClose();

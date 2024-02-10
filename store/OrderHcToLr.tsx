@@ -9,6 +9,8 @@ export interface OrderObject {
   orderId?: number;
   archive?: boolean;
   date?: string;
+  priority: boolean;
+  startDate: string;
 }
 export interface NewOrderObject {
   webNumber: string;
@@ -16,6 +18,8 @@ export interface NewOrderObject {
   done?: boolean;
   orderId: number;
   archive?: boolean;
+  startDate?: string;
+  priority: boolean;
 }
 interface OrderState extends OrderObject {
   loadOrders: () => void;
@@ -27,11 +31,13 @@ interface OrderState extends OrderObject {
 const useOrderStore = create<OrderState>((set, get) => ({
   webNumber: '',
   quantities: 0,
+  priority: false,
   $id: '',
   done: false,
   archive: false,
-  oderId: 0,
+  oderId: 1,
   date: '',
+  startDate: '',
   loadOrders: async () => {
     const data = await database.listDocuments(
       '6510bb07873546043cae',
@@ -47,7 +53,9 @@ const useOrderStore = create<OrderState>((set, get) => ({
       '65b7c2b4eb99ce07b2fe',
       ID.unique(),
       {
+        startDate: new Date().toISOString(),
         webNumber: order.webNumber,
+        priority: order.priority,
         quantities: order.quantities,
         done: false,
         orderId: order.orderId

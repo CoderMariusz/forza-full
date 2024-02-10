@@ -3,18 +3,26 @@ import React, { useEffect, useState } from 'react';
 import OrderModal from './OrderModal';
 import OrderCard from './OrderCard';
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
+import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
+import { redirect, useRouter } from 'next/navigation';
+import { navigate } from '@/lib/action';
 
 const OrderHcToLrPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [webTrays, setWebTrays] = useState<WebTrays[]>([]);
   const [totalWebOrders, setTotalWebOrders] = useState<OrderObject[]>([]);
+  const router = useRouter();
 
   const loadOrders = async () => {
     const data = await useOrderStore.getState().loadOrders();
+    const webToOrder = await useWebTraysStore.getState().loadWebTraysFromDB();
 
     if (data !== undefined && data) {
       setTotalWebOrders(data);
-      console.log(data);
+    }
+    if (webToOrder !== undefined && webToOrder) {
+      setWebTrays(webToOrder);
     }
   };
 
@@ -54,8 +62,6 @@ const OrderHcToLrPage: React.FC = () => {
 
   const handleArchiveDoneOrders = () => {
     const doneOrders = totalWebOrders.filter((order) => order.done);
-
-    console.log(doneOrders);
     setLoading(!loading);
     doneOrders.forEach((order) => {
       useOrderStore
@@ -78,7 +84,15 @@ const OrderHcToLrPage: React.FC = () => {
 
   return (
     <div className='w-full'>
-      <h1 className='text-3xl p-3 font-bold'>Order HC to Lr</h1>
+      <div className='flex justify-between mb-2'>
+        <h1 className='text-3xl p-3 font-bold'>Order HC to Lr</h1>
+        <button
+          className='bg-green-500 px-3 py-2 m-4 mr-6'
+          name='archive'
+          onClick={() => router.push('/orderHcToLr/archive')}>
+          Archive
+        </button>
+      </div>
       <hr />
       <div>
         {sortedOrders.map(
@@ -102,7 +116,6 @@ const OrderHcToLrPage: React.FC = () => {
         className='p-2 m-3 bg-green-500 hover:bg-blue-600 hover:text-white duration-300  shadow-lg'
         onClick={() => {
           handleArchiveDoneOrders();
-          console.log('Archive done orders');
         }}>
         Archive done orders
       </button>
@@ -114,12 +127,13 @@ const OrderHcToLrPage: React.FC = () => {
             <OrderModal
               setIsOpen={(e) => setIsOpen(e)}
               webOrdersLength={
-                totalWebOrders.length > 0
+                totalWebOrders.length > 1
                   ? totalWebOrders.findLastIndex(
                       (order) => order !== undefined
                     ) + 1
-                  : 0
+                  : 1
               }
+              webTrays={webTrays}
               setLoading={(e) => setLoading(e)}
             />
           </div>

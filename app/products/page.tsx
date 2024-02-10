@@ -35,8 +35,6 @@ function ProductsPage() {
   };
 
   const handleProductSubmit = async (newOrEditedProduct: any) => {
-    console.log(newOrEditedProduct);
-
     if (
       products.some(
         (p) =>
@@ -45,14 +43,13 @@ function ProductsPage() {
       )
     ) {
       // Handle the case where the product is being edited
-      console.log('editing product');
 
       await useProductsStore
         .getState()
         .updateProduct(newOrEditedProduct.$id, newOrEditedProduct);
     } else {
       // Handle adding a new product
-      console.log('adding new product');
+
       await useProductsStore.getState().AddNewProduct(newOrEditedProduct);
     }
     setLoading(!loading);

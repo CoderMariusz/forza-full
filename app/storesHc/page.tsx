@@ -168,6 +168,7 @@ function StoresHcPage() {
       {currentView === 'StoresHc' && (
         <div className='container mx-auto p-4'>
           <h1 className='text-3xl font-bold mb-2'>Store</h1>
+
           <hr className='mb-4' />
           <table className='min-w-full table-auto'>
             <thead>
@@ -189,12 +190,14 @@ function StoresHcPage() {
                     key={index}
                     className='border-b border-gray-200 hover:bg-gray-100'>
                     <td className='py-3 px-6 text-left whitespace-nowrap'>
-                      {item.aCode}
+                      {item.aCode.join(', ')}
                     </td>
                     <td className='py-3 px-6 text-left whitespace-nowrap'>
                       {item.code}
                     </td>
-                    <td className='py-3 px-6 text-left'>{item.name}</td>
+                    <td className='py-3 px-6 text-left'>
+                      {item.name.join(',  ')}
+                    </td>
                     <td className='py-3 px-6 text-center'>
                       {item.quantities.join(', ')}
                     </td>
@@ -232,7 +235,6 @@ function StoresHcPage() {
           setIsOpenChange(false);
         }}
         onEdit={(updateItem) => {
-          console.log('edit');
           item && updateStoresHcToDB(updateItem);
           updateItemquantities(updateItem.id, updateItem.quantities);
           setIsOpenChange(false);

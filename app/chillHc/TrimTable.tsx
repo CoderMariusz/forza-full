@@ -39,7 +39,6 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
       };
 
       const addItem = await useTrimState.getState().addTrimToDB(newItem);
-      console.log(addItem);
 
       try {
         setTrim((trim: any) => [...trim, { ...newItem, id: addItem.$id }]);
@@ -49,8 +48,6 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
       } catch (e) {
         console.log(e);
       }
-
-      console.log(addItem);
     }
   };
 
@@ -61,7 +58,6 @@ const TrimTable: React.FC<TrimTableProps> = ({ isLoggedIn, trim, setTrim }) => {
     const item = await useTrimState.getState().removeTrimFromDB(id);
     const NewArray = trim.filter((item) => item.id !== id);
     setTrim(NewArray);
-    console.log(item);
   };
 
   return (

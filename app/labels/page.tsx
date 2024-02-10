@@ -14,7 +14,6 @@ const LabelsPage = () => {
   // Dummy fetch function, replace with actual data fetching logic
   const fetchLabelsData = async (): Promise<LabelItem[]> => {
     const data = await useLabelsStore.getState().loadLabelsFromDB();
-    console.log(data);
 
     setLabelsData(data);
     return data;
@@ -26,13 +25,11 @@ const LabelsPage = () => {
   }, [loading]);
 
   const handleAddNewLabel = (newLabel: NewLabelItem) => {
-    console.log(newLabel);
     useLabelsStore.getState().addNewLabel(newLabel);
     setLoading(false);
   };
 
   const removeLabel = async (id: string) => {
-    console.log(id);
     await useLabelsStore.getState().removeLabel(id);
     try {
       const newA = labelsData.filter((item) => item.$id !== id);
@@ -43,7 +40,6 @@ const LabelsPage = () => {
     }
   };
   const updateLabel = async (newI: LabelItem) => {
-    console.log(newI);
     await useLabelsStore.getState().updateLabel(newI.$id, newI);
     try {
       setLoading(false);

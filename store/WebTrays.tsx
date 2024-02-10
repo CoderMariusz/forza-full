@@ -51,7 +51,6 @@ export const useWebTraysStore = create<WebTraysStore>((set) => ({
     );
     try {
       set((state) => ({ ...state, data }));
-      console.log(data);
       console.log('Add new web functionality to be implemented');
       return data;
     } catch (e) {

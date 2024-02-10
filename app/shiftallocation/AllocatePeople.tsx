@@ -38,14 +38,8 @@ const AllocatePeople = ({
       lines[line.line] = { line: line.line, packers: [], slicers: [] };
     });
 
-    console.log(lines);
-    console.log(peopleAvailable);
-    console.log(lineWithAllocation);
-
     const allocateBasedOnPreference = (preferenceIndex: any) => {
       peopleAvailable.forEach((person: any) => {
-        console.log(person);
-
         const line = person.allocation[preferenceIndex];
         if (line && !allocated.has(person.name)) {
           const currentLine = lineWithAllocation.find(
@@ -108,7 +102,6 @@ const AllocatePeople = ({
   };
   const handelAllocate = () => {
     const { lines, extras } = allocate();
-    console.log(lines);
 
     setLines(lines);
     setExtras(extras);
