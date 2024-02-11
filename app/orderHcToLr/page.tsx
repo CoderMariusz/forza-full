@@ -5,6 +5,8 @@ import OrderCard from './OrderCard';
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
 import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
 import { useUserStore } from '@/store/UserStore';
+import { client, database } from '@/appwrite';
+import { useRouter } from 'next/navigation';
 
 const OrderHcToLrPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -12,6 +14,7 @@ const OrderHcToLrPage: React.FC = () => {
   const user = useUserStore((state) => state.name);
   const [webTrays, setWebTrays] = useState<WebTrays[]>([]);
   const [totalWebOrders, setTotalWebOrders] = useState<OrderObject[]>([]);
+  const router = useRouter();
 
   const loadOrders = async () => {
     const data = await useOrderStore.getState().loadOrders();
@@ -72,6 +75,18 @@ const OrderHcToLrPage: React.FC = () => {
   const handleOpenModal = () => {
     setIsOpen(true);
   };
+
+  useEffect(() => {
+    console.log('subscribing');
+
+    const unsubscribe = client.subscribe(
+      'collections.orderHcLr.documents',
+      (res) => {
+        console.log(res);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     loadOrders();

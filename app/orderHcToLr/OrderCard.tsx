@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { useUserStore } from '@/store/UserStore';
 
 interface OrderCardProps {
   id: number;
@@ -9,7 +10,7 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
   const [order, setOrder] = useState<OrderObject[]>([]);
-  const user = useOrderStore((state) => state.name);
+  const user = useUserStore((state) => state.name);
   let allDone = false;
 
   useEffect(() => {
@@ -29,6 +30,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
 
     setOrder(updatedOrders);
   };
+  console.log('order', user);
 
   // Sprawdzenie, czy wszystkie elementy zamówienia są oznaczone jako wykonane
   allDone = order.every((item) => item.done);
@@ -59,7 +61,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ id, data }) => {
               <ExclamationCircleIcon className='h-7 w-7 text-red-500' />
             )}
             {item.quantities}
-            {user === 'storeslr@forzafooods.com' ? (
+            {user === 'storeslr@forzafoods.com' ? (
               <button
                 className={`bg-[#a3bb43] text-white text-sm font-semibold px-3 py-2 ${
                   item.done ? 'hidden' : ''
