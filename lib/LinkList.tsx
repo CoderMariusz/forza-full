@@ -46,6 +46,7 @@ export const linksList = (
     'rmMaterials',
     'settings'
   ];
+  const storesLr = ['dashboard', 'storesLr', 'orderHcToLr', 'settings'];
 
   const logoutFun = async () => {
     await logout();
@@ -70,6 +71,7 @@ export const linksList = (
   if (name === 'planning@forzafoods.com') links = linksPlanning;
   if (name === 'process@forzafoods.com') links = linksProcess;
   if (name === 'npd@forzafoods.com') links = linksNpd;
+  if (name === 'storeslr@forzafoods.com') links = storesLr;
 
   return (
     <>
@@ -88,6 +90,9 @@ export const linksList = (
               <HomeIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
             {link === 'storesHc' ? (
+              <CircleStackIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'storesLr' ? (
               <CircleStackIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
             {link === 'orderHcToLr' ? (

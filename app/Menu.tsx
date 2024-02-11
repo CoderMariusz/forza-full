@@ -34,7 +34,7 @@ function Menu() {
   }, [loading]);
 
   return (
-    <div className='hidden md:flex flex-col gap-4 w-48 p-2 bg-cyan-700 min-h-full'>
+    <div className='hidden md:flex flex-col gap-4 w-48 p-4 bg-cyan-700 min-h-full'>
       <div className='flex justify-center items-center bg-yellow-500 ml-3 rounded-full w-16 h-16 '>
         <h2 className='text-white text-3xl font-bold'>
           {name.slice(0, 1).toUpperCase()}
@@ -42,7 +42,7 @@ function Menu() {
       </div>
 
       <h2 className='text-gray-200 ml-3 font-semibold text-lg'>
-        Hi, {name.slice(0, 12)}...
+        Hi, {name.slice(0, 10)}...
       </h2>
       <nav>
         <ul className='flex flex-col gap-y-2 w-full'>

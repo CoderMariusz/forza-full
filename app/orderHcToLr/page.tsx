@@ -4,15 +4,14 @@ import OrderModal from './OrderModal';
 import OrderCard from './OrderCard';
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
 import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
-import { redirect, useRouter } from 'next/navigation';
-import { navigate } from '@/lib/action';
+import { useUserStore } from '@/store/UserStore';
 
 const OrderHcToLrPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const user = useUserStore((state) => state.name);
   const [webTrays, setWebTrays] = useState<WebTrays[]>([]);
   const [totalWebOrders, setTotalWebOrders] = useState<OrderObject[]>([]);
-  const router = useRouter();
 
   const loadOrders = async () => {
     const data = await useOrderStore.getState().loadOrders();
@@ -94,7 +93,7 @@ const OrderHcToLrPage: React.FC = () => {
         </button>
       </div>
       <hr />
-      <div>
+      <div className='flex gap-3 flex-wrap'>
         {sortedOrders.map(
           (order, index) =>
             (order[0].archive === null || false) && (
@@ -112,13 +111,16 @@ const OrderHcToLrPage: React.FC = () => {
         className='bg-blue-400 hover:bg-blue-600 p-2 m-3 text-white font-semibold '>
         Add Order
       </button>
-      <button
-        className='p-2 m-3 bg-green-500 hover:bg-blue-600 hover:text-white duration-300  shadow-lg'
-        onClick={() => {
-          handleArchiveDoneOrders();
-        }}>
-        Archive done orders
-      </button>
+      {user === 'storeshc@forzafoods.com' ? (
+        <button
+          className='p-2 m-3 bg-green-500 hover:bg-blue-600 hover:text-white duration-300  shadow-lg'
+          onClick={() => {
+            handleArchiveDoneOrders();
+            setLoading(!loading);
+          }}>
+          Archive done orders
+        </button>
+      ) : null}
 
       {/* Modal component */}
       {isOpen && (

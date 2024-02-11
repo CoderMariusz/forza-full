@@ -67,9 +67,6 @@ export default function QRPage(props: any) {
         <Link href='/qr/scanner'>
           <p className='text-blue-500'>Go to Scanner</p>
         </Link>
-        <h1>Strona QR</h1>
-        <p>Imię: {name}</p>
-        <p>Wiek: {age}</p>
       </div>
     </div>
   );
