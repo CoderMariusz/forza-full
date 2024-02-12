@@ -1,229 +1,160 @@
-// 'use client';
-// import React, { useEffect, useState } from 'react';
-// import ExcelReader from './ExcelReader';
-// import {
-//   useProductionProductStore,
-//   useProductionStore
-// } from '@/store/Production';
-// import AddModal from './AddModal';
-// import { useProductsStore } from '@/store/Products';
-// import Production from './Production';
-// import Available from './Available';
-// import {
-//   WeeklyProductionRow,
-//   useWeeklyReportStore
-// } from '@/store/WeeklyReportStore';
-// import { useUserStore } from '@/store/UserStore';
+'use client';
+import { BarChart } from '@/lib/BarChart';
+import ExcelReader from '@/lib/ExcelReader';
+import { LineChart } from '@/lib/LineChart';
+import { NewPlanningItem, usePlanningStore } from '@/store/Production';
+import { use, useEffect, useState } from 'react';
+import ProductionTable from './ProductionTable';
+import StartUp from './Startup';
 
-// interface MyData {
-//   aCode: string;
-//   quantities: number | null;
-//   date: string | Date | number;
-// }
-
-// // Define a type for the labelMap object
-// type LabelMap = {
-//   [labelCode: string]: {
-//     count: number;
-//     totalWaste: number;
-//     labelId: string;
-//   };
-// };
-
-// function ProductionPage() {
-//   const [data, setData] = useState<MyData[]>([]);
-//   const [products, setProducts] = useState<any[]>([]);
-//   const [isModalOpen, setModalOpen] = useState(false);
-//   const [Bookmark, setBookmark] = useState(0);
-//   const [availableData, setAvailableData] = useState<any[]>([]);
-//   const [processedData, setProcessedData] = useState<any[]>([]);
-//   const user = useUserStore((state) => state.name);
-
-//   function formatDate(inputStr: string | number | Date) {
-//     const date = new Date(inputStr); // create a Date object
-//     const day = String(date.getDate()).padStart(2, '0');
-//     const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-//     const year = date.getFullYear();
-
-//     return `${day}/${month}/${year}`;
-//   }
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const products = await useProductsStore.getState().loadProductsFromDB();
-
-//       setProducts(products);
-
-//       const production = await useProductionStore
-//         .getState()
-//         .setProductsFromDB();
-
-//       const weeklyReport = await useWeeklyReportStore
-//         .getState()
-//         .setWeeklyReportFromDBinRow();
-
-//       production.map((row) => {
-//         row.date = formatDate(row.date) as unknown as string;
-//       });
-
-//       setData(production);
-//       setAvailableData(weeklyReport);
-//     };
-
-//     fetchData();
-//   }, []);
-
-//   const sortedData = [...data].sort((a: MyData, b: MyData) => {
-//     const getDateTimestamp = (input: string | Date): number => {
-//       if (typeof input === 'string') {
-//         // Convert "DD/MM/YYYY" to "YYYY/MM/DD" and return the timestamp
-//         return new Date(input.split('/').reverse().join('/')).getTime();
-//       } else {
-//         // Return the timestamp of the Date object
-//         return input.getTime();
-//       }
-//     };
-
-//     if (typeof a.date === 'number' && typeof b.date === 'number') {
-//       return a.date - b.date;
-//     } else if (typeof a.date === 'number') {
-//       return -1; // Consider numbers as smaller
-//     } else if (typeof b.date === 'number') {
-//       return 1; // Consider numbers as smaller
-//     } else {
-//       const dateA = getDateTimestamp(a.date);
-//       const dateB = getDateTimestamp(b.date);
-//       return dateA - dateB;
-//     }
-//   });
-
-//   const onAdd = (production: {
-//     aCode: string;
-//     quantities: number;
-//     date: Date;
-//   }) => {
-//     setData([...data, production]);
-//     useProductionProductStore.getState().createProduct(production);
-//   };
-
-//   function processData(data: WeeklyProductionRow[]): any {
-//     const labelMap: LabelMap = {};
-
-//     // Loop through each data entry
-//     data.forEach((entry) => {
-//       const { labelCode, wasted, labelId } = entry;
-
-//       // Check if the labelCode exists in the labelMap
-//       if (!labelMap[labelCode]) {
-//         labelMap[labelCode] = {
-//           count: 0,
-//           totalWaste: 0,
-//           labelId: labelId!
-//         };
-//       }
-
-//       // Increment the count for this labelCode
-//       labelMap[labelCode].count += 1;
-
-//       // Add to the total waste for this labelCode
-//       labelMap[labelCode].totalWaste += wasted;
-//     });
-
-//     // Convert the labelMap to the desired array format
-//     const result = [];
-//     for (const labelCode in labelMap) {
-//       const { count, totalWaste, labelId } = labelMap[labelCode];
-//       const avgWaste = totalWaste / count;
-
-//       result.push({
-//         labelCode,
-//         timesProduced: count,
-//         averageWaste: avgWaste.toFixed(2),
-//         labelId
-//       });
-//     }
-
-//     return result;
-//   }
-
-//   const changeStoresBookmark = (number: number) => {
-//     if (number >= 0 && number <= 3) {
-//       setBookmark(number);
-//     } else {
-//       console.warn('Invalid bookmark number');
-//     }
-//   };
-
-//   if (user === '') {
-//     console.log('no user');
-
-//     return <div>You need to be log in!</div>;
-//   }
-
-//   return (
-//     <div className='w-full my-4'>
-//       <div className='flex flex-col pl-3'>
-//         <h1 className='text-3xl font-bold mb-1'>Production</h1>
-//         <ExcelReader
-//           setData={setData}
-//           dataFromPage={data}
-//         />
-//         <button
-//           onClick={() => setModalOpen(true)}
-//           className='bg-blue-600 w-48 text-white p-2 rounded hover:bg-blue-700'>
-//           Add Production
-//         </button>
-//       </div>
-//       <hr className='mb-4' />
-//       <div className='flex bg-slate-100 mb-2 rounded-md'>
-//         <button
-//           className='p-3 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2 rounded-tl-md rounded-bl-md'
-//           onClick={() => changeStoresBookmark(0)}>
-//           Production
-//         </button>
-//         <button
-//           className='p-3 px-4 font-bold hover:bg-blue-300 transition-all duration-200 border-r-2'
-//           onClick={() => changeStoresBookmark(1)}>
-//           Available to produce.
-//         </button>
-//       </div>
-//       {(() => {
-//         switch (Bookmark) {
-//           case 0: {
-//             return <Production sortedData={sortedData} />;
-//           }
-
-//           case 1: {
-//             if (availableData.length > 0 && processedData.length === 0) {
-//               const processedData = processData(availableData);
-
-//               setProcessedData(processedData);
-//             }
-
-//             return <Available data={processedData} />;
-//           }
-
-//           default:
-//             return <Production sortedData={sortedData} />;
-//         }
-//       })()}
-
-//       <AddModal
-//         isOpen={isModalOpen}
-//         onClose={() => setModalOpen(false)}
-//         onAdd={onAdd}
-//         products={products}
-//       />
-//     </div>
-//   );
-// }
-
-// export default ProductionPage;
-
-import React from 'react';
-
-function Production() {
-  return <div>Production</div>;
+interface ToolCardProps {
+  title: string;
+  description: string;
+  setAnimation: (e: boolean) => void;
 }
 
-export default Production;
+// Define the prop types for Chart
+interface ChartProps {
+  title: string;
+  type: 'bar' | 'line';
+}
+
+const ProductionPage = () => {
+  const [animationSection, setAnimationSection] = useState(false);
+  const [view, setView] = useState('');
+  const [excelData, setExcelData] = useState<NewPlanningItem[]>([]);
+
+  const secondLoopAnimation = () => {
+    setTimeout(() => {
+      setAnimationSection(true);
+    }, 700);
+  };
+
+  const setAnimation = (view: string) => {
+    if (animationSection === false) {
+      setView(view);
+    }
+    setAnimationSection(!animationSection);
+
+    setTimeout(() => {
+      setView(view);
+    }, 500);
+    secondLoopAnimation();
+  };
+
+  useEffect(() => {
+    console.log(excelData);
+  }, [excelData]);
+
+  return (
+    <div className='container mx-auto p-4'>
+      <h1 className='text-3xl font-bold underline text-center mb-4'>
+        Production Dashboard
+      </h1>
+      <ExcelReader setDataFrom={(e: any) => setExcelData(e)} />
+      <hr className='mb-4' />
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4'>
+        {/* Placeholder for Tools */}
+        <ToolCard
+          setAnimation={() => setAnimation('view1')}
+          title='Prepare Start Sheet'
+          description='Generate the starting conditions for production lines.'
+        />
+        <ToolCard
+          setAnimation={() => setAnimation('view2')}
+          title='Planning Manning'
+          description='Plan and schedule manpower for each line.'
+        />
+        <ToolCard
+          setAnimation={() => setAnimation('view3')}
+          title='Allocation People on Line'
+          description='Allocate workers to their respective production lines.'
+        />
+        <ToolCard
+          setAnimation={() => setAnimation('view4')}
+          title='New Training'
+          description='Initiate training programs for new equipment or procedures.'
+        />
+        {/* Additional Tools as needed */}
+      </div>
+      <div
+        className={` bg-white min-h-[300px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden ${
+          animationSection === false ? 'min-h-0 h-0 p-0 text-white' : null
+        }`}>
+        {view === 'view1' && (
+          <div>
+            <h2 className='text-xl font-semibold mb-3'>
+              Start-Up Information{' '}
+            </h2>
+            <StartUp />
+          </div>
+        )}
+
+        {view === 'view2' && (
+          <div className=''>
+            <h2 className='text-xl font-semibold mb-3'>time sheet</h2>
+            <div>
+              <p>
+                This section will display the time sheet for the selected
+                production line.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className='bg-white min-h-[300px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden'>
+        <h1>Production Schedule</h1>
+        <ProductionTable productionData={excelData} />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+        {/* Efficiency Charts */}
+        <Chart
+          title='Line Efficiency'
+          type='bar'
+        />
+        <Chart
+          title='Timeline Production'
+          type='line'
+        />
+      </div>
+      {/* Placeholder for AI Implementation */}
+      <div className='bg-gray-100 p-4 rounded-lg shadow'>
+        <h2 className='text-xl font-semibold mb-3'>
+          AI Integration (Coming Soon)
+        </h2>
+        <p>
+          This section will integrate AI capabilities to assist with production
+          decisions.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ToolCard: React.FC<ToolCardProps> = ({
+  title,
+  description,
+  setAnimation
+}) => {
+  return (
+    <button
+      className='bg-white p-4 rounded-lg shadow hover:bg-green-600/40 transition-all duration-500 '
+      onClick={() => setAnimation(true)}>
+      <h3 className='text-lg font-semibold'>{title}</h3>
+      <p>{description}</p>
+    </button>
+  );
+};
+
+const Chart: React.FC<ChartProps> = ({ title, type }) => {
+  return (
+    <div className='bg-white p-4 rounded-lg shadow'>
+      <h3 className='text-lg font-semibold'>{title}</h3>
+      <div className='h-64'>
+        {type === 'bar' ? <BarChart /> : <LineChart />}
+      </div>
+    </div>
+  );
+};
+
+export default ProductionPage;

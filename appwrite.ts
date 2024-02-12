@@ -10,6 +10,10 @@ import {
 
 const client = new Client();
 
+const clientReal = new Client()
+  .setEndpointRealtime('wss://cloud.appwrite.io/v1/realtime')
+  .setProject('6510ab663173c4d1180d');
+
 client
   .setEndpoint('https://cloud.appwrite.io/v1')
   .setProject('6510ab663173c4d1180d');
@@ -23,4 +27,4 @@ const avatars = new Avatars(client);
 
 console.log('Appwrite initialized');
 
-export { client, account, database, storage, ID, avatars };
+export { client, account, database, storage, ID, avatars, clientReal };

@@ -11,13 +11,15 @@ interface OrderModalProps {
   setIsOpen: (e: boolean) => void;
   webOrdersLength: number;
   setLoading: (e: boolean) => void;
+  loading: boolean;
 }
 
 const OrderModal: React.FC<OrderModalProps> = ({
   setIsOpen,
   webTrays,
   webOrdersLength,
-  setLoading
+  setLoading,
+  loading
 }) => {
   const [order, setOrder] = useState<NewOrderObject[]>([]);
   const [webNumber, setWebNumber] = useState('');
@@ -55,7 +57,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    setLoading(false);
+    setLoading(!loading);
     setOrder([]);
   };
 

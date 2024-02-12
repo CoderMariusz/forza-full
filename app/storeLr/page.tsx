@@ -2,7 +2,6 @@
 import { useUserStore } from '@/store/UserStore';
 import React, { use, useState } from 'react';
 
-// Definicja typu dla produktów
 interface Product {
   code: string;
   name: string;
@@ -10,11 +9,10 @@ interface Product {
   supplierCode: string;
   location: string;
   quantity: number;
-  deliveryDate?: string; // Opcjonalne tylko dla RM Stock
-  expirationDate?: string; // Opcjonalne tylko dla RM Stock
+  deliveryDate?: string;
+  expirationDate?: string;
 }
 
-// Przykładowe dane produktów
 const dryGoodsSample: Product[] = [
   {
     code: 'DG001',

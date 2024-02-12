@@ -2,6 +2,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
   CircleStackIcon,
   Cog6ToothIcon,
+  CogIcon,
   CurrencyPoundIcon,
   FolderPlusIcon,
   HomeIcon,
@@ -32,10 +33,9 @@ export const linksList = (
   const linksProduction = [
     'dashboard',
     'products',
-    'labels',
-    'orders',
     'production',
-    'stores',
+    'storesHc',
+    'chillHc',
     'settings'
   ];
   const linksNpd = [
@@ -72,6 +72,7 @@ export const linksList = (
   if (name === 'process@forzafoods.com') links = linksProcess;
   if (name === 'npd@forzafoods.com') links = linksNpd;
   if (name === 'storeslr@forzafoods.com') links = storesLr;
+  if (name === 'production@forzafoods.com') links = linksProduction;
 
   return (
     <>
@@ -88,6 +89,9 @@ export const linksList = (
             className='text-cyan-200 hover:text-gray-700 hover:font-bold p-2 rounded flex'>
             {link === 'dashboard' ? (
               <HomeIcon className='h-6 w-6 text-gray-200 mr-2' />
+            ) : null}
+            {link === 'production' ? (
+              <CogIcon className='h-6 w-6 text-gray-200 mr-2' />
             ) : null}
             {link === 'storesHc' ? (
               <CircleStackIcon className='h-6 w-6 text-gray-200 mr-2' />

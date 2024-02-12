@@ -77,15 +77,13 @@ const OrderHcToLrPage: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('subscribing');
-
-    const unsubscribe = client.subscribe(
-      'collections.orderHcLr.documents',
-      (res) => {
-        console.log(res);
-      }
-    );
-    return () => unsubscribe();
+    loadOrders();
+    console.log('loading orders');
+    setLoading(true);
+    const interval = setInterval(() => {
+      loadOrders();
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -96,6 +94,12 @@ const OrderHcToLrPage: React.FC = () => {
 
   const sortedOrders = sortAndGroupByOrderId(totalWebOrders);
 
+  const findLargestOrderId = (ordersArray: OrderObject[]) => {
+    return ordersArray.reduce(
+      (max, order) => (order.orderId ?? max > max ? order.orderId ?? max : max),
+      ordersArray[0].orderId ?? 0
+    );
+  };
   return (
     <div className='w-full'>
       <div className='flex justify-between mb-2'>
@@ -116,6 +120,8 @@ const OrderHcToLrPage: React.FC = () => {
                 key={index}
                 id={index}
                 data={order}
+                setLoading={(e) => setLoading(e)}
+                loading={loading}
               />
             )
         )}
@@ -143,15 +149,10 @@ const OrderHcToLrPage: React.FC = () => {
           <div className='bg-white p-4'>
             <OrderModal
               setIsOpen={(e) => setIsOpen(e)}
-              webOrdersLength={
-                totalWebOrders.length > 1
-                  ? totalWebOrders.findLastIndex(
-                      (order) => order !== undefined
-                    ) + 1
-                  : 1
-              }
+              webOrdersLength={findLargestOrderId(totalWebOrders) + 1}
               webTrays={webTrays}
               setLoading={(e) => setLoading(e)}
+              loading={loading}
             />
           </div>
         </div>

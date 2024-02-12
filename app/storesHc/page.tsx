@@ -7,8 +7,21 @@ import Webs from './Webs';
 import AddModal from './AddModal';
 import ChangeModal from './ChangeModal';
 import * as XLSX from 'xlsx';
-import { WebTrays, WebTraysStore, useWebTraysStore } from '@/store/WebTrays';
+import {
+  NewWebTrays,
+  WebTrays,
+  WebTraysStore,
+  useWebTraysStore
+} from '@/store/WebTrays';
 import { Product, useProductsStore } from '@/store/Products';
+import ScannerModal from './ScannerModal';
+
+export interface ScannerDataHC {
+  aCode: string;
+  code: string;
+  name: string;
+  quantities: string;
+}
 
 function StoresHcPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +41,9 @@ function StoresHcPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenChange, setIsOpenChange] = useState(false);
   const [item, setItem] = useState<StoresHcObject>();
+  const [isOpenScanner, setIsOpenScanner] = useState(false);
+  const [scannerData, setScannerData] = useState<any>('');
+  const [scannerDataArray, setScannerDataArray] = useState<ScannerDataHC>();
 
   const getBookmarkClass = (viewName: string) => {
     return currentView === viewName
@@ -115,6 +131,29 @@ function StoresHcPage() {
     }
   };
 
+  useEffect(() => {
+    if (scannerData === '') return;
+    const array = scannerData.split('!@');
+    const newObject = {
+      aCode: array[0],
+      code: array[1],
+      name: array[2],
+      quantities: array[3]?.split(',')
+    };
+
+    setScannerDataArray(newObject);
+
+    setIsOpenScanner(false);
+  }, [scannerData]);
+
+  useEffect(() => {
+    console.log('wew');
+    if (scannerData !== '' && scannerDataArray !== undefined) {
+      setIsOpen(true);
+      setScannerData('');
+    }
+  }, [scannerDataArray]);
+
   const sortedData = sortByCode(data, searchQuery);
 
   return (
@@ -131,13 +170,22 @@ function StoresHcPage() {
           className='p-2 border rounded'
         />
         {user === 'storeshc@forzafoods.com' && (
-          <button
-            onClick={() => {
-              setIsOpen(true);
-            }}
-            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
-            Add Web +
-          </button>
+          <div className='flex gap-2'>
+            <button
+              onClick={() => {
+                setIsOpen(true);
+              }}
+              className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
+              Add Web +
+            </button>
+            <button
+              onClick={() => {
+                setIsOpenScanner(true);
+              }}
+              className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
+              ScanQr Code
+            </button>
+          </div>
         )}
       </div>
 
@@ -158,6 +206,8 @@ function StoresHcPage() {
           Trays
         </button>
       </div>
+
+      <div>{scannerDataArray && scannerDataArray.aCode}</div>
 
       {!loading && (
         <h3>
@@ -228,6 +278,7 @@ function StoresHcPage() {
         onAdd={(e) => addObject(e)}
         products={products}
         webTraysData={websData}
+        scannerData={scannerDataArray}
       />
       <ChangeModal
         isOpen={isOpenChange}
@@ -240,6 +291,11 @@ function StoresHcPage() {
           setIsOpenChange(false);
         }}
         item={item}
+      />
+      <ScannerModal
+        open={isOpenScanner}
+        setOpen={(e) => setIsOpenScanner(e)}
+        setReading={(e) => setScannerData(e)}
       />
       <div className='pt-4'>
         <button

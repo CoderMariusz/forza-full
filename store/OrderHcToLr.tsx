@@ -1,4 +1,5 @@
-import { ID, database } from '@/appwrite';
+import { ID, client, database } from '@/appwrite';
+import { Client } from 'appwrite';
 import { create } from 'zustand';
 
 export interface OrderObject {
@@ -26,6 +27,7 @@ interface OrderState extends OrderObject {
   addOrder: (order: NewOrderObject) => void;
   removeOrder: (id: string) => void;
   updateOrder: (id: string, order: OrderObject) => void;
+  liveOrders: () => void;
 }
 
 const useOrderStore = create<OrderState>((set, get) => ({
@@ -84,6 +86,13 @@ const useOrderStore = create<OrderState>((set, get) => ({
         date: order.date
       }
     );
+    set((state) => ({ ...state, data }));
+  },
+  liveOrders: async () => {
+    const data = await client.subscribe('database.*', (event) => {
+      console.log(event);
+      return event;
+    });
     set((state) => ({ ...state, data }));
   }
 }));

@@ -46,6 +46,8 @@ function LoginForm() {
     setEmail(email.toLocaleLowerCase());
   };
 
+  name === 'production@forzafoods.com' && redirect('/production');
+
   name && redirect('/dashboard');
 
   return (

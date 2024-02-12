@@ -2,6 +2,7 @@
 import { Product } from '@/store/Products';
 import { WebTrays } from '@/store/WebTrays';
 import React, { useState, useEffect } from 'react';
+import { ScannerDataHC } from './page';
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface AddItemModalProps {
   onAdd: (data: any) => void; // Consider using a more specific type here
   webTraysData: WebTrays[];
   products: Product[];
+  scannerData?: ScannerDataHC;
 }
 
 function AddItemModal({
@@ -16,7 +18,8 @@ function AddItemModal({
   onClose,
   onAdd,
   webTraysData,
-  products
+  products,
+  scannerData
 }: AddItemModalProps) {
   const [selectedWebCode, setSelectedWebCode] = useState('');
   const [associatedProducts, setAssociatedProducts] = useState<Product[]>([]);
@@ -30,6 +33,13 @@ function AddItemModal({
     setAssociatedProducts(relatedProducts);
     console.log('relatedProducts', relatedProducts);
   }, [selectedWebCode, products]);
+
+  useEffect(() => {
+    if (scannerData?.code !== undefined || scannerData?.code !== null) {
+      console.log('inside modal', scannerData);
+      setSelectedWebCode(scannerData?.code ?? '');
+    }
+  }, [scannerData]);
 
   const handleAddQuantities = () => setQuantities([...quantities, '']);
 

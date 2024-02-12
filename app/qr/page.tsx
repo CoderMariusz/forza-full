@@ -8,6 +8,7 @@ export default function QRPage(props: any) {
   const [inputData1, setInputData1] = useState('');
   const [inputData2, setInputData2] = useState('');
   const [inputData3, setInputData3] = useState('');
+  const [inputData4, setInputData4] = useState('');
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
 
@@ -26,7 +27,15 @@ export default function QRPage(props: any) {
       <div className='flex flex-col items-center'>
         <h2 className='text-2xl font-bold mb-4'>Scan QR Code</h2>
         <Canvas
-          text={inputData1 + ' ' + inputData2 + ' ' + inputData3}
+          text={
+            inputData1 +
+            '!@' +
+            inputData2 +
+            '!@' +
+            inputData3 +
+            '!@' +
+            inputData4
+          }
           options={{
             errorCorrectionLevel: 'M',
             margin: 3,
@@ -60,6 +69,13 @@ export default function QRPage(props: any) {
           placeholder='Input 3'
           value={inputData3}
           onChange={(e) => setInputData3(e.target.value)}
+          className='mb-2 p-2 border rounded'
+        />
+        <input
+          type='text'
+          placeholder='Input 4'
+          value={inputData4}
+          onChange={(e) => setInputData4(e.target.value)}
           className='mb-2 p-2 border rounded'
         />
       </div>
