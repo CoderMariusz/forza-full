@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { useUserStore } from '@/store/UserStore';
 
 ChartJS.register(
   CategoryScale,
@@ -139,6 +140,7 @@ const ProductionLive: React.FC = () => {
   const [dayProductionArray, setDayProductionArray] =
     useState<ProductionData>();
   const lineCounts: Record<number, number> = {};
+  const user = useUserStore((state) => state.name);
 
   const fetchDataAndUpdate = async () => {
     const fetchedData = await fetchData();
@@ -202,6 +204,10 @@ const ProductionLive: React.FC = () => {
 
     console.log('Data updated:', dataChart2.datasets[0].data);
   }, [data]);
+
+  if (user === '' || user === undefined) {
+    return <div>Not authorized</div>;
+  }
 
   return (
     <div className='container mx-auto p-4 bg-slate-800'>

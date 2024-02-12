@@ -5,7 +5,6 @@ import OrderCard from './OrderCard';
 import { OrderObject, useOrderStore } from '@/store/OrderHcToLr';
 import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
 import { useUserStore } from '@/store/UserStore';
-import { client, database } from '@/appwrite';
 import { useRouter } from 'next/navigation';
 
 const OrderHcToLrPage: React.FC = () => {
@@ -100,6 +99,10 @@ const OrderHcToLrPage: React.FC = () => {
       ordersArray[0].orderId ?? 0
     );
   };
+
+  if (user === '' || user === undefined) {
+    return <div>Not authorized</div>;
+  }
   return (
     <div className='w-full'>
       <div className='flex justify-between mb-2'>

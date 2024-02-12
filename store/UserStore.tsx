@@ -23,6 +23,8 @@ export const useUserStore = create<UserState>((set) => ({
   loginUser: async (email: string, password: string) => {
     try {
       const user = await account.createEmailSession(email, password);
+      console.log(user);
+
       localStorage.setItem('session', user.$id);
       localStorage.setItem('uid', user.userId);
       return user;

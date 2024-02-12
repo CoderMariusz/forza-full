@@ -7,6 +7,7 @@ import { use, useEffect, useState } from 'react';
 import ProductionTable from './ProductionTable';
 import StartUp from './Startup';
 import { ChevronUpIcon } from '@heroicons/react/24/outline';
+import { useUserStore } from '@/store/UserStore';
 
 interface ToolCardProps {
   title: string;
@@ -25,6 +26,7 @@ const ProductionPage = () => {
   const [view, setView] = useState('');
   const [excelData, setExcelData] = useState<NewPlanningItem[]>([]);
   const [height, setHeight] = useState('');
+  const user = useUserStore((state) => state.name);
 
   const secondLoopAnimation = () => {
     setTimeout(() => {
@@ -57,6 +59,10 @@ const ProductionPage = () => {
   useEffect(() => {
     console.log(excelData);
   }, [excelData]);
+
+  if (user === '' || user === null || user === undefined) {
+    return <div>Not authorize try login one more time</div>;
+  }
 
   return (
     <div className='container mx-auto p-4'>

@@ -5,6 +5,7 @@ import { RmMaterial, useRmMaterialsStore } from '@/store/RmMaterials';
 import { WebTrays, useWebTraysStore } from '@/store/WebTrays';
 import React, { use, useEffect, useState } from 'react';
 import EditAddProductModal from './EditAddModal';
+import { useUserStore } from '@/store/UserStore';
 
 function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,6 +18,7 @@ function ProductsPage() {
   const [productToEdit, setProductToEdit] = useState<Product | undefined>(
     undefined
   );
+  const user = useUserStore((state) => state.name);
 
   const fetchData = async () => {
     const products = await useProductsStore.getState().loadProductsFromDB();
@@ -69,6 +71,10 @@ function ProductsPage() {
       product.labelCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (user === '' || user === undefined) {
+    return <div>Not authorized</div>;
+  }
+
   return (
     <div className='container mx-auto px-4'>
       <h1 className='text-xl font-bold text-center my-4'>Products</h1>
@@ -118,17 +124,19 @@ function ProductsPage() {
                 <td className='border px-2 py-2'>
                   {product.additionalInfo || 'N/A'}
                 </td>
-                <td className='border px-4 py-2'>
-                  <button
-                    onClick={() => editProduct(product)}
-                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2'>
-                    Edit
-                  </button>
+                {user === 'npd@forzafoods.com' ? (
+                  <td className='border px-4 py-2'>
+                    <button
+                      onClick={() => editProduct(product)}
+                      className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2'>
+                      Edit
+                    </button>
 
-                  <button className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'>
-                    Delete
-                  </button>
-                </td>
+                    <button className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'>
+                      Delete
+                    </button>
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>
