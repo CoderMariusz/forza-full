@@ -12,7 +12,7 @@ import { useUserStore } from '@/store/UserStore';
 interface ToolCardProps {
   title: string;
   description: string;
-  setAnimation: (e: boolean) => void;
+  setAnimation: (e: boolean | null) => void;
 }
 
 // Define the prop types for Chart
@@ -22,10 +22,14 @@ interface ChartProps {
 }
 
 const ProductionPage = () => {
-  const [animationSection, setAnimationSection] = useState(false);
+  const [animationSection, setAnimationSection] = useState<boolean | null>(
+    null
+  );
   const [view, setView] = useState('');
   const [excelData, setExcelData] = useState<NewPlanningItem[]>([]);
+  const [productionData, setProductionData] = useState<any>([]);
   const [height, setHeight] = useState('');
+  const [height2, setHeight2] = useState('');
   const user = useUserStore((state) => state.name);
 
   const secondLoopAnimation = () => {
@@ -48,17 +52,32 @@ const ProductionPage = () => {
   };
 
   const fold = (e: string) => {
-    if (height !== 'h-14 min-h-0') {
-      setHeight('h-14 min-h-0');
-      console.log('????');
-    } else {
-      setHeight('min-h-[300px] h-[300px]');
+    if (e === 'view1') {
+      if (height !== 'h-14 min-h-0') {
+        setHeight('h-14 min-h-0');
+        console.log('????');
+      }
+      if (height === 'h-14 min-h-0') {
+        setHeight('min-h-[300px] h-[300px]');
+      }
+    }
+    if (e === 'Production Schedule') {
+      if (height2 !== 'h-14 min-h-0') {
+        setHeight2('h-14 min-h-0');
+      }
+      if (height2 === 'h-14 min-h-0') {
+        setHeight2('min-h-[300px]');
+      }
     }
   };
 
   useEffect(() => {
     console.log(excelData);
   }, [excelData]);
+  useEffect(() => {
+    console.log(productionData);
+    console.log('productionData');
+  }, [productionData]);
 
   if (user === '' || user === null || user === undefined) {
     return <div>Not authorize try login one more time</div>;
@@ -69,7 +88,17 @@ const ProductionPage = () => {
       <h1 className='text-3xl font-bold underline text-center mb-4'>
         Production Dashboard
       </h1>
-      <ExcelReader setDataFrom={(e: any) => setExcelData(e)} />
+      <div className='flex gap-3'>
+        <ExcelReader
+          setDataFrom={(e: any) => setExcelData(e)}
+          name='planning'
+        />
+
+        <ExcelReader
+          setDataFrom={(e: any) => setProductionData(e)}
+          name='production'
+        />
+      </div>
       <hr className='mb-4' />
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4'>
         {/* Placeholder for Tools */}
@@ -96,7 +125,7 @@ const ProductionPage = () => {
         {/* Additional Tools as needed */}
       </div>
       <div
-        className={` bg-white min-h-[300px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden ${
+        className={` bg-white min-h-[56px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden ${
           animationSection === false ? 'min-h-0 h-0 p-0 text-white' : null
         } ${height}`}>
         {view === 'view1' && (
@@ -106,7 +135,11 @@ const ProductionPage = () => {
                 Start-Up Information{' '}
               </h2>
               <ChevronUpIcon
-                className='h-8 w-8 text-gray-600 p-1 border-2 border-gray-600/20 rounded-full '
+                className={`${
+                  height === 'min-h-[300px] h-[300px]'
+                    ? 'rotate-180'
+                    : 'rotate-0'
+                } h-8 w-8 text-gray-600 p-1 border-2 border-gray-600/20 rounded-full hover:bg-gray-600/20 transition-all duration-500 cursor-pointer `}
                 onClick={() => fold('view1')}
               />
             </div>
@@ -126,9 +159,27 @@ const ProductionPage = () => {
           </div>
         )}
       </div>
-      <div className='bg-white min-h-[300px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden'>
-        <h1>Production Schedule</h1>
-        <ProductionTable productionData={excelData} />
+      <div
+        className={` bg-white min-h-[80px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden ${
+          animationSection === false ? 'min-h-0 h-0 p-0 text-white' : null
+        } ${height2}`}>
+        <div className='flex justify-between'>
+          <h1 className='text-xl font-semibold mb-3'>Production Schedule</h1>
+          <ChevronUpIcon
+            className={`${
+              height2 === 'min-h-[300px]' ? 'rotate-180' : 'rotate-0'
+            } h-8 w-8 text-gray-600 p-1 border-2 border-gray-600/20 rounded-full hover:bg-gray-600/20 transition-all duration-500 cursor-pointer `}
+            onClick={() => fold('Production Schedule')}
+          />
+        </div>
+
+        <ProductionTable
+          planningData={excelData}
+          productionData={productionData}
+          className={`${
+            height2 === 'min-h-[300px]' ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         {/* Efficiency Charts */}

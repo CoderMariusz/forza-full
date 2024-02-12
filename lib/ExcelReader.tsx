@@ -1,5 +1,5 @@
 import { NewPlanningItem, usePlanningStore } from '@/store/Production';
-import React, { use, useState } from 'react';
+import React, { use, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 
 interface PlaningItem {
@@ -12,11 +12,14 @@ interface PlaningItem {
   quantity: string;
 }
 
-const ExcelReader = ({ setDataFrom }: any) => {
+const ExcelReader = ({ setDataFrom, name }: any) => {
   const [data, setData] = useState<PlaningItem[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef2 = useRef<HTMLInputElement>(null);
 
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
+    console.log(event.target.name);
 
     if (selectedFile) {
       const reader = new FileReader();
@@ -32,9 +35,16 @@ const ExcelReader = ({ setDataFrom }: any) => {
           console.log(jsonData);
 
           // Process jsonData as in the previous example
-          const processedData = processData(jsonData);
-          setData(processedData);
-          setDataFrom(processedData);
+          if (name === 'planning') {
+            const processedData = processData(jsonData);
+            setData(processedData);
+            setDataFrom(processedData);
+          }
+          if (name === 'production') {
+            console.log('production');
+            setDataFrom(jsonData);
+            console.log(jsonData);
+          }
         }
       };
       reader.readAsBinaryString(selectedFile);
@@ -73,10 +83,25 @@ const ExcelReader = ({ setDataFrom }: any) => {
     return processedData;
   };
 
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+  const handleClick2 = () => {
+    fileInputRef2.current?.click();
+  };
+
   return (
     <div>
+      <button
+        type='button'
+        onClick={handleClick}
+        className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+        {name}
+      </button>
       <input
         type='file'
+        ref={fileInputRef}
+        className='hidden'
         onChange={handleFile}
       />
     </div>
