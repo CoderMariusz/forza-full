@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 // Define types for your table data
 type StartUpData = {
+  line: number;
   productCode: string;
   dieset: string;
   depthOfForming: string;
@@ -16,6 +17,7 @@ type StartUpData = {
 // Example data for the table
 const dummyData: StartUpData[] = [
   {
+    line: 1,
     productCode: 'A1000',
     dieset: '6x2',
     depthOfForming: '30mm',
@@ -49,6 +51,9 @@ const StartUp: React.FC = () => {
         <thead>
           <tr className='bg-gray-100'>
             <th className='px-4 py-2 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100'>
+              Line
+            </th>
+            <th className='px-4 py-2 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100'>
               Product Code
             </th>
             <th className='px-4 py-2 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100'>
@@ -80,6 +85,7 @@ const StartUp: React.FC = () => {
         <tbody>
           {startUpData.map((item, index) => (
             <tr key={index}>
+              <td className='px-4 py-2'>{item.line}</td>
               <td className='px-4 py-2'>{item.productCode}</td>
               <td className='px-4 py-2'>{item.dieset}</td>
               <td className='px-4 py-2'>{item.depthOfForming}</td>

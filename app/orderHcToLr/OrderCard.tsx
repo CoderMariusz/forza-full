@@ -7,7 +7,7 @@ interface OrderCardProps {
   id: number;
   data: OrderObject[];
   setLoading: (loading: boolean) => void;
-  loading: boolean;
+  loading?: boolean;
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -40,32 +40,34 @@ const OrderCard: React.FC<OrderCardProps> = ({
   allDone = order.every((item) => item.done);
 
   return (
-    <div className='bg-[#97caef] rounded-lg shadow-lg m-3 pb-3 w-1/3 min-h-[140px] flex flex-col'>
+    <div className='bg-blue-100 rounded-lg shadow-lg m-3 pb-3 w-1/3 min-h-[140px] flex flex-col'>
       <div
-        className={`text-2xl font-bold mb-4 rounded-t-lg p-2 flex justify-between ${
-          allDone ? 'bg-yellow-500' : ''
-        }`}>
+        className={
+          'bg-blue-800 text-white rounded-t-lg p-3 flex justify-between items-center text-xl font-semibold mb-2'
+        }>
         <h2>Order Card #{id}</h2>
-        <div>
-          <p className='text-lg'>{allDone ? 'Order is done' : ''}</p>
-          <p className='text-xs'>{order.length > 0 ? order[0].date : ''}</p>
+        <div className={`${allDone ? 'bg-yellow-600 p-2 rounded-md' : null}`}>
+          <p className='text-sm'>{allDone ? 'Order is done' : ''}</p>
+          <p className='text-xs text-gray-300'>
+            {order.length > 0 ? order[0].date : ''}
+          </p>
         </div>
       </div>
       {order.map((item) => (
         <div
           key={item.$id}
-          className={`flex justify-between py-2 border-b-2 border-cyan-800/20 ${
-            item.priority ? 'bg-red-400 rounded-sm p-2' : ''
+          className={`flex justify-between items-center py-2 border-b border-gray-200 ${
+            item.priority ? 'bg-red-50 rounded-sm p-2' : ''
           }`}>
           <p className='text-lg text-gray-800 pl-3'>{item.webNumber}</p>
-          <div className='flex items-center gap-2 pr-3 '>
+          <div className='flex items-center gap-2 pr-3'>
             {item.priority && (
-              <ExclamationCircleIcon className='h-7 w-7 text-red-500' />
+              <ExclamationCircleIcon className='h-6 w-6 text-red-600' />
             )}
             {item.quantities}
             {user === 'storeslr@forzafoods.com' ? (
               <button
-                className={`bg-[#a3bb43] text-white text-sm font-semibold px-3 py-2 ${
+                className={`bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-3 py-2 rounded-md focus:outline-none focus:shadow-outline" ${
                   item.done ? 'hidden' : ''
                 }`}
                 onClick={() => markOrderAsDone(item.$id)}>
@@ -76,9 +78,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </div>
       ))}
       {user === 'storeshc@forzafoods.com' && !allDone ? (
-        <div className='flex justify-end items-end flex-grow'>
+        <div className='flex justify-end items-end flex-grow mt-2'>
           <button
-            className='bg-red-500 text-white p-2 m-2'
+            className='bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md focus:outline-none focus:shadow-outline mr-2'
             onClick={async () => {
               const removePromises = order.map((item) =>
                 useOrderStore.getState().removeOrder(item.$id)

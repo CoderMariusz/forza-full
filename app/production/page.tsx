@@ -6,6 +6,7 @@ import { NewPlanningItem, usePlanningStore } from '@/store/Production';
 import { use, useEffect, useState } from 'react';
 import ProductionTable from './ProductionTable';
 import StartUp from './Startup';
+import { ChevronUpIcon } from '@heroicons/react/24/outline';
 
 interface ToolCardProps {
   title: string;
@@ -23,6 +24,7 @@ const ProductionPage = () => {
   const [animationSection, setAnimationSection] = useState(false);
   const [view, setView] = useState('');
   const [excelData, setExcelData] = useState<NewPlanningItem[]>([]);
+  const [height, setHeight] = useState('');
 
   const secondLoopAnimation = () => {
     setTimeout(() => {
@@ -30,16 +32,26 @@ const ProductionPage = () => {
     }, 700);
   };
 
-  const setAnimation = (view: string) => {
+  const setAnimation = (viewfun: string) => {
+    if (view === viewfun) return;
     if (animationSection === false) {
-      setView(view);
+      setView(viewfun);
     }
     setAnimationSection(!animationSection);
 
     setTimeout(() => {
-      setView(view);
+      setView(viewfun);
     }, 500);
     secondLoopAnimation();
+  };
+
+  const fold = (e: string) => {
+    if (height !== 'h-14 min-h-0') {
+      setHeight('h-14 min-h-0');
+      console.log('????');
+    } else {
+      setHeight('min-h-[300px] h-[300px]');
+    }
   };
 
   useEffect(() => {
@@ -80,12 +92,18 @@ const ProductionPage = () => {
       <div
         className={` bg-white min-h-[300px] p-4 rounded-lg shadow  transition-all duration-500 mb-4 overflow-hidden ${
           animationSection === false ? 'min-h-0 h-0 p-0 text-white' : null
-        }`}>
+        } ${height}`}>
         {view === 'view1' && (
           <div>
-            <h2 className='text-xl font-semibold mb-3'>
-              Start-Up Information{' '}
-            </h2>
+            <div className='flex justify-between'>
+              <h2 className='text-xl font-semibold mb-3'>
+                Start-Up Information{' '}
+              </h2>
+              <ChevronUpIcon
+                className='h-8 w-8 text-gray-600 p-1 border-2 border-gray-600/20 rounded-full '
+                onClick={() => fold('view1')}
+              />
+            </div>
             <StartUp />
           </div>
         )}

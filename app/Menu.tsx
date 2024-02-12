@@ -1,6 +1,6 @@
 'use client';
 import { useUserStore } from '@/store/UserStore';
-import { linksList } from '@/lib/LinkList';
+import { LinksList } from '@/lib/LinkList';
 import { use, useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 
@@ -34,7 +34,7 @@ function Menu() {
   }, [loading]);
 
   return (
-    <div className='hidden md:flex flex-col gap-4 w-48 p-4 bg-cyan-700 min-h-full'>
+    <div className='hidden md:flex flex-col gap-4 w-48 p-4 bg-[#494866] min-h-full'>
       <div className='flex justify-center items-center bg-yellow-500 ml-3 rounded-full w-16 h-16 '>
         <h2 className='text-white text-3xl font-bold'>
           {name.slice(0, 1).toUpperCase()}
@@ -46,7 +46,7 @@ function Menu() {
       </h2>
       <nav>
         <ul className='flex flex-col gap-y-2 w-full'>
-          {linksList(name, setName, setIsOpen, logOut)}
+          {LinksList(name, setName, setIsOpen, logOut)}
         </ul>
       </nav>
     </div>

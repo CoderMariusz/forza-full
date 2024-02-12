@@ -9,8 +9,9 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export const linksList = (
+export const LinksList = (
   name: string,
   setName: Function,
   setIsOpen: Function,
@@ -48,9 +49,14 @@ export const linksList = (
   ];
   const storesLr = ['dashboard', 'storesLr', 'orderHcToLr', 'settings'];
 
+  const route = useRouter();
+
   const logoutFun = async () => {
     await logout();
     setName('');
+    if (name !== '') {
+      route.push('/login');
+    }
   };
 
   if (!name || name === '') {

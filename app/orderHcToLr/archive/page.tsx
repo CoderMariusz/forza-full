@@ -72,6 +72,8 @@ function OrderHcLRArchive() {
               key={index}
               id={index}
               data={group}
+              setLoading={() => console.log('loading')}
+              loading={loading}
             />
           ) : null
         )}
