@@ -1,14 +1,13 @@
+'use client';
 import QrScanner from '@/lib/QrScanner';
 
 function ScannerPage() {
+  const [reading, setReading] = useState('');
+
   return (
     <div>
       <h1>Scanner Page</h1>
-      <QrScanner
-        setReading={(e) => {
-          console.log(e);
-        }}
-      />
+      <QrScanner setReading={(e) => setReading(e)} />
     </div>
   );
 }
