@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import { useUserStore } from '@/store/UserStore';
-import { linksList } from '@/lib/LinkList';
 
 function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
