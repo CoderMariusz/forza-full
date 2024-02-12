@@ -7,12 +7,14 @@ import {
   RmMaterial,
   useRmMaterialsStore
 } from '@/store/RmMaterials'; // Adjust the import paths according to your project structure
+import { useUserStore } from '@/store/UserStore';
 
 const RmMaterialsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rmData, setRmData] = useState<RmMaterial[]>([]);
+  const user = useUserStore((state) => state.name);
 
   const filteredData =
     rmData &&
@@ -38,6 +40,10 @@ const RmMaterialsPage = () => {
     fetchData();
     setLoading(false);
   }, [loading]);
+
+  if (user === '' || user === undefined) {
+    return <div>Not authorized</div>;
+  }
 
   return (
     <div className='container mx-auto px-4'>
