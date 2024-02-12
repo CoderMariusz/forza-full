@@ -1,6 +1,4 @@
-'use clinet';
 import QrScanner from '@/lib/QrScanner';
-import React, { useState } from 'react';
 
 function ScannerPage() {
   return (
