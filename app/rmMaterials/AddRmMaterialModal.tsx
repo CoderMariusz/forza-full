@@ -32,7 +32,10 @@ const AddRmMaterialModal = ({ isOpen, onClose, onAdd }: Props) => {
   };
 
   const handleAdd = () => {
+    console.log('Adding new RM Material', formData);
+
     onAdd(formData);
+
     onClose(); // Close modal after adding
     // Reset form data
     setFormData({

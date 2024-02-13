@@ -37,6 +37,8 @@ function ProductsPage() {
   };
 
   const handleProductSubmit = async (newOrEditedProduct: any) => {
+    console.log(newOrEditedProduct);
+
     if (
       products.some(
         (p) =>
@@ -100,6 +102,7 @@ function ProductsPage() {
               <th className='px-2 py-2'>Name</th>
               <th className='px-2 py-2'>WebCode</th>
               <th className='px-2 py-2'>LabelCode</th>
+              <th className='px-2 py-2'>Bottom Labels</th>
               <th className='px-2 py-2'>RmCode</th>
               <th className='px-2 py-2'>Rates</th>
               <th className='px-2 py-2'>Version</th>
@@ -117,6 +120,7 @@ function ProductsPage() {
                 <td className='border px-2 py-2'>{product.name}</td>
                 <td className='border px-2 py-2'>{product.webCode}</td>
                 <td className='border px-2 py-2'>{product.labelCode}</td>
+                <td className='border px-2 py-2'>{product.bottomLabelCode}</td>
                 <td className='border px-2 py-2'>{product.rmCode}</td>
                 <td className='border px-2 py-2'>{product.rates}</td>
                 <td className='border px-2 py-2'>{product.version}</td>
@@ -132,7 +136,12 @@ function ProductsPage() {
                       Edit
                     </button>
 
-                    <button className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'>
+                    <button
+                      className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                      onClick={() => {
+                        useProductsStore.getState().removeProduct(product.$id);
+                        setLoading(!loading);
+                      }}>
                       Delete
                     </button>
                   </td>
@@ -151,7 +160,12 @@ function ProductsPage() {
           existingProducts={products}
           webCodes={websData.map((web) => web.code)}
           rmCodes={rmData.map((rm) => rm.rmCode)}
-          labelCodes={labelData.map((label) => label.code)}
+          labelCodes={labelData
+            .filter((label) => label.group === 'top')
+            .map((label) => label.code)}
+          bottomLabelCodes={labelData
+            .filter((label) => label.group === 'bottom')
+            .map((label) => label.code)}
           productToEdit={productToEdit}
         />
       </div>

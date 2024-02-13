@@ -8,9 +8,11 @@ interface EditAddProductModalProps {
   onSubmit: (product: NewProduct) => void;
   existingProducts: Product[];
   productToEdit?: Product;
+
   webCodes: string[];
   rmCodes: string[];
   labelCodes: string[];
+  bottomLabelCodes: string[];
 }
 
 const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
@@ -21,13 +23,15 @@ const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
   productToEdit,
   webCodes,
   rmCodes,
-  labelCodes
+  labelCodes,
+  bottomLabelCodes
 }) => {
   const [product, setProduct] = useState<NewProduct>({
     aCode: '',
     name: '',
     webCode: '',
     labelCode: '',
+    bottomLabelCode: '',
     rmCode: '',
     rates: 0,
     version: 0,
@@ -48,6 +52,7 @@ const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
         name: '',
         webCode: '',
         labelCode: '',
+        bottomLabelCode: '',
         rmCode: '',
         rates: 0,
         version: 0,
@@ -81,6 +86,7 @@ const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
       setError('aCode already exists');
       return;
     }
+
     onSubmit(product);
     onClose();
   };
@@ -218,6 +224,29 @@ const EditAddProductModal: React.FC<EditAddProductModalProps> = ({
             className='mt-1 p-2 border border-gray-300 rounded w-full'>
             <option value=''>Select Label Code</option>
             {labelCodes.map((code) => (
+              <option
+                key={code}
+                value={code}>
+                {code}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='mb-4'>
+          <label
+            htmlFor='labelCode'
+            className='block text-sm font-medium text-gray-700'>
+            Bottom Label Code
+          </label>
+          <select
+            id='bottomLabelCode'
+            name='bottomLabelCode'
+            value={product.bottomLabelCode}
+            onChange={handleChange}
+            className='mt-1 p-2 border border-gray-300 rounded w-full'>
+            <option value=''>Select Bottom Label Code</option>
+
+            {bottomLabelCodes.map((code) => (
               <option
                 key={code}
                 value={code}>

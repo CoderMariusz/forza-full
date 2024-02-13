@@ -6,6 +6,7 @@ export interface NewProduct {
   name: string;
   webCode: string;
   labelCode: string;
+  bottomLabelCode: string;
   rmCode: string;
   rates: number;
   version: number;
@@ -28,6 +29,7 @@ export const useProductsStore = create<ProductsStore>((set) => ({
   name: '',
   webCode: '',
   labelCode: '',
+  bottomLabelCode: '',
   rmCode: '',
   rates: 0,
   version: 0,
@@ -46,6 +48,7 @@ export const useProductsStore = create<ProductsStore>((set) => ({
         name: product.name,
         webCode: product.webCode,
         labelCode: product.labelCode,
+        bottomLabelCode: product.bottomLabelCode,
         rmCode: product.rmCode,
         rates: product.rates,
         version: product.version,
@@ -57,6 +60,8 @@ export const useProductsStore = create<ProductsStore>((set) => ({
     return products;
   },
   AddNewProduct: async (newItem) => {
+    console.log('Adding new product', newItem);
+
     const data = await database.createDocument(
       '6510bb07873546043cae',
       '6510bb1f8f240bd7c3b2',
@@ -84,11 +89,24 @@ export const useProductsStore = create<ProductsStore>((set) => ({
     }
   },
   updateProduct: async (id, newItem) => {
+    console.log('Updating product', newItem);
+
     const data = await database.updateDocument(
       '6510bb07873546043cae',
       '6510bb1f8f240bd7c3b2',
       id,
-      newItem
+      {
+        aCode: newItem.aCode,
+        name: newItem.name,
+        webCode: newItem.webCode,
+        labelCode: newItem.labelCode,
+        bottomLabelCode: newItem.bottomLabelCode,
+        rmCode: newItem.rmCode,
+        rates: newItem.rates,
+        version: newItem.version,
+        packetsInBox: newItem.packetsInBox,
+        additionalInfo: newItem.additionalInfo
+      }
     );
     try {
       set((state) => ({ ...state, data }));
